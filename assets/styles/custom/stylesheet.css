@@ -27,6 +27,10 @@ body {
   margin-top: 1em;
 }
 
+#top-nav .nav > li > a:hover {
+  background-color: #6067a8;
+}
+
 #logo {
   -webkit-filter: invert(1);
   filter: invert(1);
