@@ -5,26 +5,6 @@ title: Getting Started
 ---
 ###Prerequisites
 
-  * Java 8
-
-###Overview
-
-<p align="center">
-  <img alt="Elide High-Level Overview" src="/assets/images/elide-high-level.png" />
-</p>
-
-The Elide library is integrated directly into your serving layer. It is independent of any additional custom logic and can be used alongside custom application code. It consumes and produces valid [JSON API](http://jsonapi.org/) documents as its interchange format between clients to make it easy to adapt and create clients.
-
-###Technical Overview
-
-<p align="center">
-  <img alt="Elide High-Level Overview" src="/assets/images/elide-service-desc.png" />
-</p>
-
-Elide is middleware for your web service layer. It typically sits between your datastore (and any caching/scaling technologies you may have there) and your server technology (i.e. Jetty, Tomcat, etc.).
-
-The elide-core component is the basis of Elide's functionality. It interacts with a specified database manager to lookup and store data effectively. Moreover, JPA-annotated Java beans are consumed by elide-core and then properly validated hierarchically per request to ensure security.
-
 ###Code
 The first step is to create a JPA data model and mark which beans to expose via Elide.  The following directive exposes **everything** in a package:  
 

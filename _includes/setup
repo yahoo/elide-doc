@@ -1,0 +1,9 @@
+{% if site.github %}
+  {% assign BASE_PATH = site.BASE_PATH %}
+{% else %}
+  {% assign BASE_PATH = 'http://localhost:4000' %}
+{% endif %}
+
+{% if site.ASSET_PATH != '' %}
+  {% assign ASSET_PATH = site.ASSET_PATH %}
+{% endif %}
