@@ -1,0 +1,37 @@
+body {
+  padding-top: 50px;
+}
+
+.page-header {
+  margin: 0;
+  background-color: #2dc8ab;
+  background-image: linear-gradient(120deg, #6067a8, #2dc8ab);
+}
+
+.project-tagline {
+  font-size: larger;
+}
+
+.navbar {
+  border-bottom: none;
+  margin-bottom: none;
+  background-color: #2dc8ab;
+  background-image: linear-gradient(14deg, #6067a8, #2dc8ab);
+}
+
+.navbar a {
+  color: white;
+}
+
+.nav-stacked {
+  margin-top: 1em;
+}
+
+#top-nav .nav > li > a:hover {
+  background-color: #6067a8;
+}
+
+#logo {
+  -webkit-filter: invert(1);
+  filter: invert(1);
+}

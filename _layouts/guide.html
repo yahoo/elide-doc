@@ -1,0 +1,26 @@
+---
+layout: default
+---
+{% include setup %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="affix">
+        <ul class="nav nav-stacked">
+        {% assign sorted_pages = site.pages | sort:"name" %}
+        {% for pages in sorted_pages %}
+          {% if (pages.type == page.type) and (pages.group == "guide") %}
+            <li><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
+          {% endif %}
+        {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-sm-9">
+      <h2>{{ page.title }} {% if page.tagline %} <small>{{ page.tagline }}</small>{% endif %}</h2>
+      <div class="row-fluid">
+        {{ content }}
+      </div>
+    </div>
+  </div>
+</div>

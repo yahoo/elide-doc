@@ -1,0 +1,38 @@
+{% include setup %}
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Elide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- bootstrap -->
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/github/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/github/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/github/syntax.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/custom/stylesheet.css" media="screen">
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top" role="banner">
+      <div class="container">
+        <nav id="top-nav" class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+          <ul class="nav navbar-nav navbar-left">
+            <li class="brand"><a href="/">Elide</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right ">
+            {% assign pages = site.pages %}
+            {% assign group = 'navigation' %}
+            {% include navigation %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+		{{ content }}
+  </body>
+</html>
