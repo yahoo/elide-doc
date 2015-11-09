@@ -15,7 +15,7 @@ The Elide library is integrated directly into your serving layer. It is independ
 
 Elide is middleware for your web service layer. It typically sits between your datastore (and any caching/scaling technologies you may have there) and your server technology (i.e. Jetty, Tomcat, etc.).
 
-The elide-core component is the basis of Elide's functionality. It interacts with a specified database manager to lookup and store data effectively. Moreover, JPA-annotated Java beans are consumed by elide-core and then properly validated hierarchically per request to ensure security.
+The elide-core component is the basis of Elide's functionality. It interacts with a specified data store to lookup and store data effectively. Moreover, JPA-annotated Java beans are consumed by elide-core and then properly validated hierarchically per request to ensure security.
 
 ###Code
 The first step is to create a JPA data model and mark which beans to expose via Elide.  The following directive exposes **everything** in a package:  
@@ -25,11 +25,11 @@ The first step is to create a JPA data model and mark which beans to expose via 
 package example;
 ```
 
-The second step is to create a `DatabaseManager`.   It is an interface that binds to a JPA provider.  Elide ships with a default implementation for Hibernate.  The default `HibernateManager` will discover all of the JPA beans in your deployment and expose those that have been annotated to do so.
+The second step is to create a `DataStore`.   It is an interface that binds to a JPA provider.  Elide ships with a default implementation for Hibernate.  The default `HibernateStore` will discover all of the JPA beans in your deployment and expose those that have been annotated to do so.
 
 ```java
 /* Takes a hibernate session factory */
-DatabaseManager db = new HibernateManager(sessionFactory);
+DataStore db = new HibernateStore(sessionFactory);
 ```
 
 The third step is to create an `AuditLogger`.   It is an interface that does something with Audit messages.  Elide ships with a default that dumps them to slf4j:
