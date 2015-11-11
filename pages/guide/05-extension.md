@@ -76,3 +76,34 @@ TODO - add example code for how to configure elide with initializers.
 
 Data models can be validated using [bean validation](http://beanvalidation.org/1.0/spec/).  This requires
 *JSR303* data model annotations and wiring in a bean validator in the `DataStore`.
+
+## Lifecycle Events
+Lifecycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers:
+
+```Java
+@Entity
+class Book {
+   @Column
+   public String title;
+
+   @OnUpdate("title")
+   void onUpdateTitle() {
+      // title attribute updated
+   }
+
+   @OnCommit("title")
+   void onCommitTitle() {
+      // title attribute update committed
+   }
+
+   @OnCommit
+   void onCommitBook() {
+      // book entity committed
+   }
+
+   @OnDelete
+   void onDeleteBook() {
+      // book entity deleted
+   }
+}
+```
