@@ -3,7 +3,7 @@ layout: guide
 group: guide
 title: Access
 ---
-Railsplitter allows limiting which models are exposed through JSON API with two annotations: `Include` and `Exclude`.
+Elide allows limiting which models are exposed through JSON API with two annotations: `Include` and `Exclude`.
 
 ## Include
 `Include` allows access to a given model or package of models.   Class annotations override the settings of package annotations. `Include` takes two parameters:
