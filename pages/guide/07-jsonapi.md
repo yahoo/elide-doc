@@ -55,12 +55,12 @@ Filters will be passed as query parameters in the URL with the following BNF syn
 Elide supports the following operators:
 
 1. `in` : Evaluates to true if the attribute exactly matches any of the values in the list.
-1. `equals` : Evalutes to true if the attribute exactly matches the singular value.
-1. `notin` : Evalutes to true if the attribute does not match any of the values in the list.
+1. `equals` : Evaluates to true if the attribute exactly matches the singular value.
+1. `notin` : Evaluates to true if the attribute does not match any of the values in the list.
 1. `notequals` : Evaluates to true if the attribute does not match the singular value.
 1. `startswith` : Similar to SQL `like 'value%`.
 1. `endswith` : Similar to SQL `like '%value`.
-1. `contains` : Simliar to SQL `like '%value%`.
+1. `contains` : Similar to SQL `like '%value%`.
 
 ### Examples
 
