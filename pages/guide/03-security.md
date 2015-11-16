@@ -103,7 +103,7 @@ The definition of these checks is outside of the scope of Elide, but an example 
 
 ## Security of Shareable Models<a name="shareable">&nbsp;</a>
 
-The following scenario illustrates what could happen without Elide's concept of shareable models.
+The following scenario illustrates what could happen _without_ Elide's concept of shareable models.
 
 Imagine a scenario where Elide is used to model and expose a bank account.  In this example, there are 3 models:
 
