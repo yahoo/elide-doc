@@ -4,5 +4,5 @@ exclude: ["README.md"]
 highlighter: pygments
 
 # site-specific configuration
-BASE_PATH: https://git.corp.yahoo.com/pages/railsplitter/elide-doc
+BASE_PATH: http://elide.io
 ASSET_PATH: /assets
