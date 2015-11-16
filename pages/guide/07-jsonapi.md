@@ -20,4 +20,48 @@ There are a few caveats given that Elide allows developers control over how enti
 
 ## Filters
 
+Elide supports filters that are compatible with the [JSON-API recommendations](http://jsonapi.org/recommendations/).
+However, it extends them to support additional filter operator types and compound documents.
+
+Filters are only supported on attributes with simple, primitive types.
+
+### Rough BNF Syntax
+
+Filters will be passed as query parameters in the URL with the following BNF syntax:
+
+```
+<QUERY> ::= 
+     “filter” “[“ <ATTRIBUTE> “]” “=” <VALUES>
+   | “filter” “[“ <ATTRIBUTE> “]” “[“ <OPERATOR> “]” “=” <VALUES> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[in]” “=” <VALUES> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[notin]” “=” <VALUES> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[equals]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[notequals]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[startswith]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[endswith]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[contains]” “=” <VALUE> 
+
+<OPERATOR> ::= <TERM>
+<ATTRIBUTE> ::= <TERM>
+<TYPE> ::= <TERM>
+
+<VALUE> ::= <URL_ENCODED_TERM> 
+<VALUES> ::= <URL_ENCODED_TERM> | <URL_ENCODED_TERM> “,” <VALUES>
+
+```
+
+### Operators
+
+Elide supports the following operators:
+
+1. `in` : Evaluates to true if the attribute exactly matches any of the values in the list.
+1. `equals` : Evalutes to true if the attribute exactly matches the singular value.
+1. `notin` : Evalutes to true if the attribute does not match any of the values in the list.
+1. `notequals` : Evaluates to true if the attribute does not match the singular value.
+1. `startswith` : Similar to SQL `like 'value%`.
+1. `endswith` : Similar to SQL `like '%value`.
+1. `contains` : Simliar to SQL `like '%value%`.
+
+### Examples
+
 ## Entity Identifiers
