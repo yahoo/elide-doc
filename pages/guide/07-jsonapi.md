@@ -37,6 +37,8 @@ Filters will be passed as query parameters in the URL with the following BNF syn
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[prefix]" "=" <VALUE> 
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[postfix]" "=" <VALUE> 
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[infix]" "=" <VALUE> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[isnull]"
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[notnull]"
 
 <ATTRIBUTE> ::= <TERM>
 <TYPE> ::= <TERM>
@@ -50,9 +52,6 @@ Values are simply a comma separated list of URL encoded strings.
 
 ### Type Coercion
 Values are type coerced into the appropriate primitive data type for the attribute filter.
-Anything surrounded by quotes is considered a string.  Quotes can be escaped.  
-
-The null value can be passed as the word ‘null’ without quotes.
 
 ### Multiple Filters
 When multiple filters are present for the same type, the filters are a logical ‘and’ for any collection with
@@ -68,6 +67,8 @@ Elide supports the following operators.  When an operator is not specified, Elid
 1. `prefix` : Similar to SQL `like 'value%`.
 1. `postfix` : Similar to SQL `like '%value`.
 1. `infix` : Similar to SQL `like '%value%`.
+1. `isnull` : Evaluates to true if the attribute is null
+1. `notnull` : Evaluates to true if the attribute is not null
 
 ### Examples
 
@@ -82,6 +83,14 @@ The same as the prior example except the operator is explicit.
 The same as prior except include all the comment votes but only those which were voted up.
 
 `/articles/1/comments?include=comments.votes&filter[comment.title][in]=Elide%20is%20great&filter[vote.up]=true` 
+
+Return all comments where the title is not null:
+
+`/articles/1/comments?filter[comment.title][notnull]`
+
+Return all comments posted by anonymous people:
+
+`/articles/1/comments?filter[comment.author][isnull]`
 
 ## Model Identifiers
 
