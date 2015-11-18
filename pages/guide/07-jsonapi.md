@@ -16,7 +16,7 @@ There are a few caveats given that Elide allows developers control over how enti
 1. Some entities may only be reached through a relationship to another entity.  Not every entity is _rootable_.
 1. The root path segment of URLs are by default the name of the class (lowercase).  This can be overridden.
 1. Elide allows relationships to be nested arbitrarily deep in URLs.
-1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an article with a singular author which has a singular address.   While unambiguous, the following is *not* allowed: `/articles/1/author/address`.  Instead, the author must be full qualified by ID: `/articles/1/author/34/address`
+1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an article with a singular author which has a singular address.   While unambiguous, the following is *not* allowed: `/articles/1/author/address`.  Instead, the author must be fully qualified by ID: `/articles/1/author/34/address`
 
 ## Filters
 
@@ -31,12 +31,12 @@ Filters will be passed as query parameters in the URL with the following BNF syn
 
 ```
 <QUERY> ::= 
-     “filter” "[" <TYPE> "." <ATTRIBUTE> “]“ “=” <VALUES>
-   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[in]” “=” <VALUES> 
-   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[not]” “=” <VALUES> 
-   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[prefix]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[postfix]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[infix]” “=” <VALUE> 
+     "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "=" <VALUES>
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[in]" "=" <VALUES> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[not"” "=" <VALUES> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[prefix]" "=" <VALUE> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[postfix]" "=" <VALUE> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[infix]" "=" <VALUE> 
 
 <ATTRIBUTE> ::= <TERM>
 <TYPE> ::= <TERM>
@@ -106,4 +106,4 @@ the order in which they were created.  The client can use this order to map the 
 
 ### ID types
 
-ID fields must be `Serializable` objects.   
+ID fields must be `Serializable` objects.   Elide does not require IDs to be UUIDs (a divergence from JSON-API).
