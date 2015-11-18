@@ -20,7 +20,7 @@ There are a few caveats given that Elide allows developers control over how enti
 
 ## Filters
 
-Elide supports filters that are compatible with the [JSON-API recommendations](http://jsonapi.org/recommendations/).
+Elide supports filters that are similar to the [JSON-API recommendations](http://jsonapi.org/recommendations/).
 However, it extends them to support additional filter operator types and compound documents.
 
 Filters are only supported on attributes with simple, primitive types.
@@ -31,38 +31,57 @@ Filters will be passed as query parameters in the URL with the following BNF syn
 
 ```
 <QUERY> ::= 
-     “filter” “[“ <ATTRIBUTE> “]” “=” <VALUES>
-   | “filter” “[“ <ATTRIBUTE> “]” “[“ <OPERATOR> “]” “=” <VALUES> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[in]” “=” <VALUES> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[notin]” “=” <VALUES> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[equals]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[notequals]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[startswith]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[endswith]” “=” <VALUE> 
-   | “filter” "[" <TYPE> "]" “[“ <ATTRIBUTE> “]” “[contains]” “=” <VALUE> 
+     “filter” "[" <TYPE> "." <ATTRIBUTE> “]“ “=” <VALUES>
+   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[in]” “=” <VALUES> 
+   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[not]” “=” <VALUES> 
+   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[prefix]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[postfix]” “=” <VALUE> 
+   | “filter” "[" <TYPE> "." <ATTRIBUTE> “]” “[infix]” “=” <VALUE> 
 
-<OPERATOR> ::= <TERM>
 <ATTRIBUTE> ::= <TERM>
 <TYPE> ::= <TERM>
 
 <VALUE> ::= <URL_ENCODED_TERM> 
 <VALUES> ::= <URL_ENCODED_TERM> | <URL_ENCODED_TERM> “,” <VALUES>
-
 ```
+
+### Values
+Values are simply a comma separated list of URL encoded strings.
+
+### Type Coercion
+Values are type coerced into the appropriate primitive data type for the attribute filter.
+Anything surrounded by quotes is considered a string.  Quotes can be escaped.  
+
+The null value can be passed as the word ‘null’ without quotes.
+
+### Multiple Filters
+When multiple filters are present for the same type, the filters are a logical ‘and’ for any collection with
+that type.   Filters are type independent: any filters for type 'A' do *not* modify the results 
+returned for a collection of type 'B'.
 
 ### Operators
 
-Elide supports the following operators:
+Elide supports the following operators.  When an operator is not specified, Elide uses the `in` operator.
 
 1. `in` : Evaluates to true if the attribute exactly matches any of the values in the list.
-1. `equals` : Evaluates to true if the attribute exactly matches the singular value.
-1. `notin` : Evaluates to true if the attribute does not match any of the values in the list.
-1. `notequals` : Evaluates to true if the attribute does not match the singular value.
-1. `startswith` : Similar to SQL `like 'value%`.
-1. `endswith` : Similar to SQL `like '%value`.
-1. `contains` : Similar to SQL `like '%value%`.
+1. `not` : Evaluates to true if the attribute does not match any of the values in the list.
+1. `prefix` : Similar to SQL `like 'value%`.
+1. `postfix` : Similar to SQL `like '%value`.
+1. `infix` : Similar to SQL `like '%value%`.
 
 ### Examples
+
+Return all the comments associated with article 1 whose name is 'Elide is great'.
+
+`/articles/1/comments?filter[comment.title]=Elide%20is%20great` 
+
+The same as the prior example except the operator is explicit.
+
+`/articles/1/comments?filter[comment.title][in]=Elide%20is%20great` 
+
+The same as prior except include all the comment votes but only those which were voted up.
+
+`/articles/1/comments?include=comments.votes&filter[comment.title][in]=Elide%20is%20great&filter[vote.up]=true` 
 
 ## Model Identifiers
 
