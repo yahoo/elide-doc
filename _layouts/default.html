@@ -19,19 +19,34 @@
     <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/custom/stylesheet.css" media="screen">
   </head>
   <body>
-    <div class="navbar navbar-fixed-top" role="banner">
-      <div class="container">
-        <nav id="top-nav" class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
-          <ul class="nav navbar-nav navbar-left">
-            <li class="brand"><a href="/">Elide</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right ">
-            {% assign pages = site.pages %}
-            {% assign group = 'navigation' %}
-            {% include navigation %}
-          </ul>
-        </nav>
-      </div>
+    <!--<div class="navbar navbar-fixed-top" role="banner">-->
+    <div class="navbar-default navbar-fixed-top" role="banner">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-nav" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Elide</a>
+            </div>
+            <nav id="top-nav" class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+                <ul class="nav navbar-nav navbar-right ">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docs<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% assign sorted_pages = site.pages | sort:"name" %}
+                            {% for pages in sorted_pages %}
+                              {% if (pages.type == page.type) and (pages.group == "guide") %}
+                                <li><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 		{{ content }}
   </body>
