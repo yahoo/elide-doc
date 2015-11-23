@@ -53,31 +53,6 @@ A `DataStoreTransaction` is responsible for persistence of entities:
 
 #Extending Life Cycle Events
 
-TBD
-
-Sometimes, business logic however requires access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
-
-Elide can be configured with an `Initializer` implementation for a particular model class.  An `Initializer` is any class which implements the following interface:
-
-```java
-public interface Initializer<T> {
-    /**
-     * Initialize an entity bean
-     *
-     * @param entity Entity bean to initialize
-     */
-    public void initialize(T entity);
-}
-```
-
-TODO - add example code for how to configure elide with initializers.
-
-#Validation
-
-Data models can be validated using [bean validation](http://beanvalidation.org/1.0/spec/).  This requires
-*JSR303* data model annotations and wiring in a bean validator in the `DataStore`.
-
-## Lifecycle Events
 Lifecycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers:
 
 ```Java
@@ -107,3 +82,26 @@ class Book {
    }
 }
 ```
+## Initializers
+
+Sometimes, lifecycle event triggers require access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
+
+Elide can be configured with an `Initializer` implementation for a particular model class.  An `Initializer` is any class which implements the following interface:
+
+```java
+public interface Initializer<T> {
+    /**
+     * Initialize an entity bean
+     *
+     * @param entity Entity bean to initialize
+     */
+    public void initialize(T entity);
+}
+```
+
+TODO - add example code for how to configure elide with initializers.
+
+#Validation
+
+Data models can be validated using [bean validation](http://beanvalidation.org/1.0/spec/).  This requires
+*JSR303* data model annotations and wiring in a bean validator in the `DataStore`.
