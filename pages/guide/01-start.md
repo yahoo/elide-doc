@@ -57,3 +57,7 @@ ElideResponse response = elide.post(path, requestBody, user)
 ```
 
 Wire up the four HTTP verbs to your container and you will have a functioning JSON API server.
+
+###More Examples
+
+If you're looking for more complete examples, please [see the elide repository](https://github.com/yahoo/elide/tree/master/elide-example).
