@@ -99,7 +99,24 @@ public interface Initializer<T> {
 }
 ```
 
-TODO - add example code for how to configure elide with initializers.
+Initializers can be configured in a custom `DataStore` when the method `populateEntityDictionary` is invoked:
+
+```java
+    public void populateEntityDictionary(EntityDictionary dictionary) {
+
+        /* Assuming this DataStore extends another... */
+        super.populateEntityDictionary(dictionary);
+
+        /* 
+         * Create an initializer for model Foobar, passing any runtime configuration to 
+         * the constructor of the initializer.
+         */
+        ...
+
+        /* Bind the initializer to Foobar.class */
+        dictionary.bindInitializer(foobarInitializer, Foobar.class);
+    }
+```
 
 #Validation
 
