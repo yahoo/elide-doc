@@ -42,7 +42,7 @@ Security is applied in three ways:
 
 JSON API does not qualify (outside of recommendations) whether a URL can traverse the model relationship graph.   
 Without a hierarchy, all models must be accessible at the URL root.  When everything is exposed at the root, 
-all models must enumerate all security checks.  The declarations become highly redundant and error prone.
+all models must enumerate security checks.  The declarations become highly redundant and error prone.
 
 Elide allows hierarchical URL navigation.  Security checks are evaluated in the order in which the 
 relationship graph is traversed.  
@@ -56,6 +56,12 @@ A PATCH on `/article/1/comments/4` changing the comment _title_ field would be e
 1. Write permission check on the comment model.
 1. Read field permission check on the comment's `title` attribute.
 1. Write field permission check on the comment's `title` attribute.
+
+### Bidirectional Relationships
+
+When one side of a bidirectional relationship is modified by a client, Elide will automatically update the opposite side
+of the relationship.  This implies that the client must have permission to both read and write both sides of the relationship (both
+at the model level and at the relationship level).
 
 ## Check
 
