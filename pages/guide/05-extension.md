@@ -82,6 +82,14 @@ class Book {
    }
 }
 ```
+
+Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, commit, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
+
+1. `@OnCreate` This annotation executes immediately when the object is created on the server-side and before it is committed/persisted in the backend.
+1. `@OnDelete` This annotation executes immediately when the object has been deleted on the server-side.
+1. `@OnUpdate(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.
+1. `@OnCommit(value)` If `value` is **not** specified, then this annotation executes every time the object is committed to the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` has changed.
+
 ## Initializers
 
 Sometimes, lifecycle event triggers require access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
