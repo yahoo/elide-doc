@@ -12,9 +12,9 @@ There are four common patterns to extend Elide with custom business logic:
 
 #Simple Translations
 It is sometimes required to perform simple computations or translations when a model attribute is read or written.
-For example, a user model might require a cryptographic hash applied to a password field before it is persisted. 
+For example, a user model might require a cryptographic hash applied to a password field before it is persisted.
 
-It is generally not a good idea to put logic inside getter and setter functions that are used by JPA providers to 
+It is generally not a good idea to put logic inside getter and setter functions that are used by JPA providers to
 hydrate and read attributes.  JPA does provide a `Transient` annotation that allows attributes and functions to exist
 in a data model that are not persisted.  By default, Elide will not expose any attributes marked as `Transient`.  
 However, this behavior can be overridden by also annotating the attribute with the `ComputedAttribute` Elide annotation.
@@ -62,22 +62,22 @@ class Book {
    public String title;
 
    @OnUpdate("title")
-   void onUpdateTitle() {
+   public void onUpdateTitle() {
       // title attribute updated
    }
 
    @OnCommit("title")
-   void onCommitTitle() {
+   public void onCommitTitle() {
       // title attribute update committed
    }
 
    @OnCommit
-   void onCommitBook() {
+   public void onCommitBook() {
       // book entity committed
    }
 
    @OnDelete
-   void onDeleteBook() {
+   public void onDeleteBook() {
       // book entity deleted
    }
 }
@@ -115,8 +115,8 @@ Initializers can be configured in a custom `DataStore` when the method `populate
         /* Assuming this DataStore extends another... */
         super.populateEntityDictionary(dictionary);
 
-        /* 
-         * Create an initializer for model Foobar, passing any runtime configuration to 
+        /*
+         * Create an initializer for model Foobar, passing any runtime configuration to
          * the constructor of the initializer.
          */
         ...
