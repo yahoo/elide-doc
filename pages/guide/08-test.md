@@ -19,7 +19,7 @@ defined in the domain specific language.  Any mismatches are reported as test fa
 
 ## Domain Specific Language
 
-The DSL is structured as a [gherkin](gherkin link) feature file with the following elements:
+The DSL is structured as a [gherkin](https://github.com/cucumber/cucumber/wiki/Gherkin) feature file with the following elements:
 
 ### Exposed Entities
 
