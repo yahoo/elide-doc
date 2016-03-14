@@ -36,6 +36,7 @@ Exposed entities is a table describing which JPA entities are exposed through El
 
 There will be different classes of users who have access to the system.  A class of users are the set of users who share the same authorization
 permissions.  Ideally, the developer should define a `user` for each permutation of authorization permissions they want to test.  
+
 ```
     And users
       # Amalberti father
@@ -45,7 +46,7 @@ permissions.  Ideally, the developer should define a `user` for each permutation
       | Margery  |
 ```
 
-The concept of users is opaque to the security test framework.  It has no concept of authentication or user identity.  Instead the developer provides
+The concept of users is opaque to the security test framework.  It has no concept of authentication or user identity.  Instead, the developer provides
 a concrete implementation of a `UserFactory` which constructs the user objects your authorization code expects:
 
 ```
@@ -56,7 +57,8 @@ public interface UserFactory {
 
 ### Associated Permissions
 
-Associated permissions is a table that defines which entities a given user class has access to which CRUD operations are allowed.
+Associated permissions is a table that defines which entities a given user class has access to.  For each set of entities, it also
+defines which CRUD operations are allowed.
 
 ```
     And associated permissions
@@ -75,9 +77,10 @@ This column identifies the JPA entity.  The name must match the name exposed via
 
 #### ValidIdsList
 There is a [grammar](...) which defines the syntax for this column.  In short, it can be one of the following:
-1. A list of comma separated entity IDs.  The IDs much match the test data in the `DataStore`.
+
+1. A comma separated list of entity IDs.  The IDs much match the test data in the `DataStore`.
 2. The keyword `[ALL]` which signifies all the IDs found in the test data for the given entity.
-3. An expression `[type.collection]` where `type` is another entity and `collection` is a relationship inside of `type` that contains elements of type `EntityName`.  This expression semantically means: 'If the user has any access to an entity of type `type`, they should have access to everything inside that entity's collection `collection`.'  More concretly, this expression will get expanded to a comma separated list of IDs by first expanding type to the set of entities of type `type` the user class has access to.  For each of these entities, it will then expand to the list of IDs contained within `collection`.  Expressions of this type can be combined within lists of comma separated IDs.  
+3. An expression `[type.collection]` where `type` is another entity and `collection` is a relationship inside of `type` that contains elements of type `EntityName`.  This expression semantically means: 'If the user has any access to an entity of type `type`, they should have access to everything inside that entity's collection `collection`.'  More concretely, this expression will get expanded to a comma separated list of IDs by first expanding `type` to the set of entities of type `type` the user class has access to.  For each of these entities, it will then expand to the list of IDs contained within `collection`.  Expressions of this type can be combined within lists of comma separated IDs.  
 
 Aliases can also be defined to represent one or more comma separated IDs,  These aliases are expanded in the grammar expression prior to parsing.  Aliases are defined in the gherkin file:
 
@@ -107,7 +110,8 @@ as a comma separated list of the keywords 'Create', 'Read', 'Update', and 'Delet
 
 The list of entity fields the given user class should not be able to read or write respectively.
 There is a [grammar](...) which defines the syntax for this column.  In short, it can be one of the following:
-1. A comma separated list of fieldnames.
+
+1. A comma separated list of field names.
 2. The keyword `[ALL]` which signifies all fields.
 3. The keyword `[EXCLUDING]` followed by a list of fields.  This inverts the column to a white list of allowed fields instead of a blacklist of excluded fields.
 
@@ -130,33 +134,44 @@ A full example of the configuration DSL can be found [here](...)
 ## Using The Framework
 
 Using the framework can be broken down into the following steps:
+
 1. Create a feature file using the described DSL.
-2. Write a java program that does the following:
-   1. Initializes the entity dictionary.
+2. Write a Java program that does the following:
+   1. Create a `DataStore`
    2. Create test data.
-   3. Create a user factory.
-   4. Initialize a `ValidationDriver` 
+   3. Create a `UserFactory`.
+   4. Create a `ValidationDriver` and invoke `execute`.
 
-'''
-        setupEntityDictionary();
-        setupDB();
+```
+    /* The data store we use is orthogonal to the correctness of security checks */
+    DataStore dataStore = new InMemoryDB();
 
-        String featureFile = "SampleConfig.feature";
+    /* Construct test data and persist to the store */
+    initializeTestData(dataStore);
 
-        UserFactory customUserFactory = new TestUserFactory();
+    String featureFile = "SampleConfig.feature";
 
-        AuditLogger AuditLogger = new AuditLogger() {
-            @Override
-            public void commit() throws IOException {
+    /* Pass in a NOOP logger */
+    AuditLogger logger = new AuditLogger() {
+        @Override
+        public void commit() throws IOException {}
+    };
 
-            }
-        };
 
-        driver = new ValidationDriver(featureFile, customUserFactory, dataStore, AuditLogger);
-'''
+    /* This class will instantiate our users */
+    UserFactory userFactory  = new MyUserFactory(dataStore);
+
+    /* Create and execute the test driver */
+    ValidationDriver driver = new ValidationDriver(featureFile, userFactory, dataStore, logger);
+
+    /* Results per user can be printed or processed in some other way */
+    Map<UserProfile, List<ValidationResult>> results = driver.execute();
+```
 
 Given that the goal of the test framework is limited to testing authorization code (security check logic), the `DataStore` used to furnish test data
-should ideally be orthogonal to the correctness of the tests.   We recommend using the provided Hibernate test data store which uses [flyway](...)
-to create an in-memory mysql database with test data.
+should be orthogonal to the correctness of the tests.   
 
-This database can be initialized
+## Fail On Missing Tests
+
+The `ValidationDriver` takes an optional boolean parameter (`failOnMissingTests`) that will fail the test execution if there is no test data
+for any entity exposed via Elide.  If this parameter is not set, it will simply log the absence of test data.
