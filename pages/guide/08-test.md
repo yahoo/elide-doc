@@ -5,7 +5,7 @@ title: Test
 ---
 
 The surface of an Elide web service can become quite large given the numerous ways of navigating a complex data model.  This can make testing daunting.
-Elide has a [sibling project](github link) for testing the authorization logic of your service.  
+Elide has a [sibling project](https://github.com/yahoo/elide-testing-framework) for testing the authorization logic of your service.  
 
 ## Overview
 
@@ -76,7 +76,7 @@ This column identifies the user class.
 This column identifies the JPA entity.  The name must match the name exposed via Elide.
 
 #### ValidIdsList
-There is a [grammar](...) which defines the syntax for this column.  In short, it can be one of the following:
+There is a [grammar](https://github.com/yahoo/elide-testing-framework/blob/master/src/main/antlr/com/yahoo/elide/IdList.g4) which defines the syntax for this column.  In short, it can be one of the following:
 
 1. A comma separated list of entity IDs.  The IDs much match the test data in the `DataStore`.
 2. The keyword `[ALL]` which signifies all the IDs found in the test data for the given entity.
@@ -109,7 +109,7 @@ as a comma separated list of the keywords 'Create', 'Read', 'Update', and 'Delet
 #### RestrictedReadFields & RestrictedWriteFields
 
 The list of entity fields the given user class should not be able to read or write respectively.
-There is a [grammar](...) which defines the syntax for this column.  In short, it can be one of the following:
+There is a [grammar](https://github.com/yahoo/elide-testing-framework/blob/master/src/main/antlr/com/yahoo/elide/RestrictedFields.g4) which defines the syntax for this column.  In short, it can be one of the following:
 
 1. A comma separated list of field names.
 2. The keyword `[ALL]` which signifies all fields.
@@ -129,7 +129,7 @@ in the output of test framework executions.
 
 ## Complete Example
 
-A full example of the configuration DSL can be found [here](...)
+A full example of the configuration DSL can be found [here](https://github.com/yahoo/elide-testing-framework/blob/master/src/test/resources/SampleConfig.feature)
 
 ## Using The Framework
 
