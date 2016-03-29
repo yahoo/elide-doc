@@ -33,7 +33,7 @@ Filters will be passed as query parameters in the URL with the following BNF syn
 <QUERY> ::= 
      "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "=" <VALUES>
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[in]" "=" <VALUES> 
-   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[not"” "=" <VALUES> 
+   | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[not]" "=" <VALUES> 
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[prefix]" "=" <VALUE> 
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[postfix]" "=" <VALUE> 
    | "filter" "[" <TYPE> "." <ATTRIBUTE> "]" "[infix]" "=" <VALUE> 
