@@ -3,7 +3,7 @@ layout: home
 group: home
 title: Home
 ---
-##What Is Elide?
+## What Is Elide?
 
 Elide is a Java library that let's you stand up a [JSON API](http://jsonapi.org) web service with minimal effort starting from a JPA annotated data model.
 Elide is designed to quickly build and deploy **production quality** web services that expose databases as services.  Beyond the basics, elide provides:
@@ -16,6 +16,6 @@ Elide is designed to quickly build and deploy **production quality** web service
 1. **Extension** Elide allows the ability to add custom business logic and to changeout the default JPA provider (Hibernate)
 1. **Client API** Elide is developed in conjunction with a Javascript client library that insulates developers from changes to the specification.
 
-##License
+## License
 
 The use and distribution terms for this software are covered by the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).

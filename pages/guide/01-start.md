@@ -3,22 +3,22 @@ layout: guide
 group: guide
 title: Getting Started
 ---
-###Prerequisites
+### Prerequisites
 
 * Java 8
 
-###Overview
+### Overview
 
 The Elide library is integrated directly into your serving layer. It is independent of any additional custom logic and can be used alongside custom application code. It consumes and produces valid [JSON API](http://jsonapi.org) documents as its interchange format between clients to make it easy to adapt and create clients.
 
-###Technical Overview
+### Technical Overview
 
 Elide is middleware for your web service layer. It typically sits between your datastore (and any caching/scaling technologies you may have there) and your server technology (i.e. Jetty, Tomcat, etc.).
 
 The elide-core component is the basis of Elide's functionality. It interacts with a specified data store to lookup and store data effectively. Moreover, JPA-annotated Java beans are consumed by elide-core and then properly validated hierarchically per request to ensure security.
 
-###Code
-The first step is to create a JPA data model and mark which beans to expose via Elide.  The following directive exposes **everything** in a package:  
+### Code
+The first step is to create a JPA data model and mark which beans to expose via Elide.  The following directive exposes **everything** in a package:
 
 ```java
 @Include(rootLevel=true)
@@ -38,7 +38,7 @@ The third step is to create an `AuditLogger`.   It is an interface that does som
 AuditLogger logger = new Slf4jLogger();
 ```
 
-Create an `Elide class`.  It is the entry point for handling requests from your web server/container.  
+Create an `Elide class`.  It is the entry point for handling requests from your web server/container.
 
 ```java
 Elide elide = new Elide(logger, db);
@@ -52,12 +52,12 @@ Elide elide = new Elide(logger, db);
 
 It returns a `ElideResponse` which contains the HTTP response status code and a `String` which contains the response entity body.
 
-```
+```java
 ElideResponse response = elide.post(path, requestBody, user)
 ```
 
 Wire up the four HTTP verbs to your container and you will have a functioning JSON API server.
 
-###More Examples
+### More Examples
 
 If you're looking for more complete examples, please [see the elide repository](https://github.com/yahoo/elide/tree/master/elide-example).
