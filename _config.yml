@@ -1,7 +1,5 @@
 # jekyll configuration
-markdown: redcarpet
 exclude: ["README.md"]
-highlighter: pygments
 
 # site-specific configuration
 BASE_PATH: http://elide.io
