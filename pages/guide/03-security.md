@@ -27,11 +27,11 @@ More complex check expressions can be implemented by composing and evaluating ch
 When a relationship is updated by PATCH or POST, existing model instances are loaded by ID and assigned to the selected relationship.  These loads
 bypass the normal relationship graph traversal and corresponding security check evaluation to reference a given model instance.
 
-To prevent [unauthorized access](#shareable), Elide disallows this behavior by default.  It can be explicitly enabled by
+To prevent [unauthorized access](# shareable), Elide disallows this behavior by default.  It can be explicitly enabled by
 making an object _shareable_.  Shareable models are models with an associated `SharePermission`.  Attempts to share objects without this
-permission or without satisfying the associated permission check(s) are denied access.  
+permission or without satisfying the associated permission check(s) are denied access.
 
-## Application  
+## Application
 Security is applied in three ways:
 
 1. **Granting or denying access.**  If a specific model or model field is accessed and the requesting user does not belong to a role that has the associated permission, the request will be rejected with a 403 error code.  Otherwise the request is granted.
@@ -40,12 +40,12 @@ Security is applied in three ways:
 
 ### Hierarchical Security
 
-JSON API does not qualify (outside of recommendations) whether a URL can traverse the model relationship graph.   
+JSON API does not qualify (outside of recommendations) whether a URL can traverse the model relationship graph.
 Without a hierarchy, all models must be accessible at the URL root.  When everything is exposed at the root,
 all models must enumerate security checks.  The declarations become highly redundant and error prone.
 
 Elide allows hierarchical URL navigation.  Security checks are evaluated in the order in which the
-relationship graph is traversed.  
+relationship graph is traversed.
 
 Consider a simple data model consisting of articles - each having zero or more comments.
 A PATCH on `/article/1/comments/4` changing the comment _title_ field would be evaluated in the following order:
@@ -92,7 +92,7 @@ In particular, checks should only be implemented by extending one of the abstrac
 
 The commit check is the first leaf in the tree above. What the word "commit" describes is the execution time at which this particular check is executed. That is, this check executes after all changes have been made within a request but **before** those changes are ever committed to the database. This type of check allows you to verify the final state of an object as it will be committed. The effective implementation of `CommitCheck` is specified below:
 
-```
+```java
 public abstract class CommitCheck<T> implements Check<T> {
     public abstract boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
 }
@@ -108,7 +108,7 @@ The arguments are briefly described:
 
 Operation checks are really the analog to `CommitCheck`. However, rather than waiting until commit time, `OperationCheck`s run before an action is ever taken (i.e. **inline**). These checks are preferred over commit checks whenever possible since they provide the ability for a request to fail sooner. The effective implementation is as follows:
 
-```
+```java
 public abstract class OperationCheck<T> implements InlineCheck<T> {
     public abstract boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
 }
@@ -131,7 +131,7 @@ public abstract class UserCheck implements InlineCheck {
 In some cases, the check logic can be pushed down to the data store itself.  For example, a filter can be added to a
 database query to remove elements from a collection where access is disallowed.
 
-The definition of these checks is outside of the scope of Elide, but an example is provided for Hibernate in the repository.  
+The definition of these checks is outside of the scope of Elide, but an example is provided for Hibernate in the repository.
 
 ## Security of Shareable Models<a name="shareable">&nbsp;</a>
 
@@ -171,4 +171,4 @@ What makes this possible is that there is no lineage for objects which are loade
 referenced by its ID (123) bypassing any security checks that would have evaluated if the same object had been loaded starting from
 the user model.
 
-This behavior is disallowed by default and can only be enabled by explicitly making a model shareable with an associated security check.  
+This behavior is disallowed by default and can only be enabled by explicitly making a model shareable with an associated security check.
