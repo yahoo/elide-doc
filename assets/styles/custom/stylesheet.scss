@@ -1,62 +1,23 @@
 ---
 ---
-@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+// @import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+@import "bootswatch/flatly/variables";
+@import "bootstrap/bootstrap";
+@import "bootswatch/flatly/bootswatch";
 
 body {
   padding-top: 50px;
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-.page-header {
-  margin: 0;
-  background-color: #2dc8ab;
-  background-image: linear-gradient(120deg, #6067a8, #2dc8ab);
-}
-
-.project-tagline {
-  font-size: larger;
-}
-
-.navbar {
-  border-bottom: none;
-  margin-bottom: none;
-  background-color: #2dc8ab;
-  background-image: linear-gradient(14deg, #6067a8, #2dc8ab);
-}
-
-.navbar a {
-  color: white;
+.navbar-brand {
+  -webkit-filter: invert(100%);
+  filter: invert(100%);
+  margin-left: 0px !important;
+  padding: 8px 0px;
 }
 
 .nav-stacked {
   margin-top: 1em;
-}
-
-#top-nav-desktop {
-  margin: 0 1em;
-
-  .nav > li > a {
-    margin-top: 0px;
-    padding: 15px 5px 5px;
-
-    &:hover {
-      border-bottom: 2px solid black;
-    }
-  }
-}
-
-#logo {
-  -webkit-filter: invert(1);
-  filter: invert(1);
-}
-
-pre code {
-  word-wrap: normal;
-  word-break: normal;
-  white-space: pre;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
