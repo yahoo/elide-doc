@@ -3,13 +3,23 @@ layout: guide
 group: guide
 title: Access
 ---
-Elide allows limiting which models are exposed through JSON API with two annotations: `Include` and `Exclude`.
+To define which models are exposed through the Elide service the `@Include` and `@Exclude` annotations. These access
+annotations can be used at the package and class levels, with annotations at an entity level taking precedence.
 
-## Include
-`Include` allows access to a given model or package of models.   Class annotations override the settings of package annotations. `Include` takes two parameters:
+Resources are accessed by traversing the models in the URL path. Consider the following simple data model with three
+POJOs:
 
-1. `rootLevel` - Whether or not the model(s) can be accessed at the root URL path (/post for example).  
-1. `type` - Overrides the name of the model on the URL path.  By default, this is the class name.
+{% include code_example example="access-example" %}
 
-## Exclude
-`Exclude` disallows access to a given entity or package of entities.   Class annotations override the settings of package annotations.
+In this example all of the exposed models are accessable at the base of the API. (i.e. `/user/:id` and `/post/:id`
+are valid URLs and `/comment/:id` is invalid) When we say that resources are accessed by traversing the models in the
+URL we mean that if you have a `User#1` who has written `Post#1`, `Post#2`, `Post#3` the you can access those posts with
+the URLs `/user/1/posts/1`, `/user/1/posts/2`, and `/user/1/posts/3`–almost a 1:1 mapping of how those resources would
+be accessed directly from java:
+
+```java
+User user1 = UserDAO.getUserWithId(1);  // /user/1
+Post post1 = user1.posts.get(1);        // /user/1/posts/1
+Post post2 = user1.posts.get(2);        // /user/1/posts/2
+Post post3 = user1.posts.get(3);        // /user/1/posts/3
+```
