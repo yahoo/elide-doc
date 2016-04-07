@@ -1,0 +1,69 @@
+files:
+  - TOC
+  - package-info.java
+  - User.java
+  - Post.java
+  - Comment.java
+
+TOC: |+2
+  ```
+  com.example.blog
+    package-info.java
+    User.java
+    Post.java
+    Comment.java
+  ```
+
+package-info.java: |+2
+  ```java
+  @Include(rootLevel = true)
+  package blog;
+
+  import com.yahoo.elide.annotation.Include;
+  ```
+
+User.java: |+2
+  ```java
+  @Entity
+  class User {
+    @Id
+    public int id;
+
+    public String userName;
+
+    @OneToMany(mappedBy = "author")
+    public Set<Post> posts;
+  }
+  ```
+
+Post.java: |+2
+  ```java
+  @Entity
+  class Post {
+    @Id
+    public int id;
+
+    public String title;
+
+    @ManyToOne(mappedBy = "posts")
+    public User author;
+
+    @ManyToOne(mappedBy = "post")
+    public Set<Comment> comments;
+  }
+  ```
+
+Comment.java: |+2
+  ```java
+  @Entity
+  @Exclude
+  class Comment {
+    @Id
+    public int id;
+
+    public String text;
+
+    @OneToMany(mappedBy = "comments")
+    public Post post;
+  }
+  ```

@@ -1,7 +1,11 @@
 ---
 ---
+@import url(https://fonts.googleapis.com/css?family=Montserrat:400,700);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
+
 body {
   padding-top: 50px;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .page-header {
@@ -51,4 +55,8 @@ pre code {
   word-wrap: normal;
   word-break: normal;
   white-space: pre;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
