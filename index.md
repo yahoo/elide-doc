@@ -3,19 +3,64 @@ layout: home
 group: home
 title: Home
 ---
-## What Is Elide?
+<div class="row" style="text-align: center">
+  <h1 style="margin-top: 0px; margin-bottom: 30px">
+    <a href="/pages/guide/01-start.html"><i class="fa fa-fast-forward"></i> Get Started</a>
+  </h1>
+</div>
 
-Elide is a Java library that let's you stand up a [JSON API](http://jsonapi.org) web service with minimal effort starting from a JPA annotated data model.
-Elide is designed to quickly build and deploy **production quality** web services that expose databases as services.  Beyond the basics, elide provides:
+<div class="row">
 
-1. **Access** to JPA entities via JSON API CRUD operations.  Entities can be explicitly included or excluded via annotations.
-1. **Patch Extension** Elide supports the [JSON API Patch extension](http://jsonapi.org/extensions/jsonpatch/) allowing multiple create, edit, and delete operations in a single request.
-1. **Atomic Requests** All requests to the library (including the patch extension) can be embedded in transactions to ensure operational integrity.
-1. **Authorization** All operations on entities and their fields can be assigned custom permission checks limiting who has access to your data.
-1. **Audit** Logging can be customized for any operation on any entity.
-1. **Extension** Elide allows the ability to add custom business logic and to changeout the default JPA provider (Hibernate)
-1. **Client API** Elide is developed in conjunction with a Javascript client library that insulates developers from changes to the specification.
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <i class="fa fa-server fa-3x"></i>
+      <p>Quickly build and deploy <b>production quality</b> web services to expose your data as a service.</p>
+    </div>
+  </div>
 
-## License
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <i class="fa fa-question-circle fa-3x"></i>
+      <p>Elide is a Java library that enables you to stand up a <a href="http://jsonapi.org">JSON API</a> web service with <b>minimal effort</b> starting from a JPA annotated data model.</p>
+    </div>
+  </div>
 
-The use and distribution terms for this software are covered by the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <i class="fa fa-lock fa-3x"></i>
+      <p><b>Security comes standard</b>. Controlling access to your data is as simple as defining your rules and annotating your models.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2"></div>
+  
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <img src="/assets/images/atom.png" height="45px" style="padding: 4px">
+      <p>Elide supports the <a href="http://jsonapi.org/extensions/jsonpatch/">JSON API Patch extension</a> which enables multiple create, edit, and delete operations in a <b>single atomic request</b>.</p>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <i class="fa fa-github-alt fa-3x"></i>
+      <p>Elide is 100% <b>open source</b> and available on <a href="https://github.com/yahoo/elide">github</a>. Released under the commercial-friendly <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License, Version 2.0</a>.</p>
+    </div>
+  </div>
+
+  <div class="col-md-2"></div>
+</div>
+
+<!-- <div class="row">
+  <div class="col-md-6">
+    <h2><img src="/assets/images/jsonapi.png" height="96px"></h2>
+    <ul>
+      <li>JSON API is a modern <a href="http://jsonapi.org/format/">specification</a> for building APIs in JSON</li>
+      <li>Reduces round trips to the server</li>
+      <li>Mobile friendly with a polyglot of <a href="http://jsonapi.org/implementations/#client-libraries">clients</a></li>
+    </ul>
+  </div>
+</div>
+ -->
