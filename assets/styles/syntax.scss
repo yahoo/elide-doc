@@ -1,0 +1,11 @@
+---
+---
+
+// generate custom syntax theme @ http://jwarby.github.io/jekyll-pygments-themes/builder.html
+@import "jwarby-jekyll-pygments-themes/manni";
+
+
+.highlight,
+.highlight code {
+  white-space: pre;
+}
