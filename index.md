@@ -53,6 +53,26 @@ title: Home
   <div class="col-md-2"></div>
 </div>
 
+<hr />
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="embed-responsive embed-responsive-16by9">
+      <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/dhb9ooXhOeg" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div style="text-align: center">
+      <i class="fa fa-youtube-square fa-3x"></i>
+      <p>In this 13 minute tutorial, we demonstrate how to stand up Elide using <a href="http://www.dropwizard.io/">Dropwizard</a>.</p>
+      <p>We build a JSON API web service that exposes two models: User and Post.</p>
+      <p>We also demonstrate how to create, list and delete posts using <a href="http://www.getpostman.com/">Postman</a>.</p>
+    </div>
+  </div>
+</div>
+
+<hr />
+
 <!-- <div class="row">
   <div class="col-md-6">
     <h2><img src="/assets/images/jsonapi.png" height="96px"></h2>
