@@ -32,7 +32,8 @@
         </a>
       </div>
 
-      <div id="top-nav-desktop" class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+      <div id="top-nav-desktop" class="collapse navbar-collapse bs-navbar-collapse" role="navigation"
+          {% if (page.title == "Home") %} style="padding-right: 76px" {% endif %}>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="{{ BASE_PATH }}/pages/guide/01-start.html" role="button" aria-haspopup="true" aria-expanded="false">Documentation</span></a>
