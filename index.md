@@ -1,7 +1,7 @@
 ---
 layout: default
 group: default
-title: Home
+title: JSON API
 ---
 
 <a href="https://github.com/yahoo/elide">
