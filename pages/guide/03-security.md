@@ -6,10 +6,10 @@ title: Security
 ## Core Concepts
 Elide authorization involves a few core concepts:
 
-* **User** - an object you define that is passed to checks, and which represents the user in your domain.
-* **Checks** - a function that grants or denies a user can perform a particular action.
-* **Permissions** - a set of annotations (read, update, delete, create, and share) that describe which checks are
-  evaluated when a user attempts to preform an action.
+* **User** - an object you define that is passed to **checks**, and which represents the user in your domain.
+* **Checks** - a function that grants or denies a user **permission** to perform a particular action.
+* **Permissions** - a set of annotations (read, update, delete, create, and share) that correspond to actions on the data model.
+Each **permission* is decorated with one or more checks that are evaluated when a user attempts to perform that action.
 
 ## User
 Each request is associated with a user. The user is computed by a function that you provide conforming to the
@@ -23,29 +23,27 @@ Function<SecurityContext, Object>
 Security is applied hierarchically with three goals:
 
 1. **Granting or denying access.**  When a model or field is accessed, a set of checks are evaluated to
-    determine if the access will be denied (i.e. 403 status code) or permitted. Simply, if a user does not have access
-    to a particular collection (anywhere along the request) then the request will be rejected.
+    determine if the access will be denied (i.e. 403 status code) or permitted. Simply, if a user has explicitly requested 
+    access to part of data model they should not see, the request will be rejected.
 1. **Filtering Collections.** If a model has read permissions defined, these checks are evaluated against each model
-    that is a member of the collection.  Only the models the user has access to are returned in the response.
+    that is a member of the collection.  Only the models the user has access to (by virtue of being of being able 
+    to read at least one of the model's fields) are returned in the response.
 1. **Filtering a model.**  If a user has read access to a model, but only for a subset of a model’s fields, the
-    disallowed fields are simply excluded from the output (rather than denying the request). When the user explicitly
-    requests a field-set that contains a restricted field the request is rejected rather than filtered.
+    disallowed fields are simply excluded from the output (rather than denying the request). However, when the user explicitly
+    requests a field-set that contains a restricted field, the request is rejected rather than filtered.
 
 ### Hierarchical Security
 JSON API does not specify how to map a particular dataset into corresponding URL representations. Elide accepts all
 URLs that can be constructed by traversing the data's relationship graph. This is beneficial because it alleviates the
-need for all models to be accessible at the URL root. When everything is exposed at the root you need to enumerate all
-of the valid access patterns for all of your models–which quickly becomes unwieldy. By allowing traversal of the
-object graph you can eliminate invalid access patterns by applying security rules to the relationships to prune
-the graph.
+need for all models to be accessible at the URL root. When everything is exposed at the root, you need to enumerate all
+of the valid access patterns for all of your models–which quickly becomes unwieldy.  Typically, security rules only need 
+to be defined for a subset of models and relationships.
 
-Consider a simple data model consisting of articles - each having zero or more comments. The request `PATCH
+By allowing traversal of the object graph, you can eliminate invalid access patterns by applying security rules to the 
+relationships to prune the graph.  Consider a simple data model consisting of articles - each having zero or more comments. The request `PATCH
 /article/1/comments/4` changing the comment _title_ field would cause permissions to evaluated in the following order:
 
-1. Read permission check on the `Article<1>#comments`. If there is no permission defined on the collection directly
-   then the Read permission defined on the entity will be used. If there is no Read permission defined on the entity
-   then the Read permission defined at a package level will be used. If there is no permission at the package level
-   then, by default, access is granted.
+1. Read permission check on the `Article<1>#comments`. 
 1. Update permission check on `Comment<4>#title`.
 
 ### Bidirectional Relationships
@@ -95,7 +93,7 @@ public interface Check<T> {
 ### Commit Checks
 Commit checks are, as you might expect, checks which are executed just before Elide calls `commit` on your datastore.
 That means that checks which extend `CommitCheck` defer their execution until all changes have been made
-within a request but *before* those changes are ever committed to the database. This type of check allows
+within a request but *before* those changes are ever committed to the datastore. This type of check allows
 you to verify the final state of an object as it will be committed.
 
 ### Operation Checks
@@ -105,9 +103,9 @@ are preferred over commit checks whenever possible since they allow requests to 
 
 ### User Checks
 User checks depend strictly on the user. These are inline checks (i.e. they run as operations occur rather than
-deferring until commit time) and only take a `User` object as input. These checks are cached at a user level
-instead of an object level. User checks allow for quickly filtering of large collections because the check only
-needs to be evaluated once per request.
+deferring until commit time) and only take a `User` object as input.   Because these checks only depend on who
+is performaing the operation and not on what has changed, these checks are only evaluated once per request - an optimization
+that accelerates the filtering of large collections.
 
 ### Criterion Checks
 In some cases, the check logic can be pushed down to the data store itself. For example, a filter can be added to a
@@ -135,29 +133,32 @@ public interface CriterionCheck<R, T> extends Check<T> {
 ## Permission Annotations
 The permission annotations include `ReadPermission`, `UpdatePermission`, `CreatePermission`, `DeletePermission`,
 and `SharePermission`. Permissions are annotations which can be applied to a model at the `package`, `entity`, or
-`field`-level. The most specific annotation always take precedence (`package < entity < field`).
+`field`-level. The most specific annotation always take precedence (`package < entity < field`).  More specifically, a field annotation
+overrides the behavior of an entity annotation.  An entity annotation overrides the behavior of a package annotation.  Entity annotations
+can be inherited from superclasses.  When no annotation is provided at any level, access is implicitly granted for 
+`ReadPermission`, `UpdatePermission`, `CreatePermission`, and `DeletePermission` and implicitly
+denied for `SharePermission`.
 
-The permission annotations wrap an expression that defines the logic to be evaluated. The expression is composition of
-checks (described above). Each check should implement the [Check][javadoc-annotations] interface and
-their representation in the expression is determined by the string used to register them in the `EntityDictionary`.
-The expressions are constructed with a [simple grammar][source-grammar]. The grammar allows for clauses that describe
-what the check guards against that are combined using `AND`, `OR`, and `NOT`, and can be grouped using parenthesis.
+The permission annotations wrap a boolean expression composed of the check(s) to be evaluated combined with `AND`, `OR`, 
+and `NOT` operators and grouped using parenthesis.  The checks are uniquely identified within the expression 
+by a string - typically a human readable phrase that describes the intent of the check.  These strings are mapped to the explicit
+`Check` classes at runtime by registering them in the `EntityDictionary`.  When no registration is made, the checks can be identified by
+their fully qualified class names.  The complete expression grammar can be found [here][source-grammar].
+
 To better understand how permissions work consider the following sample code. (Only the relevant portions are included.)
 
 {% include code_example example='check-expressions' %}
 
 You will notice that `IsOwner` actually defines two check classes; it does so because we might want to evaluate the
-same logic at distinct points in processing the request. For example, we could not apply `IsOwner.Inline` when creating
-a new post because `new Post().author == null` but just before we are ready to store the new `Post` it should have an
-author (and that author should be the user trying to create the post).
+same logic at distinct points in processing the request (inline when reading a post and at commit when creating a post). 
+For example, we could not apply `IsOwner.Inline` when creating a new post because the post's author has not yet been assigned.
+Once the post has been created and all fields assigned by Elide, the security check can be evaluated.
 
-Contrast `IsOwner` to `IsSuperuser` which only defines one check. `isSuperuser` only defines one check because it
-is unlikely that would want to distinguish situations when the user is not a superuser before processing their request
-and is a superuser after processing their request. However, the check in `IsSuperuser` is still defined as an inner
-class because we might want to add related checks in the future.
+Contrast `IsOwner` to `IsSuperuser` which only defines one check. `IsSuperuser` only defines one check because it only depends
+on who is performing the action and not on the data model being manipulated.  
 
 #### Read
-`ReadPermission` governs whether a model or field can be accessed by a particular user. If the expression evaluates
+`ReadPermission` governs whether a model or field can be read by a particular user. If the expression evaluates
 to `true` then access is granted. Notably, `ReadPermission` is evaluated as the user navigates through the data
 represented by the URL. Elide's security model is focused on field-level access, with permission annotations applied
 at on an entity or package being shorthand for applying that same security to every field in that scope. For example,
@@ -168,10 +169,10 @@ if a request is made to `GET /users/1/posts/3/comments/99` the permission execut
 1. `ReadPermission` on any field on `Comment<99>`
 
 If all of these checks succeed, then the response will succeed. The contents of the response are then determined by
-evaluating the `ReadPermission` on each field–if a field does not have an annotation, then access defaults to whatever
-is specified at the entity level. For example, if `ReadPermission` on `Comment` is true, then an unannotated field
-will be returned in the response; but if `ReadPermission` on `Comment` is false, then only annotated fields that
-return true from their `ReadPermission` will be returned in the response.
+evaluating the `ReadPermission` on each field.   The response will contain the subset of fields where `ReadPermission`
+is granted.  If a field does not have an annotation, then access defaults to whatever is specified at the entity level.   
+If the entity does not have an annotation, access defaults to whatever is specified at the package.  If the package does not have an 
+annotation, access defaults to granted.
 
 #### Update
 `UpdatePermission` governs whether a model can be updated by a particular user. Update is invoked when an attribute's
@@ -179,26 +180,29 @@ value is changed or values are added to or removed from a relationship. Examples
 `UpdatePermission` given objects `Post` and `User` from the code snippets above:
 
 * Changing the value of `Post.published` will evaluate `UpdatePermission` on `published`. Because more specific
-  checks override less specific checks, the `UpdatePermission` on `Post` will not be evaluated (which is why we
-  duplicate `User.ownsPost.inline` in our field-level annotation).
+  checks override less specific checks, the `UpdatePermission` on the entity `Post` will not be evaluated.
 * Setting `Post.author = User` will evaluate `UpdatePermission` on `Post` since `author` does not have a more specific
-  annotation. Because `author` is reciprocal, `UpdatePermission` will also be evaluated on the `User.posts` field.
-* Removing `Post` from `User.posts` will trigger `UpdatePermission` on `Post` and on `User`.
-* Creating `Post` will trigger `UpdatePermission` checks on the fields it contains (as well as any reciprocal fields on
+  annotation. Because `author` is a bidirectional relationship, `UpdatePermission` will also be evaluated on the `User.posts` field.
+* Removing `Post` from `User.posts` will trigger `UpdatePermission` on both the `Post` and `User` entities.
+* Creating `Post` will trigger `UpdatePermission` checks on any fields that are initialized in the request (as well as any bidirectional fields on
   referenced objects).
 
 #### Create
-`CreatePermission` governs whether a model can be created. It is evaluated in conjunction with `UpdatePermission` to
+`CreatePermission` governs whether a model can be created. It is evaluated in conjunction with `UpdatePermission` on any initialized field to
 determine if the user's request to create a resource will succeed.
 
 #### Delete
 `DeletePermission` governs whether a model can be deleted.
 
 #### Share
-`SharePermission` governs whether an existing (not newly created) object can be added to a relationship on
-another object. When a relationship is updated by either a `PATCH` or a `POST`, data is loaded by ID and assigned to
-the selected relationship. However, because these loads bypass the normal relationship graph traversal, they also bypass
-the corresponding security checks. Consider the following request:
+
+`SharePermission` governs whether an existing model instance (one created in a prior transaction) can be assigned to 
+another collection other than the one in which it was initially created.  Basically, does a collection 'own' the  model instance 
+in a private sense or can it be moved or referenced by other collections.
+
+When a relationship is updated by either a `PATCH` or a `POST`, data is loaded by ID and assigned to the selected relationship.
+For example, consider `Post<25>` added to the `Comment<123>#post` relationship:
+
 
 ```http
 POST /user/2/comments HTTP/1.1
@@ -218,22 +222,14 @@ Accept: application/vnd.api+json
 }
 ```
 
-This request creates a new comment that is associated with `Post<25>`; however, we don't know anything about that
-`Post` either from the request itself (since we're not creating it) or from the path by which we have arrived
-(`/user/2/comments`).
+This is the single instance in JSON-API where an object can be referenced directly by ID without first traversing
+through the normal relationship graph of the URL.  This access bypasses the hierarchical security of the data model relationship graph.
+Specifically, while `ReaderPermission` will be evaluated on the loaded object, other checks (on parent collections and objects) will not be.
 
-`SharePermission` is how we determine if the reference here to `Post<25>` is valid. By default, Elide
-disallows creating relationships like this to prevent [unauthorized access](#security-of-shareable-models).
+By default, Elide disallows manipulating relationships like this to prevent [unauthorized access](#security-of-shareable-models).
 Creating unbounded relationships in this manner can be explicitly enabled by adding `SharePermission` to a model,
 making the model *shareable*.  Attempts to share objects without this permission or without satisfying the associated
 permission check(s) are denied access.
-
-In this request `SharePermission` is not needed for the owning side of the `Comment.author` relationship because
-in order to reach the appropriate collection (`User.comments` in this example) to create the `Comment` you first need
-to be able to see `User` and then the particular `User` who owns the comment. If, however, you were going to create
-the same comment from the path `/posts/25/comments/` then you *would* need `SharePermission` on `User` and you would
-not need it on `Post` because we can see by the URL that you have valid access to `Post<25>` but cannot determine if
-you can access `User<2>`.
 
 ## Security of Shareable Models
 The following scenario illustrates what could happen _without_ Elide's concept of shareable models.
@@ -245,9 +241,9 @@ Imagine a scenario where Elide is used to model and expose a bank account.  In t
 1. A transaction
 
 A user has accounts which each have a set of transactions.  In this example, the developer has implemented
-simple security checks for the user model such that a user's model is only readable and writable by himself.
-Accounts and transactions have no implemented checks because they can only be reached by navigating through `User`
-and so no user can read the data belonging to any other user.
+simple security checks for the user model such that a user's model is only readable and writable by herself.
+Accounts and transactions have no implemented checks because the developer _mistakenly assumed_ these models can only be 
+reached by navigating through `User`.
 
 Now let's say Sally is `/user/1` in our system.  An evil hacker wants to read Sally's transactions.  The hacker
 creates a new account `/user/2`.  The hacker creates an empty account with no transactions: `/user/2/account/342`.
@@ -263,26 +259,22 @@ Accept: application/vnd.api+json
         { "type": "transaction", "id": "123" }
     ]
 }
+
 ```
-For this request the following security checks are evaluated, all of which pass because they are legitimate accesses.
+For this request the following security checks are evaluated, all of which pass. 
 
-1. `ReadPermission` on `User<2>`
-1. `ReadPermission` on `Account<342>`
+1. `ReadPermission` on `User<2>#account`
+1. `ReadPermission` on `Account<342>#transactions`
 1. `UpdatePermission` on `Account<342>#transactions`
+1. `ReadPermission` on Transaction<123> fields
 
-Noteably absent from the evaluated checks are any that involve `Transaction<123>`, this is because `Transaction<123>`
-is not being directly accessed by the hacker. It could be that the hacker has another account (say `Account<345>`) to
-which `Transaction<123>` belongs, which would make the hacker's modification of `Transaction<123>` totally legitimate.
+The final check passes because the developer assumed the checks on the user entity were sufficient to also limit access 
+to everything inside user (accounts and transactions).  The developer failed to account for the case where JSON-API can 
+reference an object directly by ID when manipulating relationships.
 
-Without `SharePermission` there is no way to validate the hacker's access to the transactions they are attempting to
-modify, so if a transaction with the specified id exists it will be added to the hacker's account. While the hacker
-has no way to know the contents of the transaction in advance (and consequently might end up owning the bank a great
-deal of money) there is no good way to prevent abusive behavior like this since security checks are evaluated while
-navigating the object hierarchy.
-
-To prevent circumventing security in this manner Elide will not allow the loading of arbitrary objects (i.e. objects
-not directly in the request's lineage or created by the request) unless the object that is being loaded has a
-`SharePermission` annotation and the checks specified by that annotation evaluate to true.
+To prevent circumventing security in this manner Elide by default will not allow an entity to be assigned to another collection other
+than the one in which it was initially created.  This behavior can be changed by explicitly annotating the entity with `SharePermission`
+and an associated check expression.
 
 <script>
   new Treant({

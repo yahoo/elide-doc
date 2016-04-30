@@ -45,10 +45,10 @@ Post.java: |+2
 
     public String title;
 
-    @ManyToOne(mappedBy = "posts")
+    @ManyToOne
     public User author;
 
-    @ManyToOne(mappedBy = "post")
+    @OneToMany(mappedBy = "post")
     public Set<Comment> comments;
   }
   ```
@@ -63,7 +63,7 @@ Comment.java: |+2
 
     public String text;
 
-    @OneToMany(mappedBy = "comments")
+    @ManyToOne
     public Post post;
   }
   ```

@@ -14,6 +14,8 @@ User.java: |+2
   @SharePermission(expression = "Prefab.Role.All")
   public class User {
       String name;
+
+      @OneToMany(mappedBy = "author")
       Set<Post> posts;
   }
   ```
@@ -26,11 +28,13 @@ Post.java: |+2
   @DeletePermission(expression = "user owns this post now")
   @SharePermission(expression = "Prefab.Role.All")
   public class Post {
+      @ManyToOne
       User author;
 
       @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
       boolean published;
 
+      @OneToMany(mappedBy = "post")
       Set<Comment> comments;
   }
   ```
@@ -44,7 +48,9 @@ Comment.java: |+2
   @DeletePermission(expression = "user made this comment")
   @SharePermission(expression = "Prefab.Role.All")
   public class Comment {
+      @ManyToOne
       User author;
+      @ManyToOne
       Post post;
       @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
       boolean suppressed;
