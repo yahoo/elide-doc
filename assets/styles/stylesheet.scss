@@ -20,3 +20,33 @@ body {
 .nav-stacked {
   margin-top: 1em;
 }
+
+.header-link {
+  position: absolute;
+  left: -0.5em;
+  opacity: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  /*
+    Make TOC links work properly
+    from: https://css-tricks.com/hash-tag-links-padding/
+  */
+  &::before {
+    display: block;
+    content: " ";
+    margin-top: -70px;
+    height: 70px;
+    visibility: hidden;
+    z-index: -1;
+  }
+
+  &:hover .header-link {
+    opacity: 1;
+  }
+}
+
+code {
+  color: inherit;
+  background-color: #eee;
+}

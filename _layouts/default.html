@@ -3,7 +3,7 @@
 <html lang="en-us">
 <head>
   <meta charset="UTF-8">
-  <title>Elide</title>
+  <title>{{page.title}} | Elide</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- bootstrap -->
@@ -15,6 +15,11 @@
 
   <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/stylesheet.css" media="screen">
   <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/syntax.css" media="screen">
+
+  <!-- Treant -->
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant/raphael.js"></script>
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant/Treant.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/treant/Treant.css" media="screen">
 </head>
 
 <body>
@@ -33,7 +38,7 @@
       </div>
 
       <div id="top-nav-desktop" class="collapse navbar-collapse bs-navbar-collapse" role="navigation"
-          {% if (page.title == "Home") %} style="padding-right: 76px" {% endif %}>
+          {% if (page.title == "JSON API") %} style="padding-right: 76px" {% endif %}>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="{{ BASE_PATH }}/pages/guide/01-start.html" role="button" aria-haspopup="true" aria-expanded="false">Documentation</span></a>
@@ -52,5 +57,18 @@
     </div>
   </nav>
   {{ content }}
+  <script>
+  $(function() {
+    return $("h2, h3, h4, h5, h6").each(function(i, el) {
+      var $el, icon, id;
+      $el = $(el);
+      id = $el.attr('id');
+      icon = '<i class="glyphicon glyphicon-link"></i>';
+      if (id) {
+        return $el.append($("<a />").addClass("header-link").attr("href", "#" + id).html(icon));
+      }
+    });
+  });
+  </script>
 </body>
 </html>

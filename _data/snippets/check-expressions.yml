@@ -1,0 +1,94 @@
+files:
+  - User.java
+  - Post.java
+  - Comment.java
+  - IsOwner.java
+  - IsSuperuser.java
+  - MyElide.java
+
+User.java: |+2
+  ```java
+  @ReadPermission(expression = "Prefab.Roll.All")
+  @UpdatePermission(expression = "user is a superuser OR user is this user")
+  @DeletePermission(expression = "user is a superuser OR user is this user")
+  @SharePermission(expression = "Prefab.Role.All")
+  public class User {
+      String name;
+      Set<Post> posts;
+  }
+  ```
+
+Post.java: |+2
+  ```java
+  @ReadPermission(expression = "Post.isVisible OR User.ownsPost OR user is a superuser")
+  @UpdatePermission(expression = "user owns this post now")
+  @CreatePermission(expression = "user owns this post")
+  @DeletePermission(expression = "user owns this post now")
+  @SharePermission(expression = "Prefab.Role.All")
+  public class Post {
+      User author;
+
+      @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
+      boolean published;
+
+      Set<Comment> comments;
+  }
+  ```
+
+Comment.java: |+2
+  ```java
+  // user has to be able to see the post and to see the comment, or else be a super user
+  @ReadPermission(expression = "((Post.isVisible OR User.ownsPost) AND (comment is visible OR user made this comment)) OR user is a superuser")
+  @UpdatePermission(expression = "user made this comment")
+  @CreatePermission(expression = "post is visible now")
+  @DeletePermission(expression = "user made this comment")
+  @SharePermission(expression = "Prefab.Role.All")
+  public class Comment {
+      User author;
+      Post post;
+      @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
+      boolean suppressed;
+  }
+  ```
+
+IsOwner.java: |+2
+  ```java
+  public class IsOwner {
+      public static class Inline<Post> extends InlineCheck {
+          @Override
+          boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return post.author.equals(requestScope.getUser());
+          }
+      }
+      public static class AtCommit<Post> extends CommitCheck {
+          @Override
+          boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return post.author.equals(requestScope.getUser());
+          }
+      }
+  }
+  ```
+
+IsSuperuser.java: |+2
+  ```java
+  public class IsSuperuser {
+      public static class Inline<User> extends InlineCheck {
+          @Override
+          boolean ok(User user, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return user.isSuperuser();
+          }
+      }
+  }
+  ```
+
+MyElide.java: |+2
+  ```java
+  HashMap checks = new HashMap();
+  checks.put("post is visible now", IsPublished.Inline.class);
+  checks.put("post is visible", IsPublished.AtCommit.class);
+  checks.put("user owns this post now", IsOwner.Inline.class);
+  checks.put("user owns this post", IsOwner.AtCommit.class);
+  checks.put("user is a superuser", IsSuperuser.Inline.class);
+  //...
+  EntityDictionary dictionary = new EntityDictionary(checks);
+  ```
