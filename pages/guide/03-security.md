@@ -49,7 +49,7 @@ relationships to prune the graph.  Consider a simple data model consisting of ar
 ### Bidirectional Relationships
 When one side of a bidirectional relationship is modified by a client, Elide will automatically update the
 opposite side of the relationship.  This implies that the client must have permission to write both sides of the
-relationship (either through permissions at the model level or through permissions at the relationship level).
+relationship.
 
 ## Checks
 Checks are simply functions that return whether or not access should be granted to the requesting user. There
