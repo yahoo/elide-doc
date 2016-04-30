@@ -104,7 +104,7 @@ are preferred over commit checks whenever possible since they allow requests to 
 ### User Checks
 User checks depend strictly on the user. These are inline checks (i.e. they run as operations occur rather than
 deferring until commit time) and only take a `User` object as input.   Because these checks only depend on who
-is performaing the operation and not on what has changed, these checks are only evaluated once per request - an optimization
+is performing the operation and not on what has changed, these checks are only evaluated once per request - an optimization
 that accelerates the filtering of large collections.
 
 ### Criterion Checks
