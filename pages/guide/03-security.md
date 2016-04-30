@@ -9,7 +9,7 @@ Elide authorization involves a few core concepts:
 * **User** - an object you define that is passed to **checks**, and which represents the user in your domain.
 * **Checks** - a function that grants or denies a user **permission** to perform a particular action.
 * **Permissions** - a set of annotations (read, update, delete, create, and share) that correspond to actions on the data model.
-Each **permission* is decorated with one or more checks that are evaluated when a user attempts to perform that action.
+Each **permission** is decorated with one or more checks that are evaluated when a user attempts to perform that action.
 
 ## User
 Each request is associated with a user. The user is computed by a function that you provide conforming to the
