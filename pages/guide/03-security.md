@@ -169,7 +169,7 @@ if a request is made to `GET /users/1/posts/3/comments/99` the permission execut
 1. `ReadPermission` on `Post<3>#comments`
 1. `ReadPermission` on any field on `Comment<99>`
 
-If all of these checks succeed, then the response will succeed. The contents of the response are then determined by
+If all of these checks succeed, then the response will succeed. The contents of the response are determined by
 evaluating the `ReadPermission` on each field.   The response will contain the subset of fields where `ReadPermission`
 is granted.  If a field does not have an annotation, then access defaults to whatever is specified at the entity level.   
 If the entity does not have an annotation, access defaults to whatever is specified at the package.  If the package does not have an 
