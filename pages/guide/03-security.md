@@ -24,7 +24,7 @@ Security is applied hierarchically with three goals:
 
 1. **Granting or denying access.**  When a model or field is accessed, a set of checks are evaluated to
     determine if the access will be denied (i.e. 403 status code) or permitted. Simply, if a user has explicitly requested 
-    access to part of data model they should not see, the request will be rejected.
+    access to part of the data model they should not see, the request will be rejected.
 1. **Filtering Collections.** If a model has read permissions defined, these checks are evaluated against each model
     that is a member of the collection.  Only the models the user has access to (by virtue of being of being able 
     to read at least one of the model's fields) are returned in the response.
@@ -33,15 +33,16 @@ Security is applied hierarchically with three goals:
     requests a field-set that contains a restricted field, the request is rejected rather than filtered.
 
 ### Hierarchical Security
-JSON API does not specify how to map a particular dataset into corresponding URL representations. Elide accepts all
+JSON API does not specify how to map a particular data model into corresponding URL representations. Elide accepts all
 URLs that can be constructed by traversing the data's relationship graph. This is beneficial because it alleviates the
 need for all models to be accessible at the URL root. When everything is exposed at the root, you need to enumerate all
 of the valid access patterns for all of your models–which quickly becomes unwieldy.  Typically, security rules only need 
-to be defined for a subset of models and relationships.
+to be defined for a subset of models and relationships - often near the roots of the relationship graph.
+Invalid access patterns can be eliminated by applying security rules to the relationships to prune the graph.  
 
-By allowing traversal of the object graph, you can eliminate invalid access patterns by applying security rules to the 
-relationships to prune the graph.  Consider a simple data model consisting of articles - each having zero or more comments. The request `PATCH
-/article/1/comments/4` changing the comment _title_ field would cause permissions to evaluated in the following order:
+To better understand the sequence of how security is applied, consider a simple data model consisting of articles - each having zero 
+or more comments. The request `PATCH /article/1/comments/4` changing the comment _title_ field would cause permissions to evaluated in 
+the following order:
 
 1. Read permission check on the `Article<1>#comments`. 
 1. Update permission check on `Comment<4>#title`.
@@ -161,7 +162,7 @@ on who is performing the action and not on the data model being manipulated.
 `ReadPermission` governs whether a model or field can be read by a particular user. If the expression evaluates
 to `true` then access is granted. Notably, `ReadPermission` is evaluated as the user navigates through the data
 represented by the URL. Elide's security model is focused on field-level access, with permission annotations applied
-at on an entity or package being shorthand for applying that same security to every field in that scope. For example,
+on an entity or package being shorthand for applying that same security to every field in that scope. For example,
 if a request is made to `GET /users/1/posts/3/comments/99` the permission execution will be as follows:
 
 1. `ReadPermission` on `User<1>#posts`
@@ -224,12 +225,15 @@ Accept: application/vnd.api+json
 
 This is the single instance in JSON-API where an object can be referenced directly by ID without first traversing
 through the normal relationship graph of the URL.  This access bypasses the hierarchical security of the data model relationship graph.
-Specifically, while `ReaderPermission` will be evaluated on the loaded object, other checks (on parent collections and objects) will not be.
+Specifically, while `ReadPermission` will be evaluated on the loaded object, other checks (on parent collections and objects) will not be.
 
 By default, Elide disallows manipulating relationships like this to prevent [unauthorized access](#security-of-shareable-models).
 Creating unbounded relationships in this manner can be explicitly enabled by adding `SharePermission` to a model,
 making the model *shareable*.  Attempts to share objects without this permission or without satisfying the associated
 permission check(s) are denied access.
+
+Share permission is currently checked only for entities directly referenced by ID in a `PATCH` or a `POST` on a relationship.
+If the relationship is bidirectional, share permission is not checked for the inverse side of the relationship.
 
 ## Security of Shareable Models
 The following scenario illustrates what could happen _without_ Elide's concept of shareable models.
@@ -272,7 +276,7 @@ The final check passes because the developer assumed the checks on the user enti
 to everything inside user (accounts and transactions).  The developer failed to account for the case where JSON-API can 
 reference an object directly by ID when manipulating relationships.
 
-To prevent circumventing security in this manner Elide by default will not allow an entity to be assigned to another collection other
+To prevent circumventing security in this manner, Elide by default will not allow an entity to be assigned to another collection other
 than the one in which it was initially created.  This behavior can be changed by explicitly annotating the entity with `SharePermission`
 and an associated check expression.
 
