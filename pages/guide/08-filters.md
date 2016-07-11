@@ -24,7 +24,7 @@ the filters for that model are applied.
 
 Each approach has advantages and disadvantages:
  
-1. Disjoint filtering is fully compatable with pagination performed by the `DataStore`.   Joined filtering breaks pagination because the
+1. Disjoint filtering is fully compatible with pagination performed by the `DataStore`.   Joined filtering breaks pagination because the
 cardinality of the resulting join is typically much larger than the requested collection.
 2. Disjoint filtering allows all elements of compound documents (the primary collection _and_ the includes) to be filtered individually.
 3. Joined filtering allows more precise control over what is returned from an individual collection of elements.
@@ -129,13 +129,17 @@ It would return a single book and a single author:
 [RSQL](https://github.com/jirutka/rsql-parser) is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
 of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
 
+Because RSQL is a superset of FIQL, FIQL queries should be properly parsed.
+RSQL primarily adds more friendly lexer tokens to FIQL for conjunction and disjunction: 'and' instead of ';' and 'or' instead of ','.
+RSQL also adds a richer set of operators.
+
 ### Disjoint Filter Syntax
 
 To specify _disjoint filters_, the filter query parameters look like `filter[TYPE]` where 'TYPE' is the name of the data model/entity.  
 Any number of filter parameters can be specified provided the 'TYPE' is different for each parameter.
 
 The value of any query parameter is a RSQL expression composed of predicates.  Each predicate contains an attribute of the data model,
-an operator, and zero or more comparision values.
+an operator, and zero or more comparison values.
 
 ### Disjoint Filter Examples
 
@@ -258,7 +262,7 @@ Elide supports the following operators.  When an operator is not specified, Elid
 
 Return all the books written by author '1' with the genre exactly equal to 'Science Fiction':
 
-`/author/1/book?filter[book.genre]=Sciencei%20Fiction`
+`/author/1/book?filter[book.genre]=Science%20Fiction`
 
 Return all the books written by author '1' with the genre exactly equal to 'Science Fiction' _and_ the title starts with 'The':
 
@@ -297,8 +301,11 @@ return new Elide.Builder(dataStore)
                         .build();
 ```
 
-The method `withJoinFilterDialect` enables a filter dialect that supports [joined filter expressions](#joined-filters).
-The method `withSubqueryFilterDialect` enables a filter dialect that supports [disjoint filter expressions](#disjoint-filters).
+The method `withJoinFilterDialect` enables a filter dialect that supports [joined filter expressions](#joined-filters) by adding it to the
+list of supported join filter dialects.
+
+The method `withSubqueryFilterDialect` enables a filter dialect that supports [disjoint filter expressions](#disjoint-filters) by adding
+it to the list of supported subquery filter dialects.
 
 # Adding New Dialects
 
