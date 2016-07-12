@@ -288,8 +288,7 @@ Return all the books where the title starts with 'The' _and_ the books author is
 Elide supports multiple dialects enabled simultaneously.  They are applied in the order in which they were enabled until one dialect successfully parses
 the entire set of filter query parameters.
 
-If no dialects are explicitly enabled, Basic filtering is enabled by default.
-
+Dialects must be explicitly enabled to take effect.  However, if no dialects are explicitly enabled, Basic filtering is enabled by default.  
 Dialects are enabled when constructing the `Elide` object with an `ElideBuilder` as follows:
 
 ```
