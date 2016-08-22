@@ -54,7 +54,7 @@ relationship.
 
 ## Checks
 Checks are simply functions that return whether or not access should be granted to the requesting user. There
-are three types of checks: `InlineCheck`, `CommitCheck`, and `CriterionCheck`. Checks must be implemented by
+are two types of checks: `InlineCheck` and `CommitCheck`. Checks must be implemented by
 extending one of these abstract classes. The class you choose to extend has an impact on how Elide will evaluate
 your the check. There are specific types of check described by the following hierarchy:
 
@@ -97,37 +97,44 @@ That means that checks which extend `CommitCheck` defer their execution until al
 within a request but *before* those changes are ever committed to the datastore. This type of check allows
 you to verify the final state of an object as it will be committed.
 
-### Operation Checks
-Operation checks behave similarly to commit checks however, rather than waiting until commit time,
-`OperationCheck`s run before an action is ever taken, *inline* with the user's access as it were. These checks
+### Inline Checks
+Inline checks behave similarly to commit checks however, rather than waiting until commit time,
+`InlineCheck`s run immediately before an action is ever taken, *inline* with the user's access as it were. These checks
 are preferred over commit checks whenever possible since they allow requests to fail fast.
 
-### User Checks
+`InlineCheck` is the abstract super class of three specific variants:
+
+#### Operation Checks
+Operation checks are inline checks whose evaluation requires the entity being read from or written to.  They operate
+in memory of the process which is executing the Elide library.
+
+#### User Checks
 User checks depend strictly on the user. These are inline checks (i.e. they run as operations occur rather than
 deferring until commit time) and only take a `User` object as input.   Because these checks only depend on who
 is performing the operation and not on what has changed, these checks are only evaluated once per request - an optimization
 that accelerates the filtering of large collections.
 
-### Criterion Checks
+#### Filter Expression Checks
 In some cases, the check logic can be pushed down to the data store itself. For example, a filter can be added to a
-database query to remove elements from a collection where access is disallowed. These checks return a filtering object
-that your database library can use to limit the queries that it uses to marshal the data. Checks which extend the
-`CriterionCheck` must conform to the interface:
+database query to remove elements from a collection where access is disallowed. These checks return a `FilterExpression`
+predicate that your data store can use to limit the queries that it uses to marshal the data. Checks which extend the
+`FilterExpessionCheck` must conform to the interface:
 
 ```java
+
 /**
- * Extends Check to support Hibernate Criteria to limit SQL query responses.
- * @param <R> Type of the criterion to return
- * @param <T> Type of the record for the Check
+ * Check for FilterExpression. This is a super class for user defined FilterExpression check. The subclass should
+ * override getFilterExpression function and return a FilterExpression which will be passed down to datastore.
+ * @param <T> Type of class
  */
-public interface CriterionCheck<R, T> extends Check<T> {
+public abstract class FilterExpressionCheck<T> extends InlineCheck<T> {
+
     /**
-     * Get criterion for request scope.
-     *
-     * @param requestScope the requestScope
-     * @return the criterion
+     * Returns a FilterExpression from FilterExpressionCheck.
+     * @param requestScope Request scope object
+     * @return FilterExpression for FilterExpressionCheck.
      */
-    R getCriterion(RequestScope requestScope);
+    public abstract FilterExpression getFilterExpression(Class<?> entityClass, RequestScope requestScope);
 }
 ```
 
@@ -298,11 +305,9 @@ and an associated check expression.
           text: {name: 'InlineCheck'},
           children: [
             {text: {name: 'UserCheck'}},
-            {text: {name: 'OperationCheck'}}
+            {text: {name: 'OperationCheck'}},
+            {text: {name: 'FilterExpressionCheck'}}
           ]
-        },
-        {
-          text: {name: 'CriterionCheck'}
         }
       ]
     }
