@@ -40,7 +40,7 @@ To better understand the differences, consider the following example.  Imagine a
 The following RSQL query separates expression by type:
 
 ```
-/book?include=authors&filter[book]=title==Foo*,filter[author]=name==A
+/book?include=authors&filter[book]=title==Foo*&filter[author]=name==A
 ```
 
 It requests the collection of books and any related authors.  The collection
@@ -158,7 +158,7 @@ or 'Science Fiction':
 
 Return all the books whose title contains 'Foo'.  Include all the authors of those books whose name does not equal 'Orson Scott Card':
 
-`/book?include=authors&filter[book]=title==*Foo*,filter[author]=name!='Orson Scott Card'`
+`/book?include=authors&filter[book]=title==*Foo*&filter[author]=name!='Orson Scott Card'`
 
 ### Joined Filter Syntax
 
@@ -266,22 +266,22 @@ Return all the books written by author '1' with the genre exactly equal to 'Scie
 
 Return all the books written by author '1' with the genre exactly equal to 'Science Fiction' _and_ the title starts with 'The':
 
-`/author/1/book?filter[book.genre]=Science%20Fiction,filter[book.title][prefix]=The`
+`/author/1/book?filter[book.genre]=Science%20Fiction&filter[book.title][prefix]=The`
 
 Return all the books written by author '1' with the publication date greater than a certain time _and_ the genre _not_ 'Literary Fiction'
 or 'Science Fiction':
 
-`/author/1/book?filter[book.publishDate][gt]=1454638927411,filter[book.genre][not]=Literary%20Fiction,Science%20Fiction`
+`/author/1/book?filter[book.publishDate][gt]=1454638927411&filter[book.genre][not]=Literary%20Fiction,Science%20Fiction`
 
 Return all the books whose title contains 'Foo'.  Include all the authors of those books whose name does not equal 'Orson Scott Card':
 
-`/book?include=authors&filter[book.title][infix]=Foo,filter[author.name][not]=Orson%20Scott%20Card`
+`/book?include=authors&filter[book.title][infix]=Foo&filter[author.name][not]=Orson%20Scott%20Card`
 
 ### Joined Filter Examples
 
 Return all the books where the title starts with 'The' _and_ the books author is not 'Orson Scott Card':
 
-`/book?filter[book.title][prefix]=The,filter[book.author.name][not]=Orson%20Scott%20Card`
+`/book?filter[book.title][prefix]=The&filter[book.author.name][not]=Orson%20Scott%20Card`
 
 # Enabling/Disabling Dialects 
 
