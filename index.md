@@ -26,24 +26,31 @@ title: JSON API
 
   <div class="row">
 
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div style="text-align: center">
         <i class="fa fa-server fa-3x"></i>
         <p>Quickly build and deploy <b>production quality</b> web services that expose your data as a service.</p>
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div style="text-align: center">
         <i class="fa fa-question-circle fa-3x"></i>
         <p>Elide is a Java library that enables you to stand up a <a href="http://jsonapi.org">JSON API</a> web service with <b>minimal effort</b> starting from a JPA annotated data model.</p>
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div style="text-align: center">
         <i class="fa fa-at fa-3x"></i>
         <p>JPA enables you to use an ORM or, if you prefer, any persistence technology that support JPA&mdash;<b>Elide is agnostic</b> to your particular persistence strategy.</p>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div style="text-align: center">
+        <img src="/assets/images/openapi.svg" height="45px" style="padding: 4px">
+        <p>Explore, understand, and compose queries against your Elide API through generated <a href="http://swagger.io">Swagger</a> documentation.</p>
       </div>
     </div>
   </div>
