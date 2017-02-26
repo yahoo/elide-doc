@@ -86,14 +86,30 @@ class Book {
       // book entity created & committed
    }
 
+   /**
+    * Trigger functions can optionally accept a RequestScope to access the user principal.
+    */
    @OnDeletePreCommit
-   public void onDeleteBook() {
+   public void onDeleteBook(RequestScope scope) {
       // book entity deleted but not yet committed
    }
 }
 ```
 
-Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, commit, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
+Trigger functions can either take zero parameters or a single `RequestScope` parameter.  The `RequestScope` can be used to access the user prinicipal object that initiated the
+request:
+
+```
+   @OnReadPostCommit("title")
+   public void onReadTitle(RequestScope scope) {
+      User principal = scope.getUser();
+ 
+      //Do something with the principal object...
+   }
+
+```
+
+Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, read, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
 
 1. `@OnCreatePreSecurity` This annotation executes immediately when the object is created on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
 1. `@OnCreatePreCommit` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
