@@ -41,10 +41,9 @@ AuditLogger logger = new Slf4jLogger();
 Create an `Elide class`.  It is the entry point for handling requests from your web server/container. As of Elide version 2, this is achieved via the `Elide.Builder`, which requires a datastore. You can then chain additional methods to include configuration for more features such as the `AuditLogger`.
 
 ```java
-final Elide elide = new Elide
-                          .Builder(dataStore)
-                          .withAuditLogger(logger)
-                          .build();
+final Elide elide = new Elide(new ElideSettingsBuilder(dataStore)
+                                .withAuditLogger(logger)
+                                .build());
 ```
 
 `Elide` has methods for `get`, `patch`, `post`, and `delete`.  These methods generally take:
