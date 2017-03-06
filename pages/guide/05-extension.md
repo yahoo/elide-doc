@@ -53,7 +53,12 @@ A `DataStoreTransaction` is responsible for persistence of entities:
 
 # Extending Life Cycle Events
 
-Lifecycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers:
+Life cycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers.
+There are separate annotations for each CRUD operation (_read_, _update_, _create_, and _delete_) and also each life cycle phase of the current transaction:
+
+1. *Pre Security* - Executed prior to elide _commit_ security check evaluation.
+1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
+1. *Pre Post* - Executed immediately after transaction commit.
 
 ```java
 @Entity
@@ -61,38 +66,67 @@ class Book {
    @Column
    public String title;
 
-   @OnUpdate("title")
+   @OnReadPreSecurity("title")
+   public void onReadTitle() {
+      // title attribute about to be read but 'commit' security checks not yet executed.
+   }
+
+   @OnUpdatePreSecurity("title")
    public void onUpdateTitle() {
-      // title attribute updated
+      // title attribute updated but 'commit' security checks not yet executed.
    }
 
-   @OnCommit("title")
+   @OnUpdatePostCommit("title")
    public void onCommitTitle() {
-      // title attribute update committed
+      // title attribute updated & committed
    }
 
-   @OnCommit
+   @OnCreatePostCommit
    public void onCommitBook() {
-      // book entity committed
+      // book entity created & committed
    }
 
-   @OnDelete
-   public void onDeleteBook() {
-      // book entity deleted
+   /**
+    * Trigger functions can optionally accept a RequestScope to access the user principal.
+    */
+   @OnDeletePreCommit
+   public void onDeleteBook(RequestScope scope) {
+      // book entity deleted but not yet committed
    }
 }
 ```
 
-Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, commit, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
+Trigger functions can either take zero parameters or a single `RequestScope` parameter.  The `RequestScope` can be used to access the user prinicipal object that initiated the
+request:
 
-1. `@OnCreate` This annotation executes immediately when the object is created on the server-side and before it is committed/persisted in the backend.
-1. `@OnDelete` This annotation executes immediately when the object has been deleted on the server-side.
-1. `@OnUpdate(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.
-1. `@OnCommit(value)` If `value` is **not** specified, then this annotation executes every time the object is committed to the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` has changed.
+```
+   @OnReadPostCommit("title")
+   public void onReadTitle(RequestScope scope) {
+      User principal = scope.getUser();
+ 
+      //Do something with the principal object...
+   }
+
+```
+
+Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, read, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
+
+1. `@OnCreatePreSecurity` This annotation executes immediately when the object is created on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
+1. `@OnCreatePreCommit` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
+1. `@OnCreatePostCommit` This annotation executes after the object is created and committed/persisted on the backend.
+1. `@OnDeletePreSecurity` This annotation executes immediately when the object is deleted on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
+1. `@OnDeletePreCommit` This annotation executes after the object is deleted and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
+1. `@OnDeletePostCommit` This annotation executes after the object is deleted and committed/persisted on the backend.
+1. `@OnUpdatePreSecurity(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.  This annotation executes immediately when the field is updated on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
+1. `@OnUpdatePreCommit(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated. This annotation executes after the object is updated and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
+1. `@OnUpdatePostCommit(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.  This annotation executes after the object is updated and committed/persisted on the backend.
+1. `@OnReadPreSecurity(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes immediately when the object is read on the server-side but before _commit_ security checks execute and before the transaction commits.
+1. `@OnReadPreCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and all security checks are evaluated on the server-side but before the transaction commits.
+1. `@OnReadPostCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and the transaction commits.
 
 ## Initializers
 
-Sometimes, lifecycle event triggers require access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
+Sometimes, life cycle event triggers require access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
 
 Elide can be configured with an `Initializer` implementation for a particular model class.  An `Initializer` is any class which implements the following interface:
 

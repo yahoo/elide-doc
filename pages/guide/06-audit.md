@@ -48,8 +48,8 @@ Customizing audit functionality in elide requires two steps:
 A customized logger extends the following abstract class:
 
 ```java
-public abstract class Logger {
+public abstract class AuditLogger {
     public void log(LogMessage message);
-    public abstract void commit() throws IOException;
+    public abstract void commit(RequestScope requestScope) throws IOException;
 }
 ```
