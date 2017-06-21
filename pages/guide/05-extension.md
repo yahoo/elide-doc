@@ -22,6 +22,8 @@ However, this behavior can be overridden by also annotating the attribute with t
 To perform simple computations and translations, put them inside attribute getter and setter functions that are marked
 both as `Transient` and a `ComputedAttribute`.
 
+**N.B.** A setter is still required for a `ComputedAttribute` even if it is empty (i.e. does not perform any operation) to remain compliant with JPA specification.
+
 ```java
 @Entity
 public class Person {
@@ -32,6 +34,10 @@ public class Person {
     @ComputedAttribute
     public String getFullName() {
         return givenName + " " + familyName;
+    }
+    
+    public void setFullName(String name) {
+        // Do nothing-- remain compliant with JPA spec
     }
 }
 ```
