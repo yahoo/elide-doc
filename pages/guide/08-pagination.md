@@ -27,6 +27,16 @@ The _rough_ BNF syntax for the _page_ query parameter is:
    | "page" "[" "totals" "]"
 ```
 
+Legal combinations of the _page_ query params include:
+1. size
+1. number
+1. size & number
+1. size & number & totals
+1. offset
+1. limit
+1. offset & limit
+1. offset & limit & totals
+
 # Examples
 
 Return page 3 of size 100 of the book collection:
