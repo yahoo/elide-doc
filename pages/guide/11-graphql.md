@@ -73,7 +73,7 @@ In GraphQL, any property in the schema can take arguments.  Relationships in Eli
 set of arguments that either constrain the edges fetched from a relationship or supply data to a mutation:
 
 1. The **ids** parameter is a collection of node identifiers.  It is used to select one or more nodes from a relationship.
-2. The **filter** parameter is used to build complex RSQL filter predicates that select zero or more nodes from a relationship.
+2. The **filter** parameter is used to build complex [RSQL](https://github.com/jirutka/rsql-parser) filter predicates that select zero or more nodes from a relationship.
 3. The **sort** parameter is used to order a relationship's edges by one or more node attributes.
 4. The parameters **offset** and **first** are used to paginate a relationship across multiple API requests.
 5. The **op** argument describes the operation to perform on the relationship. When not provided, this argument
@@ -166,6 +166,43 @@ public class Publisher {
 }
 ```
 
+### Filtering
+
+Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in 
+the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
+of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
+
+RSQL predicates can filter attributes in:
+* The relationship model
+* Another model joined to the relationship model through to-one relationships
+
+To join across relationships, the attribute name is prefixed by one or more relationship names separated by period (".")
+
+#### Operators
+
+The following RSQL operators are supported:
+
+* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list.
+* `=out=` : Evaluates to true if the attribute does not match any of the values in the list.
+* `==ABC*` : Similar to SQL `like 'ABC%`.
+* `==*ABC` : Similar to SQL `like '%ABC`.
+* `==*ABC*` : Similar to SQL `like '%ABC%`.
+* `=isnull=true` : Evaluates to true if the attribute is null
+* `=isnull=false` : Evaluates to true if the attribute is not null
+* `=lt=` : Evaluates to true if the attribute is less than the value.
+* `=gt=` : Evaluates to true if the attribute is greater than the value.
+* `=le=` : Evaluates to true if the attribute is less than or equal to the value.
+* `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+
+#### Examples
+* Filter books by title equal to 'abc' _and_ genre starting with 'Science':
+  `"title=='abc';genre=='Science*'` 
+* Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
+or 'Sicence Fiction':
+  `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
+* Filter books by the publisher name contains XYZ:
+  `publisher.name==*XYZ*`
+
 ### FETCH Examples
 
 #### Fetch All Books
@@ -208,6 +245,23 @@ For each author, the response includes its id & name.
             }
           }
         }
+      }
+    }
+  }
+}
+```
+
+#### Filter All Books
+
+Fetches the set of books that start with 'Libro U'.
+
+```
+{
+  book(filter: "title==\"Libro U*\"") {
+    edges {
+      node {
+        id
+        title
       }
     }
   }
