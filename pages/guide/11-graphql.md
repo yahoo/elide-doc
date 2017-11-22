@@ -37,16 +37,23 @@ GraphQL splits its schema into two kinds of objects:
 1.  **Query objects** which are used to compose queries and mutations
 2.  **Input Objects** which are used to supply input data to mutations
 
+The schema for both kinds of objects are derived from the entity relationship graph (defined by the JPA data model).
+Both contain a set of attributes and relationships.  Attributes are properties of the entity.
+Relationships are links to other entities in the graph.
+
+### Input Objects
+
+Input objects just contain attributes and relationship with names that directly match 
+the property names in the JPA annotated model:
+
+![GraphQL Input Object UML](/assets/images/graphql_input_object_uml.png){:class="img-responsive"}
+
 ### Query Objects
 
 Query Objects are more complex given that queries have to support filtering, sorting,
 and pagination and not simply describe data.  Elide's GraphQL structure for queries and mutations is depicted below:
 
-![image-title-here](/assets/images/graphql_uml.png){:class="img-responsive"}
-
-Every entity in the entity relationship graph (defined by the JPA data model)
-is broken into a series of attributes and relationships. Attributes are properties of the entity.
-Relationships are links to other entities in the graph.
+![GraphQL Query Object UML](/assets/images/graphql_query_object_uml.png){:class="img-responsive"}
 
 Every GraphQL schema must define a root document which represents the root of the graph.
 In Elide, entities can be marked if they are directly navigable from the root of the
