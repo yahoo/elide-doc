@@ -80,7 +80,17 @@ the data model to define any number of arguments that are passed to the resolver
 #### Relationship Operations
 
 Elide GraphQL relationships support five relationship operations which can be broken into two groups: data operations and id operations.
-The operations are separated into those that accept a _data_ argument and those that accept an _ids_ argument.
+The operations are separated into those that accept a _data_ argument and those that accept an _ids_ argument:
+
+
+| Operation | Data | Ids |
+| --------- |------|-----|
+| Upsert    | ✓    | X   |
+| Fetch     | X    | ✓   |
+| Replace   | ✓    | X   |
+| Remove    | X    | ✓   |
+| Delete    | X    | ✓   |
+
 
 1. The **FETCH** operation retrieves a set of objects. When a list of ids is specified, it will only extract the set of objects within the
 relationship with matching ids.  If no ids are specified, then the entire collection of objects will be returned to the caller.
@@ -92,3 +102,192 @@ id) then it will be updated otherwise it will be created. In the case of updates
 5. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.
 **REPLACE** can be though of an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client
 has authorization to see & manipulate.
+
+#### Map Data Types
+
+GraphQL has no native support for a map data type.  If a JPA data model includes a map, Elide translates this to a list of key/value pairs in the GraphQL schema.
+
+### Making Calls
+
+All calls must be `POST` requests made to the root endpoint. This specific endpoint will depend on where you mount the provided servlet.
+For example, if the servlet is mounted at `/graphql`, all requests should be sent as:
+
+```
+POST https://yourdomain.com/graphql
+```
+
+### Example Data Model
+
+All subsequent query examples are based on the following data model including `Book`, `Author`, and `Publisher`:
+
+```java
+@Entity
+@Table(name = "book")
+@Include(rootLevel = true)
+public class Book {
+    @Id public long id;
+    public String title;
+    @ManyToMany
+    public Set<Author> authors;
+    @ManyToOne
+    Publisher publisher;
+}
+```
+```java
+@Entity
+@Table(name = "author")
+@Include(rootLevel = false)
+public class Author {
+    @Id public long id;
+    public String name;
+    @ManyToMany
+    public Set<Book> books;
+}
+```
+```java
+@Entity
+@Table(name = "publisher")
+@Include(rootLevel = false)
+public class Publisher {
+    @Id public long id;
+    public String name;
+    @OneToMany
+    public Set<Book> books;
+}
+```
+
+### FETCH Examples
+
+#### Fetch entire collection of Books with ID, Title, and Authors
+```
+book {
+  id,
+  title,
+  authors
+}
+```
+
+#### Fetch single book with Title and Authors
+```
+book(ids: [1]) {
+  title,
+  authors
+} 
+```
+
+### UPSERT Examples
+
+#### Create and Add a New Author to a Book
+```
+mutation book(op: UPSERT, data: {authors: [{name: "The added author"}]}) {
+  id,
+  authors
+}
+```
+
+### DELETE Examples
+
+#### Delete a Book
+```
+mutation book(op: DELETE, ids: [1]) {
+  id
+}
+```
+Deletes the book with `id = 1` and removes disassociates all relationships other entities might have with this object.
+
+### REMOVE Examples
+
+#### Remove an author from a book.
+
+```
+book(ids: [1]) {
+    authors(op: REMOVE, ids: [3])
+}
+```
+Removes the _association_ between book with `id = 1` and author with `id = 3`, however, the author is still present in the persistence store.
+
+### REPLACE Examples
+  
+#### Replace All Book Authors
+```
+mutation book(op: REPLACE, data: {authors:[{ name: "The New Author" }]}) {
+  id,
+  authors
+}
+```
+
+### Complex Queries
+
+#### Replacing a particular nested field
+Let's assume that in a complex scenario, we want to update the name of the 18th author of the 9th book. The corresponding query would be,
+```
+book(ids: [9]) {
+    id,
+    authors(op: REPLACE, data: {name: "New author"}) {
+        title
+    }
+}
+```
+The above payload structure helps us manipulate a specific entity amongst several different entities linked with to same parent as under.
+```
+book(id = 9)
+| \ \
+.. .. authors(id = 18)
+      |
+      name
+```
+#### Replacing two seperate fields linked to the same parent
+Let's say we want to replace the title of two seperate books associated with the same author. The corresponding query would look like,
+```
+author(ids: [1]) {
+    id,
+    books(op: REPLACE, data: [{id: 1, title: "New title"}, {id: 2, title: "New title"}]) {
+        id
+    }
+}
+```
+The above payload structure helps us manipulate attributes associated with two different entities having the same parent entity as under.
+```
+author
+|     \
+|      \
+books   books
+|  \    |  \
+|   \  ...  title
+...  title
+```
+#### Replacing fields of two seperate entities associated to the same parent
+Now lets say we want to modify a ``Book`` and a `Publisher` name. This can be accomplished in a single query as under.
+```
+books(ids: [1]) {
+    id,
+    authors(op: REPLACE, data: [{id: 1, name: "New author"}]) {
+        id
+    },
+    publisher(op: REPLACE, data: [{id: 1, name: "New name"}]) {
+        id
+    }
+}
+```
+The above payload structure helps us manipulate attributes of two seperate entities associated with the same parent in a single transaction as under.
+```
+books
+|      \
+authors  publisher
+|      |
+name  name
+```
+
+#### Allowing multiple operations in a single transaction
+We can get fancy and allow for multiple operations, like replacing title of a book and deleting a publisher, all in a single transaction.
+```
+books(ids: [1]) {
+    id,
+    authors(op: REPLACE, data: [{id: 1, name: "New author"}]) {
+        id
+    },
+    publisher(op: REMOVE, ids: [1]) {
+        id
+    }
+}
+```
