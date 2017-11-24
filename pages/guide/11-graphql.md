@@ -209,47 +209,14 @@ or 'Sicence Fiction':
 
 Include the id, title, genre, & language in the result.
 
-
-```
-{
-  book {
-    edges {
-      node {
-        id
-        title
-        genre
-        language
-      }
-    }
-  }
-}
-```
+{% include code_example example='fetch-all-books' offset=0 %}
 
 #### Fetch Single Book
 
 Fetches book 1.  The response includes the id, title, and authors.  
 For each author, the response includes its id & name.
 
-```
-{
-  book(ids: ["1"]) {
-    edges {
-      node {
-        id
-        title
-        authors {
-          edges {
-            node {
-              id
-              name
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+{% include code_example example='fetch-one-book' offset=2 %}
 
 #### Filter All Books
 
