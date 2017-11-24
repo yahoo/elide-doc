@@ -128,43 +128,7 @@ POST https://yourdomain.com/graphql
 
 All subsequent query examples are based on the following data model including `Book`, `Author`, and `Publisher`:
 
-```java
-@Entity
-@Table(name = "book")
-@Include(rootLevel = true)
-public class Book {
-    @Id public long id;
-    public String title;
-    public String genre;
-    public String language;
-    @ManyToMany
-    public Set<Author> authors;
-    @ManyToOne
-    Publisher publisher;
-}
-```
-```java
-@Entity
-@Table(name = "author")
-@Include(rootLevel = false)
-public class Author {
-    @Id public long id;
-    public String name;
-    @ManyToMany
-    public Set<Book> books;
-}
-```
-```java
-@Entity
-@Table(name = "publisher")
-@Include(rootLevel = false)
-public class Publisher {
-    @Id public long id;
-    public String name;
-    @OneToMany
-    public Set<Book> books;
-}
-```
+{% include code_example example='graphql-data-model' offset=0 %}
 
 ### Filtering
 
@@ -209,31 +173,20 @@ or 'Sicence Fiction':
 
 Include the id, title, genre, & language in the result.
 
-{% include code_example example='fetch-all-books' offset=0 %}
+{% include code_example example='fetch-all-books' offset=2 %}
 
 #### Fetch Single Book
 
 Fetches book 1.  The response includes the id, title, and authors.  
 For each author, the response includes its id & name.
 
-{% include code_example example='fetch-one-book' offset=2 %}
+{% include code_example example='fetch-one-book' offset=4 %}
 
 #### Filter All Books
 
 Fetches the set of books that start with 'Libro U'.
 
-```
-{
-  book(filter: "title==\"Libro U*\"") {
-    edges {
-      node {
-        id
-        title
-      }
-    }
-  }
-}
-```
+{% include code_example example='filter-all-books' offset=6 %}
 
 ### UPSERT Examples
 
@@ -243,24 +196,7 @@ Creates a new book and adds it to Author 1.
 The author's id and list of newly created books is returned in the response. 
 For each newly created book, only the title is returned.
 
-```
-mutation {
-  author(ids: ["1"]) {
-    edges {
-      node {
-        id
-        books(op: UPSERT, data: {title: "Book Numero Dos"}) {
-          edges {
-            node {
-              title
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+{% include code_example example='upsert-and-add' offset=8 %}
 
 #### Update the title of an existing book
 
@@ -268,25 +204,7 @@ Updates the title of book 1 belonging to author 1.
 The author's id and list of updated books is returned in the response. 
 For each updated book, only the title is returned.
 
-```
-mutation {
-  author(ids: ["1"]) {
-    edges {
-      node {
-        id
-        books(op:UPSERT, data: {id: "1", title: "abc"}) {
-          edges {
-            node {
-              id
-              title
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+{% include code_example example='upsert-to-modify' offset=10 %}
 
 ### DELETE Examples
 
@@ -294,15 +212,4 @@ mutation {
 
 Deletes books 1 and 2.  The id and title of the deleted books is returned in the response.
 
-```
-mutation {
-  book(op:DELETE, ids: ["1", "2"]) {
-    edges {
-      node {
-        id
-        title
-      }
-    }
-  }
-}
-```
+{% include code_example example='delete-multiple' offset=12 %}

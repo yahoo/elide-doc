@@ -2,8 +2,6 @@ files:
   - Request
   - Response
 
-Offset: 0
-
 Request: |+2
   ```
   {
