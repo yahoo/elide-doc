@@ -4,17 +4,15 @@ files:
 
 Request: |+2
   ```
-  {
-    book(ids: ["1"]) {
+  mutation {
+    author(ids: ["1"]) {
       edges {
         node {
           id
-          title
-          authors {
-            edges {
+          books(op: UPSERT, data: {title: "Book Numero Dos"}) {
+          edges {
               node {
-                id
-                name
+                title
               }
             }
           }
@@ -27,18 +25,16 @@ Request: |+2
 Response: |+2
   ```
   {
-    "book": {
+    "author": {
       "edges": [
         { 
           "node": {
             "id": "1",
-            "title": "Libro Uno",
-            "authors": {
+            "books": {
               "edges": [
                 { 
                   "node": {
-                    "id": "1",
-                    "name": "Mark Twain"
+                    "title": "Book Numero Dos"
                   }
                 }
               ]

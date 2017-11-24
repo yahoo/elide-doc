@@ -1,0 +1,39 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  mutation {
+    book(op:DELETE, ids: ["1", "2"]) {
+      edges {
+        node {
+          id
+          title
+        }
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "book": {
+      "edges": [
+        { 
+          "node": {
+            "id": "1",
+            "title": "Libro Uno"
+          }
+        },
+        { 
+          "node": {
+            "id": "2",
+            "title": "Libro Dos"
+          }
+        }
+      ]
+    }
+  }
+  ```
