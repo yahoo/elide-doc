@@ -140,7 +140,7 @@ RSQL predicates can filter attributes in:
 * The relationship model
 * Another model joined to the relationship model through to-one relationships
 
-To join across relationships, the attribute name is prefixed by one or more relationship names separated by period (".")
+To join across relationships, the attribute name is prefixed by one or more relationship names separated by period ('.')
 
 #### Operators
 
@@ -167,6 +167,48 @@ or 'Sicence Fiction':
 * Filter books by the publisher name contains XYZ:
   `publisher.name==*XYZ*`
 
+### Pagination
+
+Any relationship can be paginated by providing one or both of the following parameters:
+1. **first** - The number of items to return per page.
+2. **offset** - The number of items to skip.
+
+#### Relationship Metadata
+
+Every relationship includes information about the collection (in addition to a list of edges) 
+that can be requested on demand:
+
+1. **endCursor** - The last record offset in the current page (exclusive).
+2. **startCursor** - The first record offset in the current page (inclusive).
+3. **hasNextPage** - Whether or not more pages of data exist.
+4. **totalRecords** - The total number of records in this relationship across all pages.
+
+These properties are contained within the _pageInfo_ structure:
+
+```
+{
+  pageInfo {
+    endCursor
+    startCursor
+    hasNextPage
+    totalRecords
+  }
+}
+```
+
+### Sorting
+
+Any relationship can be sorted by attributes in:
+* The relationship model
+* Another model joined to the relationship model through to-one relationships
+
+To join across relationships, the attribute name is prefixed by one or more relationship names separated by period ('.')
+
+It is also possible to sort in either ascending or descending order by prepending
+the attribute expression with a '+' or '-' character.  If no order character is provided, sort order defaults to ascending.
+
+A relationship can be sorted by multiple attributes by seperating the attribute expressions by commas: ','.
+
 ### FETCH Examples
 
 #### Fetch All Books
@@ -188,6 +230,19 @@ Fetches the set of books that start with 'Libro U'.
 
 {% include code_example example='filter-all-books' offset=6 %}
 
+#### Paginate All Books
+
+Fetches a single page of books (1 book per page), starting at the 2nd page.  
+Also requests the relationship metadata.
+
+{% include code_example example='fetch-books-paginated' offset=8 %}
+
+#### Sort All Books
+
+Sorts the collection of books first by their publisher id (descending) and then by the book id (ascending).
+
+{% include code_example example='sort-all-books' offset=10 %}
+
 ### UPSERT Examples
 
 #### Create and add new book to an author
@@ -196,7 +251,7 @@ Creates a new book and adds it to Author 1.
 The author's id and list of newly created books is returned in the response. 
 For each newly created book, only the title is returned.
 
-{% include code_example example='upsert-and-add' offset=8 %}
+{% include code_example example='upsert-and-add' offset=12 %}
 
 #### Update the title of an existing book
 
@@ -204,7 +259,7 @@ Updates the title of book 1 belonging to author 1.
 The author's id and list of updated books is returned in the response. 
 For each updated book, only the title is returned.
 
-{% include code_example example='upsert-to-modify' offset=10 %}
+{% include code_example example='upsert-to-modify' offset=14 %}
 
 ### DELETE Examples
 
@@ -212,4 +267,4 @@ For each updated book, only the title is returned.
 
 Deletes books 1 and 2.  The id and title of the deleted books is returned in the response.
 
-{% include code_example example='delete-multiple' offset=12 %}
+{% include code_example example='delete-multiple' offset=16 %}
