@@ -20,7 +20,7 @@ There are a few caveats given that Elide allows developers control over how enti
 
 ## Filters
 
-Filters are covered in this [section]({{site.baseurl}}/pages/guide/08-filters.html).
+Filters are covered in this [section]({{site.baseurl}}/pages/guide/06-filters.html).
 
 
 ## Model Identifiers
