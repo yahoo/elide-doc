@@ -30,29 +30,29 @@ Relationships are links to other entities in the graph.
 
 ### Input Objects
 
-Input objects just contain attributes and relationship with names that directly match 
+Input objects just contain attributes and relationship with names directly matching
 the property names in the JPA annotated model:
 
 ![GraphQL Input Object UML](/assets/images/graphql_input_object_uml.png){:class="img-responsive"}
 
 ### Query Objects
 
-Query Objects are more complex given that queries have to support filtering, sorting,
-and pagination and not simply describe data.  Elide's GraphQL structure for queries and mutations is depicted below:
+Query Objects are more complex than Input Objects since they do more than simply describe data; they must
+support filtering, sorting, and pagination.  Elide's GraphQL structure for queries and mutations is depicted below:
 
 ![GraphQL Query Object UML](/assets/images/graphql_query_object_uml.png){:class="img-responsive"}
 
 Every GraphQL schema must define a root document which represents the root of the graph.
 In Elide, entities can be marked if they are directly navigable from the root of the
-graph. Elide’s GraphQL root documents consists of _relationships_ to these rootable entities.
-Each relationship is named by its pluralized type name in the GraphQL root document.
+graph. Elide’s GraphQL root documents consist of _relationships_ to these rootable entities.
+Each root relationship is named by its pluralized type name in the GraphQL root document.
 
 All other non-rootable entities in our schema must be referenced through traversal of the
 relationships in the entity relationship graph.
 
-Every relationship is modeled the same way.  Elide adopts [Relay's pattern for pagination support](http://graphql.org/learn/pagination/).
-Relationships are a collection of _edges_.  Each edge contains a _node_.  The _node_ is an instance of a
-data model that is also a member of the relationship.   It contains attributes and its own set of relationships.
+Elide models relationships following [Relay's Connection pattern](http://graphql.org/learn/pagination/).
+Relationships are a collection of graph _edges_.  Each edge contains a graph _node_.  The _node_ is an instance of a
+data model which in turn contains its own attributes and set of relationships.
 
 #### Relationship Arguments
 
@@ -60,16 +60,15 @@ In GraphQL, any property in the schema can take arguments.  Relationships in Eli
 set of arguments that either constrain the edges fetched from a relationship or supply data to a mutation:
 
 1. The **ids** parameter is a collection of node identifiers.  It is used to select one or more nodes from a relationship.
-2. The **filter** parameter is used to build complex [RSQL](https://github.com/jirutka/rsql-parser) filter predicates that select zero or more nodes from a relationship.
+2. The **filter** parameter is used to build [RSQL](https://github.com/jirutka/rsql-parser) filter predicates that select zero or more nodes from a relationship.
 3. The **sort** parameter is used to order a relationship's edges by one or more node attributes.
 4. The parameters **offset** and **first** are used to paginate a relationship across multiple API requests.
 5. The **op** argument describes the operation to perform on the relationship. When not provided, this argument
-defaults to a FETCH operation—which simply reads the collection of edges.
+defaults to a FETCH operation which simply reads the collection of edges.
 6. The **data** parameter is provided for operations that mutate the collection (UPSERT and REPLACE), It contains
 a list of input objects that match the data type of the relationship.
 
-Entity attributes generally do not take arguments. However, attributes can be annotated as computed which allows
-the data model to define any number of arguments that are passed to the resolver of that attribute.
+Entity attributes generally do not take arguments.  
 
 #### Relationship Operations
 
