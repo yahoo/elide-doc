@@ -4,7 +4,7 @@ group: guide
 title: Json API
 ---
 
-# JSON-API 
+--------------------------
 
 [JSON-API](jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
 Similar to GraphQL: 
@@ -19,6 +19,7 @@ The [json-api specification](http://jsonapi.org/format/) is the best reference f
 for filtering, pagination, sorting, and swagger.
 
 ## Hierarchical URLs
+--------------------------
 
 Elide generally follows the [JSON-API recommendations](http://jsonapi.org/recommendations/) for URL design.
 
@@ -32,6 +33,7 @@ article and a singular author which has a singular address.   While unambiguous,
 Instead, the author must be fully qualified by ID: `/articles/1/author/34/address`
 
 ## Model Identifiers
+--------------------------
 
 Elide supports three mechanisms by which a newly created entity is assigned an ID:
 
@@ -51,7 +53,17 @@ When using the patch extension, Elide returns object entity bodies (containing n
 the order in which they were created - assuming all the entities were newly created (and not mixed
 with entity updates in the request).  The client can use this order to map the object created to its ID.
 
+## Sparse Fields
+--------------------------
+JSON-API allows the client to limit the attributes and relationships that should be included in the response payload
+for any given entity.  The _fields_ query parameter specifies the type (data model) and list of fields that should be included.
+
+For example, to fetch the book collection but only include the book titles:
+
+{% include code_example example='jsonapi-sparse' offset=2 %}
+
 ## Filtering
+--------------------------
 
 JSON-API 1.0 is agnostic to filtering strategies.  The only recommendation is that servers and clients _should_
 prefix filtering query parameters with the word 'filter'.
@@ -116,6 +128,7 @@ Values are specified as URL encoded strings.  Elide will type coerce them into t
 data type for the attribute filter.
 
 ## Pagination
+--------------------------
 
 Elide supports:
 1. Paginating a collection by row offset and limit.
@@ -160,18 +173,15 @@ JSON-API response that contains:
 The values for _totalPages_ and _totalRecords_ are only returned if the _page[totals]_ 
 parameter was specified in the query.
 
-```
-"meta": {
-  "page": {
-    "number":1,
-    "totalRecords":20,
-    "limit":2,"
-    "totalPages":10
-   }
-}
-```
+### Example
+
+Paginate the book collection starting at the 4th record.  Include no more than 2 books per page.
+Include the total size of the collection in the _meta block_:
+
+{% include code_example example='jsonapi-paginate' offset=4 %}
 
 ## Sorting
+--------------------------
 
 Elide supports:
 1.  Sorting a collection by any attribute of the collection's type.
@@ -205,14 +215,12 @@ The keyword _id_ can be used to sort by whatever field a given entity uses as it
 
 Sort the collection of author 1's books in descending order by the book's publisher's name:
 
-{% include code_example example='jsonapi-sort' offset=2 %}
+{% include code_example example='jsonapi-sort' offset=6 %}
 
-## Swagger
-
-Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
-initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/13-swagger.html).
 
 ## Bulk Writes & Complex Mutations
+--------------------------
+
 JSON-API supported a now-deprecated mechanism for [extensions](http://jsonapi.org/extensions/).  
 The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/jsonpatch/index.md) was a 
 JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
@@ -220,4 +228,11 @@ JSON-API extension that allowed muliple mutation operations (create, delete, upd
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
 For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
 
-{% include code_example example='patch-extension' offset=4 %}
+{% include code_example example='patch-extension' offset=8 %}
+
+## Swagger
+--------------------------
+
+Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
+initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/13-swagger.html).
+

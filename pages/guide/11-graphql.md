@@ -1,10 +1,10 @@
 ---
 layout: guide
 group: guide
-title: GraphQL API
+title: GraphQL
 ---
 
-# GraphQL 
+--------------------------
 
 [GraphQL](http://graphql.org/) is a language specification published by Facebook for constructing graph APIs.  The specification provides great flexibility
 in API expression, but also little direction for best practices for common mutation operations.  For example, it is silent on how to:
@@ -19,6 +19,7 @@ in API expression, but also little direction for best practices for common mutat
 Elide offers an opinionated GraphQL API that addresses exactly how to do these things in a uniform way across your entire data model graph.
 
 ## API Structure
+--------------------------
 
 GraphQL splits its schema into two kinds of objects:
 1.  **Query objects** which are used to compose queries and mutations
@@ -101,7 +102,8 @@ has authorization to see & manipulate.
 
 GraphQL has no native support for a map data type.  If a JPA data model includes a map, Elide translates this to a list of key/value pairs in the GraphQL schema.
 
-### Making Calls
+## Making Calls
+--------------------------
 
 All calls must be HTTP `POST` requests made to the root endpoint. This specific endpoint will depend on where you mount the provided servlet.
 For example, if the servlet is mounted at `/graphql`, all requests should be sent as:
@@ -110,13 +112,14 @@ For example, if the servlet is mounted at `/graphql`, all requests should be sen
 POST https://yourdomain.com/graphql
 ```
 
-### Example Data Model
+## Example Data Model
 
 All subsequent query examples are based on the following data model including `Book`, `Author`, and `Publisher`:
 
 {% include code_example example='graphql-data-model' offset=0 %}
 
-### Filtering
+## Filtering
+--------------------------
 
 Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in 
 the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
@@ -128,7 +131,7 @@ RSQL predicates can filter attributes in:
 
 To join across relationships, the attribute name is prefixed by one or more relationship names separated by period ('.')
 
-#### Operators
+### Operators
 
 The following RSQL operators are supported:
 
@@ -144,7 +147,7 @@ The following RSQL operators are supported:
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
 
-#### Examples
+### Examples
 * Filter books by title equal to 'abc' _and_ genre starting with 'Science':
   `"title=='abc';genre=='Science*'` 
 * Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
@@ -153,13 +156,14 @@ or 'Sicence Fiction':
 * Filter books by the publisher name contains XYZ:
   `publisher.name==*XYZ*`
 
-### Pagination
+## Pagination
+--------------------------
 
 Any relationship can be paginated by providing one or both of the following parameters:
 1. **first** - The number of items to return per page.
 2. **offset** - The number of items to skip.
 
-#### Relationship Metadata
+### Relationship Metadata
 
 Every relationship includes information about the collection (in addition to a list of edges) 
 that can be requested on demand:
@@ -182,7 +186,8 @@ These properties are contained within the _pageInfo_ structure:
 }
 ```
 
-### Sorting
+## Sorting
+--------------------------
 
 Any relationship can be sorted by attributes in:
 * The relationship model
@@ -195,7 +200,8 @@ the attribute expression with a '+' or '-' character.  If no order character is 
 
 A relationship can be sorted by multiple attributes by seperating the attribute expressions by commas: ','.
 
-### Model Identifiers
+## Model Identifiers
+--------------------------
 
 Elide supports three mechanisms by which a newly created entity is assigned an ID:
 
@@ -209,55 +215,57 @@ Elide looks for the JPA `GeneratedValue` annotation to disambiguate whether or n
 the data store generates an ID for a given data model.   If the client also generated 
 an ID during the object creation request, the data store ID overrides the client value.
 
-#### Matching newly created objects to IDs
+### Matching newly created objects to IDs
 
 When using _UPSERT_, Elide returns object entity bodies (containing newly assigned IDs) in 
 the order in which they were created - assuming all the entities were newly created (and not mixed
 with entity updates in the request).  The client can use this order to map the object created to its ID.
 
-### FETCH Examples
+## FETCH Examples
+--------------------------
 
-#### Fetch All Books
+### Fetch All Books
 
 Include the id, title, genre, & language in the result.
 
 {% include code_example example='fetch-all-books' offset=2 %}
 
-#### Fetch Single Book
+### Fetch Single Book
 
 Fetches book 1.  The response includes the id, title, and authors.  
 For each author, the response includes its id & name.
 
 {% include code_example example='fetch-one-book' offset=4 %}
 
-#### Filter All Books
+### Filter All Books
 
 Fetches the set of books that start with 'Libro U'.
 
 {% include code_example example='filter-all-books' offset=6 %}
 
-#### Paginate All Books
+### Paginate All Books
 
 Fetches a single page of books (1 book per page), starting at the 2nd page.  
 Also requests the relationship metadata.
 
 {% include code_example example='fetch-books-paginated' offset=8 %}
 
-#### Sort All Books
+### Sort All Books
 
 Sorts the collection of books first by their publisher id (descending) and then by the book id (ascending).
 
 {% include code_example example='sort-all-books' offset=10 %}
 
-#### Schema Introspection 
+### Schema Introspection 
 
 Fetches the entire list of data types in the GraphQL schema.
 
 {% include code_example example='schema-introspection' offset=12 %}
 
-### UPSERT Examples
+## UPSERT Examples
+--------------------------
 
-#### Create and add new book to an author
+### Create and add new book to an author
 
 Creates a new book and adds it to Author 1.
 The author's id and list of newly created books is returned in the response. 
@@ -265,7 +273,7 @@ For each newly created book, only the title is returned.
 
 {% include code_example example='upsert-and-add' offset=14 %}
 
-#### Update the title of an existing book
+### Update the title of an existing book
 
 Updates the title of book 1 belonging to author 1.
 The author's id and list of updated books is returned in the response. 
@@ -273,19 +281,22 @@ For each updated book, only the title is returned.
 
 {% include code_example example='upsert-to-modify' offset=16 %}
 
-### DELETE Examples
+## DELETE Examples
+--------------------------
 
 Deletes books 1 and 2.  The id and title of the deleted books is returned in the response.
 
 {% include code_example example='delete-multiple' offset=18 %}
 
-### REMOVE Example
+## REMOVE Example
+--------------------------
 
 Removes books 1 and 2 from author 1.  Author 1 is returned with the removed books.
 
 {% include code_example example='remove-multiple' offset=20 %}
 
-### REPLACE Example
+## REPLACE Example
+--------------------------
 
 Replaces the set of authors for _every_ book with the set consisting of:
 * An existing author (author 1)
