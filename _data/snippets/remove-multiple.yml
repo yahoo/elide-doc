@@ -1,0 +1,53 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  mutation {
+    author(ids: ["1"]) {
+      edges {
+        node {
+          books(op:REMOVE, ids: ["1", "2"]) {
+            edges {
+              node {
+                id
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "author": {
+      "edges": [
+        { 
+  	"node": {
+  	  "books": {
+  	    "edges": [
+  	      { 
+  		"node": {
+  		  "id": "1",
+  		  "title": "Libro Uno"
+  		}
+  	      },
+  	      { 
+  		"node": {
+  		  "id": "2",
+  		  "title": "Libro Dos"
+  		}
+  	      }
+  	    ]
+  	  }
+  	}
+        }
+      ]
+    }
+  }
+  ```

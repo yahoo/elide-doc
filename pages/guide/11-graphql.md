@@ -249,6 +249,12 @@ Sorts the collection of books first by their publisher id (descending) and then 
 
 {% include code_example example='sort-all-books' offset=10 %}
 
+#### Schema Introspection 
+
+Fetches the entire list of data types in the GraphQL schema.
+
+{% include code_example example='schema-introspection' offset=12 %}
+
 ### UPSERT Examples
 
 #### Create and add new book to an author
@@ -257,7 +263,7 @@ Creates a new book and adds it to Author 1.
 The author's id and list of newly created books is returned in the response. 
 For each newly created book, only the title is returned.
 
-{% include code_example example='upsert-and-add' offset=12 %}
+{% include code_example example='upsert-and-add' offset=14 %}
 
 #### Update the title of an existing book
 
@@ -265,12 +271,26 @@ Updates the title of book 1 belonging to author 1.
 The author's id and list of updated books is returned in the response. 
 For each updated book, only the title is returned.
 
-{% include code_example example='upsert-to-modify' offset=14 %}
+{% include code_example example='upsert-to-modify' offset=16 %}
 
 ### DELETE Examples
 
-#### Delete a Book
-
 Deletes books 1 and 2.  The id and title of the deleted books is returned in the response.
 
-{% include code_example example='delete-multiple' offset=16 %}
+{% include code_example example='delete-multiple' offset=18 %}
+
+### REMOVE Example
+
+Removes books 1 and 2 from author 1.  Author 1 is returned with the removed books.
+
+{% include code_example example='remove-multiple' offset=20 %}
+
+### REPLACE Example
+
+Replaces the set of authors for _every_ book with the set consisting of:
+* An existing author (author 1)
+* A new author
+
+The response includes the complete set of books (id & title) and their new authors (id & name).
+
+{% include code_example example='replace-multiple' offset=22 %}
