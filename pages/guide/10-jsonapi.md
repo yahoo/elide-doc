@@ -201,6 +201,12 @@ The _rough_ BNF syntax for the _sort_ query parameter is:
 
 The keyword _id_ can be used to sort by whatever field a given entity uses as its identifier.
 
+### Example
+
+Sort the collection of author 1's books in descending order by the book's publisher's name:
+
+{% include code_example example='jsonapi-sort' offset=2 %}
+
 ## Swagger
 
 Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
@@ -214,4 +220,4 @@ JSON-API extension that allowed muliple mutation operations (create, delete, upd
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
 For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
 
-{% include code_example example='patch-extension' offset=2 %}
+{% include code_example example='patch-extension' offset=4 %}
