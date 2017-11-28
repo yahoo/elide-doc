@@ -1,5 +1,16 @@
+title: Elide
+baseurl: ""
+url: ""
 # jekyll configuration
 exclude: ["README.md"]
+
+# build settings
+markdown: kramdown
+sass:
+  load_paths:
+    - _sass
+    - node_modules
+exclude: []
 
 # site-specific configuration
 BASE_PATH: http://elide.io

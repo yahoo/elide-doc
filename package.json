@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "bootstrap": "4.0.0-beta.2",
+    "raphael": "^2.2.7",
+    "sass-web-fonts": "^2.0.2",
+    "treant-js": "^1.0.1"
+  }
+}
