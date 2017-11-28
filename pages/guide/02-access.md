@@ -9,7 +9,7 @@ annotations can be used at the package and class levels, with annotations at an 
 Resources are accessed by traversing the models in the URL path. Consider the following simple data model with three
 POJOs:
 
-{% include code_example example="access-example" %}
+{% include code_example example="access-example" offset=0 %}
 
 In this example all of the exposed models are accessable at the base of the API. (i.e. `/user/:id` and `/post/:id`
 are valid URLs and `/comment/:id` is invalid) When we say that resources are accessed by traversing the models in the

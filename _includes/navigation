@@ -1,7 +1,0 @@
-{% for node in pages %}
-  {% if node.title != null %}
-    {% if group == null or group == node.group %}
-      <li><a href="{{ BASE_PATH }}/pages/{{node.redirect}}.html">{{node.title}}</a></li>
-    {% endif %}
-  {% endif %}
-{% endfor %}

@@ -1,0 +1,16 @@
+@import "web-fonts";
+
+$url: web-fonts-url("Open Sans");
+@import url($url);
+
+$web-fonts-protocol: "http";
+$url: web-fonts-url("Open Sans");
+@import url($url);
+
+$web-fonts-protocol: "https";
+$url: web-fonts-url("Open Sans");
+@import url($url);
+
+$web-fonts-protocol: "";
+$url: web-fonts-url("Open Sans");
+@import url($url);

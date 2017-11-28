@@ -1,24 +1,18 @@
 {% assign example = site.data.snippets[include.example] %}
 {% assign files = example.files %}
-<div class="panel with-nav-tabs">
-  <div class="panel-heading">
-    <ul class="nav nav-tabs">
-      {% assign class = "active" %}
-      {% for file in files %}
-        <li class="{{class}}"><a href="#file-{{ forloop.index | plus: include.offset }}" data-toggle="tab">{{file}}</a></li>
-        {% assign class = "" %}
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="panel-body">
-    <div class="tab-content">
-      {% assign class = "tab-pane in active" %}
-      {% for file in files %}
-        <div class="{{class}}" id="file-{{ forloop.index | plus: include.offset }}">
-          {{ example[file] | markdownify }}
-        </div>
-        {% assign class = "tab-pane" %}
-      {% endfor %}
+<ul class="nav nav-tabs" role="tablist">
+  {% assign class = "active" %}
+  {% for file in files %}
+    <li class="nav-item"><a class="nav-link {{class}}" href="#file-{{ forloop.index | plus: include.offset }}" data-toggle="tab">{{file}}</a></li>
+    {% assign class = "" %}
+  {% endfor %}
+</ul>
+<div class="tab-content">
+  {% assign class = "tab-pane in active" %}
+  {% for file in files %}
+    <div class="{{class}}" id="file-{{ forloop.index | plus: include.offset }}">
+      {{ example[file] | markdownify }}
     </div>
-  </div>
+    {% assign class = "tab-pane" %}
+  {% endfor %}
 </div>
