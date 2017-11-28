@@ -62,6 +62,21 @@ For example, to fetch the book collection but only include the book titles:
 
 {% include code_example example='jsonapi-sparse' offset=2 %}
 
+More information about sparse fields can be found [here](http://jsonapi.org/format/#fetching-sparse-fieldsets).
+
+## Compound Documents 
+--------------------------
+JSON-API allows the client to fetch a primary collection of elements but also include their relationships or their 
+relationship's relationships (arbitrarily nested) through compound documents.  The _include_ query parameter specifies
+what relationships should be expanded in the document.
+
+The following example fetches the book collection but also includes all of the book authors.  Sparse fields are used
+to limit the book and author fields in the response:
+
+{% include code_example example='jsonapi-include' offset=4 %}
+
+More information about compound documents can be found [here](http://jsonapi.org/format/#document-compound-documents).
+
 ## Filtering
 --------------------------
 
@@ -178,7 +193,7 @@ parameter was specified in the query.
 Paginate the book collection starting at the 4th record.  Include no more than 2 books per page.
 Include the total size of the collection in the _meta block_:
 
-{% include code_example example='jsonapi-paginate' offset=4 %}
+{% include code_example example='jsonapi-paginate' offset=6 %}
 
 ## Sorting
 --------------------------
@@ -215,7 +230,7 @@ The keyword _id_ can be used to sort by whatever field a given entity uses as it
 
 Sort the collection of author 1's books in descending order by the book's publisher's name:
 
-{% include code_example example='jsonapi-sort' offset=6 %}
+{% include code_example example='jsonapi-sort' offset=8 %}
 
 
 ## Bulk Writes & Complex Mutations
@@ -228,7 +243,7 @@ JSON-API extension that allowed muliple mutation operations (create, delete, upd
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
 For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
 
-{% include code_example example='patch-extension' offset=8 %}
+{% include code_example example='patch-extension' offset=10 %}
 
 ## Swagger
 --------------------------
