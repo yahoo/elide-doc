@@ -205,3 +205,13 @@ The keyword _id_ can be used to sort by whatever field a given entity uses as it
 
 Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
 initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/13-swagger.html).
+
+## Bulk Writes & Complex Mutations
+JSON-API supported a now-deprecated mechanism for [extensions](http://jsonapi.org/extensions/).  
+The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/jsonpatch/index.md) was a 
+JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
+
+Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
+For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
+
+{% include code_example example='patch-extension' offset=2 %}
