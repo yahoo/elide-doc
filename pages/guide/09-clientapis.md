@@ -4,8 +4,6 @@ group: guide
 title: Client APIs
 ---
 
-# API Usage (Client-side info)
-
 Graph APIs are an evolution of web service APIs that serve and manipulate data for mobile & web applications.
 They have a number of characteristics that make them well suited to this task:
 1.  Most notably, they present a **data model** as an entity relationship graph and an **accompanying schema**.

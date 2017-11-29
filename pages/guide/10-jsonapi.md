@@ -50,8 +50,8 @@ an ID during the object creation request, the data store ID overrides the client
 ### Matching newly created objects to IDs
 
 When using the patch extension, Elide returns object entity bodies (containing newly assigned IDs) in 
-the order in which they were created - assuming all the entities were newly created (and not mixed
-with entity updates in the request).  The client can use this order to map the object created to its ID.
+the order in which they were created.  The client can use this order to map the object created to its 
+server assigned ID.
 
 ## Sparse Fields
 --------------------------
