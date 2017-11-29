@@ -1,0 +1,15 @@
+@startuml
+
+class Article {
+  id: int
+  title: string
+}
+class Comment {
+  id: int
+  title: string
+  content: string
+}
+
+Article "1" *-left- "many" Comment
+
+@enduml

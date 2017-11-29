@@ -21,8 +21,8 @@ Security is applied hierarchically with three goals:
 
 ### Hierarchical Security
 Both JSON-API and GraphQL define mechanisms to fetch and manipulate entities defined by the data model schema.  Some (rootable) entities can be reached directly by providing their data type and unique identifier in the query. Other entities can only be reached through relationships to other entities– by traversing the entity relationship graph.  The Elide framework supports both methods of access. This is beneficial because it alleviates the need for all models to be accessible at the root of the graph. When everything is exposed at the root, the developer needs to enumerate all of the valid access patterns for all of the data models which quickly becomes unmanageable. In addition to eliminating redundancy in security declaration, this form of security can have significant performance benefits for enforcing security on large collections stored in key-value stores that have limited ability for the underlying persistence layer to directly apply security filters. It is often possible to deny access to an entire collection (i.e. hierarchical relationship) before attempting to verify access to each individual member within that collection.  Typically, security rules only need to be defined for a subset of models and relationships– often near the roots of the graph. Applying security rules to the relationships to prune the graph can eliminate invalid access patterns.  To better understand the sequence of how security is applied, consider the data model depicted in Figure 1 consisting of articles where each contains zero or more comments. 
- 
-TODO - insert figure 1.
+
+![Security Article Comment UML](/assets/images/security_article_comment_uml.png){:class="img-responsive"} 
 
 The request to update a specific comment of a particular article involves the following permission checks:
 1. Read permission check on the Article’s comments field.
