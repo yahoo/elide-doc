@@ -285,14 +285,14 @@ For each updated book, only the title is returned.
 ## DELETE Examples
 --------------------------
 
-Deletes books 1 and 2.  The id and title of the deleted books is returned in the response.
+Deletes books 1 and 2.  The id and title of the remaining books are returned in the response.
 
 {% include code_example example='delete-multiple' offset=18 %}
 
 ## REMOVE Example
 --------------------------
 
-Removes books 1 and 2 from author 1.  Author 1 is returned with the removed books.
+Removes books 1 and 2 from author 1.  Author 1 is returned with the remaining books.
 
 {% include code_example example='remove-multiple' offset=20 %}
 
