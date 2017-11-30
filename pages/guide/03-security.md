@@ -124,6 +124,31 @@ public abstract class FilterExpressionCheck<T> extends InlineCheck<T> {
 }
 ```
 
+Most `FilterExpressionCheck` functions construct a `FilterPredicate` which is a concrete implementation of the `FilterExpression` interface:
+
+```java
+/**
+ * Constructs a filter predicate
+ * @param path The path through the entity relationship graph to a particular attribute to filter on.
+ * @param op The filter comparison operator to evaluate.
+ * @param values The list of values to compare the attribute against.
+ */
+public FilterPredicate(Path path, Operator op, List<Object> values) {
+ ...
+}
+```
+
+Here is an example to filter the Author model by book titles:
+```java
+   //Construct a filter for the Author model for books.title == 'Harry Potter'
+   Path.PathElement authorPath = new Path.PathElement(Author.class, Book.class, "books");
+   Path.PathElement bookPath = new Path.PathElement(Book.class, String.class, "title");
+   List<Path.PathElement> pathList = Arrays.asList(authorPath, bookPath);
+   Path path = new Path(pathList);
+
+   return new FilterPredicate(path, Operator.IN, Collections.singletonList("Harry Potter"));
+``` 
+
 Filter expression checks are most important when a security rule is tied in some way to the data itself. By pushing the security rule down to the datastore, the data can be more efficiently queried which vastly improves performance.  Moreover, this feature is critical for implementing a service that requires complex security rules (i.e. anything more than role-based access) on large collections.
 
 ## User
@@ -163,10 +188,11 @@ If all of these checks succeed, then the response will succeed. The contents of 
 * Changing the value of `Post.published` will evaluate `UpdatePermission` on `published`. Because more specific checks override less specific checks, the `UpdatePermission` on the entity `Post` will not be evaluated.
 * Setting `Post.author = User` will evaluate `UpdatePermission` on `Post` since `author` does not have a more specific annotation. Because `author` is a bidirectional relationship, `UpdatePermission` will also be evaluated on the `User.posts` field.
 * Removing `Post` from `User.posts` will trigger `UpdatePermission` on both the `Post` and `User` entities.
-* Creating `Post` will trigger `UpdatePermission` checks on any fields that are initialized in the request (as well as any bidirectional fields on referenced objects).
+* Creating `Post` will _not_ trigger `UpdatePermission` checks on any fields that are initialized in the request.  However, it will trigger `UpdatePermission` on any bidirectional relationship fields on preexisting objects.
 
 ### Create
-`CreatePermission` governs whether a model can be created. It is evaluated in conjunction with `UpdatePermission` on any initialized field to determine if the user's request to create a resource will succeed.
+`CreatePermission` governs whether a model can be created or a field can be initialized in a newly created model instance.
+Whenever a model instance is newly created, initialized fields are evaluated against `CreatePermission` rather than `UpdatePermission`.
 
 ### Delete
 `DeletePermission` governs whether a model can be deleted.
