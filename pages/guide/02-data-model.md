@@ -24,7 +24,7 @@ title: Data Models
 }
 </style>
 
-Elide generates its API entirely based on the concept of **Data Models**. In summary, these are [JPA-annotated](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) Java classes that describe the _schema_ for each exposed endpoint. While the JPA annotations provide a high-level description on how relationships and attributes are modeled, Elide provides a set of [security annotations](TODO: Link security docs) to secure this model.
+Elide generates its API entirely based on the concept of **Data Models**. In summary, these are [JPA-annotated](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) Java classes that describe the _schema_ for each exposed endpoint. While the JPA annotations provide a high-level description on how relationships and attributes are modeled, Elide provides a set of [security annotations](/pages/guide/03-security.html) to secure this model.
 
 ## Philosophy
 
@@ -70,7 +70,7 @@ If you need more information about JPA, please [review their documentation](http
 
 After creating a proper data model, exposing it through Elide requires you configure _security_ and _include_ it in Elide. Minimally, that implies you should add the appropriate permission annotations and configure your `@Include` permission appropriately. Elide generates its API as a _graph_; this graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
 
-Many of the Elide per-model configuration is done via annotations. For a description of all Elide-supported annotations, please check out the [annotation overview](TODO: Link).
+Many of the Elide per-model configuration is done via annotations. For a description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/11-annotations.html).
 
 ## Computed Properties
 
@@ -81,7 +81,7 @@ Elide supports computed properties by way of the `@ComputedAttribute` and `@Comp
 Life cycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers.
 There are separate annotations for each CRUD operation (_read_, _update_, _create_, and _delete_) and also each life cycle phase of the current transaction:
 
-1. *Pre Security* - Executed prior to elide _commit_ security check evaluation.
+1. *Pre Security* - Executed prior to Elide _commit_ security check evaluation.
 1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
 1. *Pre Post* - Executed immediately after transaction commit.
 
@@ -151,11 +151,12 @@ Specifying an annotation without a value executes the denoted method on every in
 
 ## Initializers
 
-Sometimes, life cycle event triggers require access to other objects and resources outside of the model.  Since all model objects in Elide are ultimately constructed by the `DataStore`, and because elide does not directly depend on any specific dependency injection framework, elide provides an alternate way to initialize a model.
+Sometimes models require additional information from the surrounding system to be useful. Since all model objects in Elide are ultimately constructed by the `DataStore`, and because Elide does not directly depend on any specific dependency injection framework (though you can still use your own [dependency injection frameworks](#dependency-injection)), Elide provides an alternate way to initialize a model.
 
 Elide can be configured with an `Initializer` implementation for a particular model class.  An `Initializer` is any class which implements the following interface:
 
 ```java
+@FunctionalInterface
 public interface Initializer<T> {
     /**
      * Initialize an entity bean
@@ -190,7 +191,7 @@ Initializers can be configured in a custom `DataStore` when the method `populate
 Dependency injection in Elide can be achieved by using [initializers](#initializers). To do so, implement your own store (or extend an existing store) and implement something like the following:
 
 ```java
-class MyStore extends HibernateStore {
+public class MyStore extends HibernateStore {
     private final Injector injector;
 
     public MyStore(Injector injector, ...) {
@@ -202,7 +203,6 @@ class MyStore extends HibernateStore {
     public void populateEntityDictionary(EntityDictionary) {
         /* bind your entities */
         for (Class<?> entityClass : yourEntityList) {
-            dictionary.bindEntity(entity);
             dictionary.bindInitializer(injector::inject, entityClass);
         }
     }
@@ -217,3 +217,89 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 *JSR303* data model annotations and wiring in a bean validator in the `DataStore`.
 
 ## Examples
+
+Consider the following example models:
+
+**Post.java**
+```java
+@Entity
+@Include(rootLevel=true)
+public class Post {
+    private Long id;
+    private String content;
+    private Set<Comment> comments;
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+            this.content = content;
+    }
+
+    @OneToMany
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
+    }
+} 
+```
+
+**Comment.java**
+```java
+@Entity
+@Include
+public class Comment {
+    private Long id;
+    private String content;
+    private Post post;
+
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @ManyToOne
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+} 
+```
+
+This example demonstrates an exposed model for a set of `Posts` and `Comments`. All posts in the system can be queried from the top-level by accessing the API-object named `post` since it is marked as a rootable entity. The only way to navigate to comments is directly through a `post` object since `comments` are not exposed at the root level.
+
+<!-- TODO: Eventually we should just make a full, multi-page tutorial -->
+For more information on accessing the exposed API, please see our [API usage documentation](TODO: Link API usage).
+
+**NOTE:** There is no security on this model. For more information about securing your models, please review the [security documentation](/pages/guide/03-security.html).
+
