@@ -1,0 +1,62 @@
+{% assign annotations = site.data.info['annotations'] | sort: 'name' %}
+
+{% for annotation in annotations %}
+  {% assign name = annotation['name'] %}
+  {% assign desc = annotation['description'] %}
+  {% assign appLevel = annotation['applicationLevel'] | sort %}
+  {% assign parameters = annotation['parameters'] | sort: 'name' %}
+  <h3 id="annotation-{{name}}">
+    @{{name}}
+    <a class="header-link" href="#annotation-{{name}}">
+      <i class="glyphicon glyphicon-link"></i>
+    </a>
+  </h3>
+  <div class="annotation-list">
+    <ul>
+      <li>
+         <div class="list-label">Description</div>
+         <div class="list-value">{{desc}}</div>
+      </li>
+      <li>
+        <div class="list-label">Application Level</div>
+        <div class="list-value">
+          <ul>
+            {% for level in appLevel %}
+              <li>{{level}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </li>
+      <li>
+        <div class="list-label">Parameters</div>
+        <div class="list-value">
+          <ul>
+            {% if parameters.size > 0 %}
+              {% for param in parameters %}
+                <li>
+                  {{param['name']}}
+                  <ul>
+                    <li>
+                      <strong>Description:</strong> {{param['description']}}
+                    </li>
+                    <li>
+                      <strong>Type:</strong> <span class="code-font">{{param['type']}}</span>
+                    </li>
+                    <li>
+                      <strong>Required:</strong> {{param['required']}}
+                    </li>
+                    <li>
+                      <strong>Default Value:</strong> {{param['default']}}
+                    </li>
+                  </ul>
+                </li>
+              {% endfor %}
+            {% else %}
+              <li><em>None</em></li>
+            {% endif %}
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+{% endfor %}

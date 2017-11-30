@@ -1,0 +1,13 @@
+{% assign annotations = site.data.info['annotations'] | sort: 'name' %}
+
+<ul>
+  {% for annotation in annotations %}
+    {% assign name = annotation['name'] %}
+    <li>
+      <a href="#annotation-{{name}}">
+        {{name}}
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+
