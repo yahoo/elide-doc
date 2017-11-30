@@ -95,7 +95,7 @@ relationships between objects without being forced to fully delete the reference
 4. The **UPSERT** operation behaves much like SQL’s MERGE.  Namely, if the object already exists (based on the provided
 id) then it will be updated.  Otherwise, it will be created. In the case of updates, attributes that are not specified are left unmodified.
 5. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.
-**REPLACE** can be though of an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client
+**REPLACE** can be thought of as an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client
 has authorization to see & manipulate.
 
 #### Map Data Types
@@ -151,7 +151,7 @@ The following RSQL operators are supported:
 * Filter books by title equal to 'abc' _and_ genre starting with 'Science':
   `"title=='abc';genre=='Science*'` 
 * Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
-or 'Sicence Fiction':
+or 'Science Fiction':
   `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
 * Filter books by the publisher name contains XYZ:
   `publisher.name==*XYZ*`
@@ -198,7 +198,7 @@ To join across relationships, the attribute name is prefixed by one or more rela
 It is also possible to sort in either ascending or descending order by prepending
 the attribute expression with a '+' or '-' character.  If no order character is provided, sort order defaults to ascending.
 
-A relationship can be sorted by multiple attributes by seperating the attribute expressions by commas: ','.
+A relationship can be sorted by multiple attributes by separating the attribute expressions by commas: ','.
 
 ## Model Identifiers
 --------------------------
