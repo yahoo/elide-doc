@@ -89,7 +89,7 @@ the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL
 ### RSQL
 
 [RSQL](https://github.com/jirutka/rsql-parser) is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
-of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
+of Boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
 
 Because RSQL is a superset of FIQL, FIQL queries should be properly parsed.
 RSQL primarily adds more friendly lexer tokens to FIQL for conjunction and disjunction: 'and' instead of ';' and 'or' instead of ','.
