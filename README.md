@@ -2,7 +2,7 @@
 Doc site for Elide built with Jekyll
 
 ## Getting started
-1. install Jekyll `gem install jekyll`
+1. install Jekyll `gem install github-pages`
 1. checkout gh-pages `git checkout gh-pages`
 1. start Jekyll `jekyll serve`
 1. edit the pages you care about

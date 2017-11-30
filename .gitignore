@@ -3,5 +3,6 @@ _site
 .sass-cache
 .idea
 yarn.lock
+.yarn-integrity
 Gemfile.lock
 package-lock.json

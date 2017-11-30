@@ -13,7 +13,7 @@ $font-family-base: Nunito, Inconsolata;
 $jumbotron-bg: transparent;
 
 @import "../node_modules/bootstrap/scss/bootstrap";
-@import "sass-web-fonts/web-fonts";
+@import "web-fonts";
 
 @import url(web-fonts-url("Nunito"));
 @import url(web-fonts-url("Inconsolata"));

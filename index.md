@@ -5,7 +5,7 @@ layout: default
 <div class="text-light background-dark">
   <div class="jumbotron">
     <div class="container text-center">
-      <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in less than 15 minutes</h2>
+      <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in 4 simple steps</h2>
       <a href="/pages/guide/01-start.html">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
@@ -97,34 +97,6 @@ layout: default
     </div>
     <div class="row align-items-center">
       <div class="col-sm">
-        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
-      </div>
-      <div class="col-sm">
-        <h4>Elide is Agnostic</h4>
-        <p>JPA enables you to use any ORM, or if you prefer, any persistence technology that support JPA&mdash;Elide is agnostic to your particular persistence strategy.</p>
-      </div>
-    </div>
-    <div class="row align-items-center elbow">
-      <div class="elbow-left"></div>
-      <div class="elbow-center"></div>
-      <div class="elbow-right"></div>
-    </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
-        <h4>Open API</h4>
-        <p>Explore, understand, and compose queries against your Elide API through generated <a>Swagger</a> documentation.</p>
-      </div>
-      <div class="col-sm text-right">
-        <img src="assets/images/features/globe-icon.png" class="img-fluid" alt="Features: Open API">
-      </div>
-    </div>
-    <div class="row align-items-center elbow">
-      <div class="elbow-right"></div>
-      <div class="elbow-center"></div>
-      <div class="elbow-left"></div>
-    </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
         <img src="assets/images/features/secure-icon.png" class="img-fluid" alt="Features: Security Comes Standard">
       </div>
       <div class="col-sm">
@@ -139,11 +111,67 @@ layout: default
     </div>
     <div class="row align-items-center">
       <div class="col-sm">
-        <h4>Single Atomic Request</h4>
-        <p>Elide supports the <a>JSON API Patch extension</a> which enables multiple create, edit, and delete operations in a single atomic request.</p>
+        <h4>Mobile Friendly</h4>
+        <p>JSON-API & GraphQL lets developers fetch entire object graphs in a single round trip. Only requested elements of the data model are returned.</p>
       </div>
       <div class="col-sm text-right">
+        <img src="assets/images/features/mobile-icon.png" class="img-fluid" alt="Features: Mobile Friendly">
+      </div>
+    </div>
+    <div class="row align-items-center elbow">
+      <div class="elbow-right"></div>
+      <div class="elbow-center"></div>
+      <div class="elbow-left"></div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-sm">
         <img src="assets/images/features/atom-icon.png" class="img-fluid" alt="Features: Single Atomic Request">
+      </div>
+      <div class="col-sm">
+        <h4>Single Atomic Request</h4>
+        <p>Elide supports multiple data model mutations in a single request in either JSON-API or GraphQL. Create objects, add them to relationships, modify or delete together in a single atomic request.</p>
+      </div>
+    </div>
+    <div class="row align-items-center elbow">
+      <div class="elbow-left"></div>
+      <div class="elbow-center"></div>
+      <div class="elbow-right"></div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-sm">
+        <h4>Elide is Agnostic</h4>
+        <p>Elide is agnostic to your particular persistence strategy. Use an ORM or provide your own implementation of a data store.</p>
+      </div>
+      <div class="col-sm text-right">
+        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
+      </div>
+    </div>
+    <div class="row align-items-center elbow">
+      <div class="elbow-right"></div>
+      <div class="elbow-center"></div>
+      <div class="elbow-left"></div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-sm">
+        <img src="assets/images/features/globe-icon.png" class="img-fluid" alt="Features: Open API">
+      </div>
+      <div class="col-sm">
+        <h4>Open API</h4>
+        <p>Explore, understand, and compose queries against your Elide API through generated <a>Swagger</a> documentation or GraphQL schema.</p>
+      </div>
+    </div>
+    <div class="row align-items-center elbow">
+      <div class="elbow-left"></div>
+      <div class="elbow-center"></div>
+      <div class="elbow-right"></div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-sm">
+        <h4>Customize</h4>
+        <p>Customize the behavior of data model operations with computed attributes, data validation annotations, and request lifecycle hooks.</p>
+      </div>
+      <div class="col-sm text-right">
+        <img src="assets/images/features/customize-icon.png" class="img-fluid" alt="Features: Customize">
       </div>
     </div>
     <div class="row align-items-center elbow">
@@ -157,43 +185,15 @@ layout: default
       </div>
       <div class="col-sm">
         <h4>Open Source</h4>
-        <p>Elide is 100% open source and available on <a>Github</a>. Released under the commercial-friendly <a>Apache License, Version 2.0</a>.</p>
-      </div>
-    </div>
-    <div class="row align-items-center elbow">
-      <div class="elbow-left"></div>
-      <div class="elbow-center"></div>
-      <div class="elbow-right"></div>
-    </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
-        <h4>Mobile Friendly</h4>
-        <p>JSON API lets developers fetch entire object graphsn in a single round trip. With sparse fields, only the requested elements of the data model are returned.</p>
-      </div>
-      <div class="col-sm text-right">
-        <img src="assets/images/features/mobile-icon.png" class="img-fluid" alt="Features: Mobile Friendly">
-      </div>
-    </div>
-    <div class="row align-items-center elbow">
-      <div class="elbow-right"></div>
-      <div class="elbow-center"></div>
-      <div class="elbow-left"></div>
-    </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
-        <img src="assets/images/features/customize-icon.png" class="img-fluid" alt="Features: Customize">
-      </div>
-      <div class="col-sm">
-        <h4>Customize</h4>
-        <p>Customize the behavior of data model operations with computed attributes, data validation annotations, and request lifecycle hooks.</p>
+        <p>Elide is 100% open source and available on <a href="https://github.com/yahoo/elide-doc">Github</a>. Released under the commercial-friendly <a href="/pages/license.html">Apache License, Version 2.0</a>.</p>
       </div>
     </div>
   </div>
 </div>
 
 <div class="container text-center my-5">
-  <h2>Are you ready to change the way you code forever?</h2>
-  <p>Improve the performance and quality of your team's work.</p>
+  <h2>Opinionated APIs for web & mobile</h2>
+  <p>Improve the velocity and quality of your team's work.</p>
   <a href="/pages/guide/01-start.html">
     <button type="button" class="btn btn-primary text-light">Get Started</button>
   </a>
@@ -214,10 +214,12 @@ layout: default
         <a href="https://gitter.im/yahoo/elide">Gitter Chat</a>
       </div>
       <div class="col-sm">
-        <button type="button" class="btn btn-secondary github">
-          <img src="assets/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
-          <span>Github</span>
-        </button>
+        <a href="https://github.com/yahoo/elide-doc">
+          <button type="button" class="btn btn-secondary github">
+            <img src="assets/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
+            <span>Github</span>
+          </button>
+        </a>
       </div>
     </div>
   </div>
