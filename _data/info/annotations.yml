@@ -11,11 +11,6 @@
       type: Action[]
       default: "{Action.CREATE, Action.UPDATE, Action.DELETE}"
       description: The set of performed action(s) upon which audit should be triggered.
-    - name: path
-      required: False
-      type: String
-      default: "\"\""
-      description: Regular expression applied to path segments of the URI. Audit is only triggered if URI matches this regex. If string is empty, then all URI's match.
     - name: operation
       required: False
       type: Integer
@@ -61,7 +56,7 @@
   parameters: []
 
 - name: CreatePermission
-  description: Define security rules for creating an object through Elide. See the security section for more information.
+  description: Define security rules for creating an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -72,10 +67,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the security section for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
 
 - name: ReadPermission
-  description: Define security rules for reading an object through Elide. See the security section for more information.
+  description: Define security rules for reading an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -86,10 +81,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the security section for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
 
 - name: UpdatePermission
-  description: Define security rules for updating an object through Elide. See the security section for more information.
+  description: Define security rules for updating an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -100,10 +95,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the security section for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
 
 - name: DeletePermission
-  description: Define security rules for deleting an object through Elide. See the security section for more information.
+  description: Define security rules for deleting an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -114,12 +109,11 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the security section for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
 
 - name: SharePermission
-  description: Enable sharing permissions on an object through Elide. See the security section for more information.
+  description: Enable sharing permissions on an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
   applicationLevel:
-      - Field
       - Method
       - Class
       - Package
@@ -128,10 +122,10 @@
         required: False
         type: Boolean
         default: True
-        description: Enable or disable shareability for an object. Shareable permissions are evaluated identically to an entity's read permissions. See the security section for more information.
+        description: Enable or disable shareability for an object. Shareable permissions are evaluated identically to an entity's read permissions. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
 
 - name: Exclude
-  description: Restricts access to a given entity or the entity's attribute/relationship.
+  description: Marks that a given field or entity should not be exposed through Elide.
   applicationLevel:
       - Field
       - Method
@@ -140,7 +134,7 @@
   parameters: []
 
 - name: Include
-  description: Allows access to a given entity or package through Elide.
+  description: Marks that a given entity should be exposed through Elide.
   applicationLevel:
       - Class
       - Package
