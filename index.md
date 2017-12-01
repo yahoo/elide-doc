@@ -18,7 +18,7 @@ layout: default
 
 <div class="container text-center my-5">
   <img src="assets/images/elide-logo.svg" class="img-fluid mb-3" alt="Elide Logo">
-  <h4 class="mx-5">Elide is a Java library that enables you to stand up a JSON API or GraphQL web service with minimal effort starting from a JPA annotated data model.</h4>
+  <h4 class="mx-2">Elide is a Java library that enables you to stand up a JSON API or GraphQL web service with minimal effort starting from a JPA annotated data model.</h4>
 </div>
 
 <hr class="mx-5">
