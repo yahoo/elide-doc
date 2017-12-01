@@ -44,33 +44,6 @@ The former is useful for checks that depend on data that is already persisted. R
 
 <div id="check-tree" style="height: 250px"></div>
 
-Checks are expected to implement only one of the _ok_ functions from the `Check` interface.
-
-```java
-/**
- * Determines whether the user can access the resource. The result is cached on a
- * per-object basis, i.e. this check will only be run once on each T. The exception
- * to this rule is that when evaluating checks for an UpdatePermission the results
- * are not cached.
- *
- * @param object — the fully modified object
- * @param requestScope —  The request scope allows for access to the current user
- *                        and the set of resources that have been created during
- *                        the current request.
- * @param changeSpec — The `ChangeSpec` is only present for `UpdatePermission` checks
- *                     and only when the checks are specified at the field level. It
- *                     provides a 'diff' of the field.
- * @return true if security check passed
- */
-public interface Check<T> {
-    boolean ok(T object,
-               RequestScope requestScope,
-               Optional<ChangeSpec> changeSpec);
-
-    boolean ok(User user);
-}
-```
-
 `InlineCheck` is the abstract super class of the three specific variants:
 
 ### Operation Checks
@@ -117,6 +90,7 @@ public abstract class FilterExpressionCheck<T> extends InlineCheck<T> {
 
     /**
      * Returns a FilterExpression from FilterExpressionCheck.
+     * @param entityClass The entity collection to filter
      * @param requestScope Request scope object
      * @return FilterExpression for FilterExpressionCheck.
      */
@@ -163,7 +137,7 @@ Function<SecurityContext, Object>
 ---------------------
 The permission annotations include `ReadPermission`, `UpdatePermission`, `CreatePermission`, `DeletePermission`, and `SharePermission`. Permissions are annotations which can be applied to a model at the `package`, `entity`, or `field`-level. The most specific annotation always take precedence (`package < entity < field`).  More specifically, a field annotation overrides the behavior of an entity annotation.  An entity annotation overrides the behavior of a package annotation.  Entity annotations can be inherited from superclasses.  When no annotation is provided at any level, access is implicitly granted for `ReadPermission`, `UpdatePermission`, `CreatePermission`, and `DeletePermission` and implicitly denied for `SharePermission`.
 
-The permission annotations wrap a boolean expression composed of the check(s) to be evaluated combined with `AND`, `OR`, and `NOT` operators and grouped using parenthesis.  The checks are uniquely identified within the expression by a string - typically a human readable phrase that describes the intent of the check (_"principal is admin at company OR principal is super user with writ permissions"_).  These strings are mapped to the explicit `Check` classes at runtime by registering them with Elide.  When no registration is made, the checks can be identified by their fully qualified class names.  The complete expression grammar can be found [here][source-grammar].
+The permission annotations wrap a boolean expression composed of the check(s) to be evaluated combined with `AND`, `OR`, and `NOT` operators and grouped using parenthesis.  The checks are uniquely identified within the expression by a string - typically a human readable phrase that describes the intent of the check (_"principal is admin at company OR principal is super user with write permissions"_).  These strings are mapped to the explicit `Check` classes at runtime by registering them with Elide.  When no registration is made, the checks can be identified by their fully qualified class names.  The complete expression grammar can be found [here][source-grammar].
 
 To better understand how permissions work consider the following sample code. (Only the relevant portions are included.)
 
