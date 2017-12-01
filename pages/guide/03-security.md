@@ -15,7 +15,7 @@ Authorization - the act of verifying data and operation access for an _already a
 ## Security Evaluation
 Security is applied hierarchically with three goals:
 
-1. **Granting or denying access.**  When a model or field is accessed, a set of checks are evaluated to determine if the access will be denied (i.e. 403 status code) or permitted.  If a user has explicitly requested access to part of the data model they should not see, the request will be rejected.
+1. **Granting or denying access.**  When a model or field is accessed, a set of checks are evaluated to determine if the access will be denied (i.e. 403 HTTP status code (JSON-API) or GraphQL error object) or permitted.  If a user has explicitly requested access to part of the data model they should not see, the request will be rejected.
 1. **Filtering Collections.** If a model has read permissions defined, these checks are evaluated against each model that is a member of the collection.  Only the models the user has access to (by virtue of being of being able to read at least one of the model's fields) are returned in the response.
 1. **Filtering a model.**  If a user has read access to a model, but only for a subset of a model’s fields, the disallowed fields are excluded from the output (rather than denying the request). However, when the user explicitly requests a field-set that contains a restricted field, the request is rejected rather than filtered.
 
