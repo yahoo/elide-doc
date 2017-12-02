@@ -185,7 +185,7 @@ layout: default
       </div>
       <div class="col-sm">
         <h4>Open Source</h4>
-        <p>Elide is 100% open source and available on <a href="https://github.com/yahoo/elide-doc">Github</a>. Released under the commercial-friendly <a href="/pages/license.html">Apache License, Version 2.0</a>.</p>
+        <p>Elide is 100% open source and available on <a href="https://github.com/yahoo/elide">Github</a>. Released under the commercial-friendly <a href="/pages/license.html">Apache License, Version 2.0</a>.</p>
       </div>
     </div>
   </div>
@@ -214,7 +214,7 @@ layout: default
         <a href="https://gitter.im/yahoo/elide">Gitter Chat</a>
       </div>
       <div class="col-sm">
-        <a href="https://github.com/yahoo/elide-doc">
+        <a href="https://github.com/yahoo/elide">
           <button type="button" class="btn btn-secondary github">
             <img src="assets/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
             <span>Github</span>
