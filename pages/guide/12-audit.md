@@ -3,11 +3,12 @@ layout: guide
 group: guide
 title: Audit
 ---
-Audit assigns semantic meaning to CRUD operations for the purposes of logging and audit.  For example, we may want to log when users change their password or when an account is locked.  Both actions are PATCH operations on a user entity that update different fields. Audit can assign these actions to parameterized, human readable logging statements that can be logged to a file, written to a database, or even displayed to users.
+Audit assigns semantic meaning to CRUD operations for the purposes of logging and audit.  For example, we may want to log when users change their password or when an account is locked.  Both actions are mutations on a user entity that update different fields. Audit can assign these actions to parameterized, human readable logging statements that can be logged to a file, written to a database, etc.
 
 ## Core Concepts
 
-All models in Elide are accessed through JPA annotated relationships.  For example, if a request URL has the path '/company/53/user', the _user_ model is accessed through its relationship with a specific company.  The sequence of prior models traversed to access a particular model is called that model's **lineage**.  A model and every prior model in its lineage are fully accessible to parameterize audit logging in Elide.
+A model's **lineage** is the path taken through the entity relationship graph to reach it.
+A model and every prior model in its lineage are fully accessible to parameterize audit logging in Elide.
 
 ## Annotations
 Elide audits operations on classes and class fields marked with the `Audit` annotation.
@@ -21,7 +22,8 @@ The `Audit` annotation takes several arguments:
 
 ## Example
 
-Let's say I have a simple _user_ entity with a _password_ field.  I want to audit whenever the password is changed. The user is accessed via the URL path '/company/53/user/21'.  I could annotate this action as follows:
+Let's say I have a simple _user_ entity with a _password_ field.  I want to audit whenever the password is changed. 
+The user is accessed via the URL path '/company/53/user/21'.  I could annotate this action as follows:
 
 ```java
 @Entity
