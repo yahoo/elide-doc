@@ -198,14 +198,11 @@ reflect our preferences from the `Include` annotations.
 ## Writing Data
 
 So far we have defined our views on the database and exposed those views over HTTP. This is great progress, but so far
-we have only read data from the database. Before we can add new data we need to make one small tweak. Our beans need the
-`@SharePermission` annotation. At the time of this writing this is required because by creating a relationship we are
-modifying a bean indirectly, which must be explicitly allowed.
+we have only read data from the database.
 
 ### Inserting Data
 
-With SharePermission applied to our beans we can now insert new records. Fortunately for us adding data is just as easy
-as reading data. For now let’s use cURL to put data in the database.
+Fortunately for us adding data is just as easy as reading data. For now let’s use cURL to put data in the database.
 
 ```curl
 curl -X POST http://localhost:8080/api/v1/group/com.example.repository/products \
