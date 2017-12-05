@@ -1,0 +1,23 @@
+files:
+  - Main.java
+  - Settings.java
+
+Main.java: |+2
+  ```java
+  public class Main {
+      public static void main(String[] args) throws Exception {
+          ElideStandalone app = new ElideStandalone(new Settings());
+          app.start();
+      }
+  }
+  ```
+
+Settings.java: |+2
+  ```java
+  public class Settings implements ElideStandaloneSettings {
+      @Override
+      public String getModelPackageName() {
+          return ArtifactGroup.class.getPackage().getName();
+      }
+  }
+  ```

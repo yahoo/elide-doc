@@ -88,6 +88,17 @@ $elbow-border: $gray-600 2px dashed;
   }
 }
 
+.docs {
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  ol ol {
+    list-style: lower-latin;
+  }
+}
+
 .footer .links a {
   color: $white;
   display: block;

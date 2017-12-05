@@ -3,14 +3,14 @@
 <ul class="nav nav-tabs" role="tablist">
   {% assign class = "active" %}
   {% for file in files %}
-    <li class="nav-item"><a class="nav-link {{class}}" href="#file-{{ forloop.index | plus: include.offset }}" data-toggle="tab">{{file}}</a></li>
+    <li class="nav-item"><a class="nav-link {{class}}" href="#{{include.example}}-file-{{forloop.index}}" data-toggle="tab">{{file}}</a></li>
     {% assign class = "" %}
   {% endfor %}
 </ul>
 <div class="tab-content">
   {% assign class = "tab-pane in active" %}
   {% for file in files %}
-    <div class="{{class}}" id="file-{{ forloop.index | plus: include.offset }}">
+    <div class="{{class}}" id="{{include.example}}-file-{{forloop.index}}">
       {{ example[file] | markdownify }}
     </div>
     {% assign class = "tab-pane" %}
