@@ -3,63 +3,275 @@ layout: guide
 group: guide
 title: Getting Started
 ---
-### Prerequisites
+## So You Want An API?
+{:.no-toc}
 
-* Java 8
+The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of
+the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, all of the code is
+[available here][elide-demo]–if you want to see a more fully fleshed out example of the standalone library checkout this
+[Kotlyn blog example][kotlyn-blog].
 
-### Overview
+1. Contents
+{:toc}
 
-The Elide library is integrated directly into your serving layer. It is independent of any additional custom logic and can be used alongside custom application code. It consumes and produces valid [JSON API](http://jsonapi.org) documents as its interchange format between clients to make it easy to adapt and create clients.
+## Create A Bean
 
-### Technical Overview
+JPA beans are some of the most important code in any Elide project. Your beans are the view of your data model that you
+wish to expose. In this example we will be modeling a software artifact repository since most developers have a
+high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like. If you are interested,
+[the code][elide-demo] is tagged for each step so you can follow along.
 
-Elide is middleware for your web service layer. It typically sits between your datastore (and any caching/scaling technologies you may have there) and your server technology (i.e. Jetty, Tomcat, etc.).
-
-The elide-core component is the basis of Elide's functionality. It interacts with a specified data store to lookup and store data effectively. Moreover, JPA-annotated Java beans are consumed by elide-core and then properly validated hierarchically per request to ensure security.
-
-### Code
-The first step is to create a JPA data model and mark which beans to expose via Elide.  The following directive exposes **everything** in a package:
-
-```java
-@Include(rootLevel=true)
-package example;
-```
-
-The second step is to create a `DataStore`.   It is an interface that binds to a JPA provider.  Elide ships with a default implementation for Hibernate.  The default `HibernateStore` will discover all of the JPA beans in your deployment and expose those that have been annotated to do so.
+The first bean we’ll need is the `ArtifactGroup` bean, for brevity we will omit package names and import statements. This
+will represent the `<groupId>` in Maven’s dependency coordinates.
 
 ```java
-/* Takes a hibernate session factory */
-DataStore db = new HibernateStore(sessionFactory);
+@Include(rootLevel = true)
+@Entity
+public class ArtifactGroup {
+    @Id
+    public String name = "";
+}
 ```
 
-The third step is to create an `AuditLogger`.   It is an interface that does something with Audit messages.  Elide ships with a default that dumps them to slf4j:
+## Spin up the API
+
+So now we have a bean, but without an API it is not do very useful. Before we add the API component of the we need to
+create the schema in the database that our beans will use. Download and run the [demo setup script][demo-schema]; this
+demo uses MySQL, feel free to modify the setup script if you are using a different database provider.
+
+You may notice that there are more tables that just `ArtifactGroup`, and that the `ArtifactGroup` table has more fields
+that our bean. Not only will our bean work just fine, we expect that beans will normally expose only a subset of the
+fields present in the database. Elide is an ideal tool for building micro-services, each service in your system can
+expose only the slice of the database that it requires.
+
+### Classes
+
+Bringing life to our API is trivially easy. We need two new classes: Main and Settings.
+
+{% include code_example example="01-running" %}
+
+### Supporting Files
+
+Elide standalone also requires a hibernate config file. By default the standalone API expects to find your  [hibernate
+config][hibernate-conf] at `./settings/hibernate.cfg.xml` (with respect to CWD when you launch the app). If you want to
+see the logs from your shiny new API you will also want a [logback config][logback-conf]. Your logback config should go
+in `src/main/resources` so logback can find it.
+
+### Running
+
+With these new classes you have two options for running your project, you can either run the `Main` class using your
+favorite IDE, or we can add the following snippet to our gradle build script and run our project with ./gradlew run
+
+```gradle
+plugins {
+  ...
+  id 'application'
+}
+
+mainClassName = 'com.example.repository.Main' // the actual path to your Main class should go here
+```
+
+With the `Main` and `Settings` classes we can now run our API. If you navigate to
+`http://localhost:8080/api/v1/artifactGroup` in your browser you can see some of the sample data that the bootstrap
+script added for us. Exciting!
+
+```json
+{
+  "data": [{
+    "type": "artifactGroup",
+    "id": "com.example.repository"
+  }, {
+    "type": "artifactGroup",
+    "id": "com.yahoo.elide"
+  }]
+}
+```
+
+## Adding More Data
+
+Now that we have an API that returns data, let’s add some more interesting behavior. Let’s update `ArtifactGroup`, and
+add the `ArtifactProduct` and `ArtifactVersion` classes–which will be the `<artifactId>` and `<version>` tags
+respectively.
+
+{% include code_example example="01-more-beans" %}
+
+We add the missing fields to `ArtifactGroup` since we anticipate user will want to add some informative metadata to help
+users find the products and artifacts they are interested in. If we restart the API and request `/artifactGroup` we’ll
+see the other metadata we just added.
+
+```json
+{
+  "data": [{
+    "type": "artifactGroup",
+    "id": "com.example.repository",
+    "attributes": {
+      "commonName": "Example Repository",
+      "description": "The code for this project"
+    },
+    "relationships": {
+      "products": {
+        "data": []
+      }
+    }
+  }, {
+    "type": "artifactGroup",
+    "id": "com.yahoo.elide",
+    "attributes": {
+      "commonName": "Elide",
+      "description": "The magical library powering this project"
+    },
+    "relationships": {
+      "products": {
+        "data": [{
+          "type": "artifactProduct",
+          "id": "elide-core"
+        }, {
+          "type": "artifactProduct",
+          "id": "elide-standalone"
+        }, {
+          "type": "artifactProduct",
+          "id": "elide-datastore-hibernate5"
+        }]
+      }
+    }
+  }]
+}
+```
+
+So now we have an API that can display information for a full `<group>:<product>:<version>` set. We can fetch data from
+our API in the following ways:
+
+```
+List groups:                 /artifactGroup/
+Show a group:                /artifactGroup/<group id>
+List a group's products:     /artifactGroup/<group id>/products/
+Show a product:              /artifactGroup/<group id>/products/<product id>
+List a product's versions:   /artifactGroup/<group id>/products/<product id>/versions/
+Show a version:              /artifactGroup/<group id>/products/<product id>/versions/<version id>
+```
+
+We can now fetch almost all of the data we would wish, but let’s clean it up a bit. Right now all of our data types are
+prefixed with Artifact. This might make sense in Java so that we don’t have naming collisions with classes from other
+libraries, however the consumers of our API do not care about naming collisions. We can control how Elide exposes our
+classes by setting the type on our `@Include` annotations.
 
 ```java
-AuditLogger logger = new Slf4jLogger();
+@Include(type = "group")
+@Entity
+public class ArtifactGroup { ... }
+
+@Include(type = "product")
+@Entity
+public class ArtifactProduct { ... }
+
+@Include(type = "version")
+@Entity
+public class ArtifactVersion{ ... }
 ```
 
-Create an `Elide class`.  It is the entry point for handling requests from your web server/container. As of Elide version 2, this is achieved via the `Elide.Builder`, which requires a datastore. You can then chain additional methods to include configuration for more features such as the `AuditLogger`.
+Now, instead of making a call to `http://localhost:8080/api/v1/artifactGroup` to fetch our data, we make a request to
+`http://localhost:8080/api/v1/group`. Our API returns the same data as before, mostly. The types of our objects now
+reflect our preferences from the `Include` annotations.
+
+```json
+{
+    "data": [{
+    "type": "group",
+    "id": "com.example.repository",
+    ...
+  }, {
+    "type": "group",
+    "id": "com.yahoo.elide",
+    ...
+    "relationships": {
+      "products": {
+        "data": [{
+          "type": "product",
+          "id": "elide-core"
+        }, ...]
+      }
+    }
+  }]
+}
+```
+
+## Writing Data
+
+So far we have defined our views on the database and exposed those views over HTTP. This is great progress, but so far
+we have only read data from the database. Before we can add new data we need to make one small tweak. Our beans need the
+`@SharePermission` annotation. At the time of this writing this is required because by creating a relationship we are
+modifying a bean indirectly, which must be explicitly allowed.
+
+### Inserting Data
+
+With SharePermission applied to our beans we can now insert new records. Fortunately for us adding data is just as easy
+as reading data. For now let’s use cURL to put data in the database.
+
+```curl
+curl -X POST http://localhost:8080/api/v1/group/com.example.repository/products \
+  -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
+  -d '{"data": {"type": "product", "id": "elide-demo"}}'
+```
+
+When you run that cURL call you should see a bunch of json returned, that is our newly inserted object! If we query
+`http://localhost:8080/api/v1/group/com.example.repository/products/`
+
+```json
+{
+  "data": [{
+    "type": "product",
+    "id": "elide-demo",
+    "attributes": {
+      "commonName": "",
+      "description": ""
+    },
+    "relationships": {
+      "group": {
+        "data": {
+          "type": "group",
+          "id": "com.example.repository"
+        }
+      },
+      "versions": {
+        "data": []
+      }
+    }
+  }]
+}
+```
+
+## Modifying Data
+
+Notice that, when we created it, we did not set any of the attributes of our new product record. Unfortunately for our
+users this leaves the meaning of our elide-demo product ambiguous. What does it do, why should they use it? Updating our
+data to help our users is just as easy as it is to add new data. Let’s update our bean with the following cURL call.
+
+```curl
+curl -X PATCH http://localhost:8080/api/v1/group/com.example.repository/products/elide-demo \
+  -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
+  -d '{
+    "data": {
+      "type": "product",
+      "id": "elide-demo",
+      "attributes": {
+        "commonName": "demo application",
+        "description": "An example implementation of an Elide web service that showcases many Elide features"
+      }
+    }
+  }'
+```
+
+It’s just that easy to create and update data using Elide.
+
+
 
 ```java
-final Elide elide = new Elide(new ElideSettingsBuilder(dataStore)
-                                .withAuditLogger(logger)
-                                .build());
 ```
 
-`Elide` has methods for `get`, `patch`, `post`, and `delete`.  These methods generally take:
 
-1. An opaque user `Object`
-1. An HTTP path as a `String`
-1. A JSON API document as a `String` representing the request entity body (if one is required).
 
-It returns a `ElideResponse` which contains the HTTP response status code and a `String` which contains the response entity body.
-
-```java
-ElideResponse response = elide.post(path, requestBody, user)
-```
-
-Wire up the four HTTP verbs to your container and you will have a functioning JSON API server.
-
-### More Examples
-
-If you're looking for more complete examples, please [see the elide repository](https://github.com/yahoo/elide/tree/master/elide-example).
+[elide-demo]: https://github.com/clayreimann/elide-demo
+[kotlyn-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
+[demo-schema]: /pages/resource/demo.sql
+[hibernate-conf]: /pages/resources/hibernate.cfg.xml
+[logback-conf]: /pages/resources/logback.xml

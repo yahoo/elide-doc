@@ -1,0 +1,11 @@
+@startuml
+
+class InputObject 
+class Attribute
+class Relationship
+
+
+InputObject "1" *-up-> "many" Attribute
+InputObject "1" *-up-> "many" Relationship
+
+@enduml

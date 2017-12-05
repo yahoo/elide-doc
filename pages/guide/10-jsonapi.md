@@ -4,10 +4,22 @@ group: guide
 title: Json API
 ---
 
-In some scenarios, JSON-API does not define how an implementation should behave.  Elide also may not implement all optional features of the
-JSON-API specification.  The following sections clarify Elide's behavior with respect to undefined or optional aspects of JSON-API.
+--------------------------
+
+[JSON-API](jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
+Similar to GraphQL: 
+*  It allows the client to control what is returned in the response payload.  
+*  It provided an API extension (the [_patch extension_](#bulk-writes-and-complex-mutations) that allowed multiple mutations to the graph to occur in a single request.
+
+Unlike GraphQL, the JSON-API specification spells out exactly how to perform common CRUD operations including complex graph mutations.  
+JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting 
+an [Open API Initiative](www.openapis.org) document (formerly known as [Swagger](swagger.io)).
+
+The [json-api specification](http://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
+commonly used JSON-API features as well as Elide additions for filtering, pagination, sorting, and swagger.
 
 ## Hierarchical URLs
+--------------------------
 
 Elide generally follows the [JSON-API recommendations](http://jsonapi.org/recommendations/) for URL design.
 
@@ -16,14 +28,12 @@ There are a few caveats given that Elide allows developers control over how enti
 1. Some entities may only be reached through a relationship to another entity.  Not every entity is _rootable_.
 1. The root path segment of URLs are by default the name of the class (lowercase).  This can be overridden.
 1. Elide allows relationships to be nested arbitrarily deep in URLs.
-1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an article with a singular author which has a singular address.   While unambiguous, the following is *not* allowed: `/articles/1/author/address`.  Instead, the author must be fully qualified by ID: `/articles/1/author/34/address`
-
-## Filters
-
-Filters are covered in this [section]({{site.baseurl}}/pages/guide/08-filters.html).
-
+1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an 
+article and a singular author which has a singular address.   While unambiguous, the following is *not* allowed: `/articles/1/author/address`.  
+Instead, the author must be fully qualified by ID: `/articles/1/author/34/address`
 
 ## Model Identifiers
+--------------------------
 
 Elide supports three mechanisms by which a newly created entity is assigned an ID:
 
@@ -33,17 +43,211 @@ Elide supports three mechanisms by which a newly created entity is assigned an I
 must provide an ID to identify objects which are both created and added to collections in other objects.  However, in some instances
 the server should have ultimate control over the ID that is assigned.  
 
-### Data Store Generated IDs
-
 Elide looks for the JPA `GeneratedValue` annotation to disambiguate whether or not
 the data store generates an ID for a given data model.   If the client also generated 
 an ID during the object creation request, the data store ID overrides the client value.
 
 ### Matching newly created objects to IDs
 
-When using the patch extension, Elide always returns object entity bodies (containing newly assigned IDs) in 
-the order in which they were created.  The client can use this order to map the object created to its ID.
+When using the patch extension, Elide returns object entity bodies (containing newly assigned IDs) in 
+the order in which they were created.  The client can use this order to map the object created to its 
+server assigned ID.
 
-### ID types
+## Sparse Fields
+--------------------------
+JSON-API allows the client to limit the attributes and relationships that should be included in the response payload
+for any given entity.  The _fields_ query parameter specifies the type (data model) and list of fields that should be included.
 
-ID fields must be `Serializable` objects.   Elide does not require IDs to be UUIDs (a divergence from JSON-API).
+For example, to fetch the book collection but only include the book titles:
+
+{% include code_example example='jsonapi-sparse' offset=2 %}
+
+More information about sparse fields can be found [here](http://jsonapi.org/format/#fetching-sparse-fieldsets).
+
+## Compound Documents 
+--------------------------
+JSON-API allows the client to fetch a primary collection of elements but also include their relationships or their 
+relationship's relationships (arbitrarily nested) through compound documents.  The _include_ query parameter specifies
+what relationships should be expanded in the document.
+
+The following example fetches the book collection but also includes all of the book authors.  Sparse fields are used
+to limit the book and author fields in the response:
+
+{% include code_example example='jsonapi-include' offset=4 %}
+
+More information about compound documents can be found [here](http://jsonapi.org/format/#document-compound-documents).
+
+## Filtering
+--------------------------
+
+JSON-API 1.0 is agnostic to filtering strategies.  The only recommendation is that servers and clients _should_
+prefix filtering query parameters with the word 'filter'.
+
+Elide supports multiple filter dialects and the ability to add new ones to meet the needs of developers or to evolve
+the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL](https://github.com/jirutka/rsql-parser)
+
+### RSQL
+
+[RSQL](https://github.com/jirutka/rsql-parser) is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
+of Boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
+
+Because RSQL is a superset of FIQL, FIQL queries should be properly parsed.
+RSQL primarily adds more friendly lexer tokens to FIQL for conjunction and disjunction: 'and' instead of ';' and 'or' instead of ','.
+RSQL also adds a richer set of operators.
+
+#### Filter Syntax
+
+Filter query parameters look like `filter[TYPE]` where 'TYPE' is the name of the data model/entity.  
+Any number of filter parameters can be specified provided the 'TYPE' is different for each parameter.
+
+The value of any query parameter is a RSQL expression composed of predicates.  Each predicate contains an attribute of the data model,
+an operator, and zero or more comparison values.
+
+#### Filter Examples
+
+Return all the books written by author '1' with the genre exactly equal to 'Science Fiction':
+
+`/author/1/book?filter[book]=genre=='Science Fiction'`
+
+Return all the books written by author '1' with the genre exactly equal to 'Science Fiction' _and_ the title starts with 'The':
+
+`/author/1/book?filter[book]=genre=='Science Fiction';title==The*`
+
+Return all the books written by author '1' with the publication date greater than a certain time _or_ the genre _not_ 'Literary Fiction'
+or 'Science Fiction':
+
+`/author/1/book?filter[book]=publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
+
+Return all the books whose title contains 'Foo'.  Include all the authors of those books whose name does not equal 'Orson Scott Card':
+
+`/book?include=authors&filter[book]=title==*Foo*&filter[author]=name!='Orson Scott Card'`
+
+#### Operators
+
+The following RSQL operators are supported:
+
+* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list.
+* `=out=` : Evaluates to true if the attribute does not match any of the values in the list.
+* `==ABC*` : Similar to SQL `like 'ABC%`.
+* `==*ABC` : Similar to SQL `like '%ABC`.
+* `==*ABC*` : Similar to SQL `like '%ABC%`.
+* `=isnull=true` : Evaluates to true if the attribute is null
+* `=isnull=false` : Evaluates to true if the attribute is not null
+* `=lt=` : Evaluates to true if the attribute is less than the value.
+* `=gt=` : Evaluates to true if the attribute is greater than the value.
+* `=le=` : Evaluates to true if the attribute is less than or equal to the value.
+* `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+
+#### Values & Type Coercion
+Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
+data type for the attribute filter.
+
+## Pagination
+--------------------------
+
+Elide supports:
+1. Paginating a collection by row offset and limit.
+2. Paginating a collection by page size and number of pages.
+3. Returning the total size of a collection visible to the given user.
+4. Returning a _meta_ block in the JSON-API response body containing metadata about the collection.
+5. A simple way to control: 
+  * the availability of metadata 
+  * the number of records that can be paginated
+
+### Syntax
+Elide allows pagination of the primary collection being returned in the response via the _page_ query parameter.
+
+The _rough_ BNF syntax for the _page_ query parameter is:
+```
+<QUERY> ::= 
+     "page" "[" "size" "]" "=" <INTEGER>
+   | "page" "[" "number" "]" "=" <INTEGER>
+   | "page" "[" "limit" "]" "=" <INTEGER>
+   | "page" "[" "offset" "]" "=" <INTEGER>
+   | "page" "[" "totals" "]"
+```
+
+Legal combinations of the _page_ query params include:
+1. size
+1. number
+1. size & number
+1. size & number & totals
+1. offset
+1. limit
+1. offset & limit
+1. offset & limit & totals
+
+### Meta Block
+Whenever a _page_ query parameter is specified, Elide will return a _meta_ block in the
+JSON-API response that contains:
+1. The page _number_
+2. The page size or _limit_
+3. The total number of pages (_totalPages_) in the collection
+4. The total number of records (_totalRecords_) in the collection.
+
+The values for _totalPages_ and _totalRecords_ are only returned if the _page[totals]_ 
+parameter was specified in the query.
+
+### Example
+
+Paginate the book collection starting at the 4th record.  Include no more than 2 books per page.
+Include the total size of the collection in the _meta block_:
+
+{% include code_example example='jsonapi-paginate' offset=6 %}
+
+## Sorting
+--------------------------
+
+Elide supports:
+1.  Sorting a collection by any attribute of the collection's type.
+2.  Sorting a collection by multiple attributes at the same time in either ascending or descending order.
+3.  Sorting a collection by any attribute of a to-one relationship of the collection's type.  Multiple relationships can be traversed provided the path 
+from the collection to the sorting attribute is entirely through to-one relationships.
+
+### Syntax
+Elide allows sorting of the primary collection being returned in the response via the _sort_ query parameter.
+
+The _rough_ BNF syntax for the _sort_ query parameter is:
+```
+<QUERY> ::= "sort" "=" <LIST_OF_SORT_SPECS>
+
+<LIST_OF_SORT_SPECS> = <SORT_SPEC> | <SORT_SPEC> "," <LIST_OF_SORT_SPECS>
+
+<SORT_SPEC> ::= "+|-"? <PATH_TO_ATTRIBUTE>
+
+<PATH_TO_ATTRIBUTE> ::= <RELATIONSHIP> <PATH_TO_ATTRIBUTE> | <ATTRIBUTE>
+
+<RELATIONSHIP> ::= <TERM> "."
+
+<ATTRIBUTE> ::= <TERM>
+```
+
+### Sort By ID
+
+The keyword _id_ can be used to sort by whatever field a given entity uses as its identifier.
+
+### Example
+
+Sort the collection of author 1's books in descending order by the book's publisher's name:
+
+{% include code_example example='jsonapi-sort' offset=8 %}
+
+
+## Bulk Writes And Complex Mutations
+--------------------------
+
+JSON-API supported a now-deprecated mechanism for [extensions](http://jsonapi.org/extensions/).  
+The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/jsonpatch/index.md) was a 
+JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
+
+Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
+For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
+
+{% include code_example example='patch-extension' offset=10 %}
+
+## Swagger
+--------------------------
+
+Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
+initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/13-swagger.html).
+

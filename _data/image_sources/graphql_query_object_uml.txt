@@ -1,0 +1,19 @@
+@startuml
+
+class Node 
+class Relationship {
+  relationshipName(Operation, Ids, Data, Sort, Filter, First, Offset)
+}
+class Edge
+class Attribute
+class Root 
+
+
+Node "1" *-down-> "many" Attribute
+Node "1" *-up-> "many" Relationship
+Root "1" *-right-> "many" Relationship
+
+Relationship "1" *-up-> "many" Edge
+Edge "1" *-up-> "many" Node
+
+@enduml

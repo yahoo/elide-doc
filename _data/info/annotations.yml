@@ -1,0 +1,244 @@
+- name: Audit
+  description: Enables audit logging for a particular package, class, method, or field whenever a specified action takes place via Elide. It takes advantage of Elide's <a href="#audit-logging">Audit logging capabilities</a>.
+  applicationLevel:
+    - Package
+    - Class
+    - Method
+    - Field
+  parameters:
+    - name: action
+      required: False
+      type: Action[]
+      default: "{Action.CREATE, Action.UPDATE, Action.DELETE}"
+      description: The set of performed action(s) upon which audit should be triggered.
+    - name: operation
+      required: False
+      type: Integer
+      default: -1
+      description: Operation code to pass to audit logger for fired audit event.
+    - name: logStatement
+      required: False
+      type: String
+      default: "\"\""
+      description: Logging string template passed to audit logger for fired audit event.
+    - name: logExpressions
+      required: False
+      type: String[]
+      default: "\"\""
+      description: Unified expression language expressions that will be evaluated and substituted into the logging template.
+
+- name: Audits
+  description: Enables a set of audit logging annotations to be applied to a particular package, class, method, or field whenever a specified action takes place through Elide.
+  applicationLevel:
+    - Package
+    - Class
+    - Method
+    - Field
+  parameters:
+    - name: value
+      required: True
+      default: <em>None</em>
+      type: Audit[]
+      description: A set of @Audit annotations.
+
+- name: ComputedAttribute
+  description: Marks a method or field as a computed attribute that should be exposed via Elide regardless of whether or not it is marked as Transient.
+  applicationLevel:
+      - Field
+      - Method
+  parameters: []
+
+- name: ComputedRelationship
+  description: Marks a method or field as a computed relationship that should be exposed via Elide regardless of whether or not it is marked as Transient.
+  applicationLevel:
+      - Field
+      - Method
+  parameters: []
+
+- name: CreatePermission
+  description: Define security rules for creating an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+  applicationLevel:
+      - Field
+      - Method
+      - Class
+      - Package
+  parameters:
+      - name: expression
+        required: True
+        type: String
+        default: <em>None</em>
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+
+- name: ReadPermission
+  description: Define security rules for reading an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+  applicationLevel:
+      - Field
+      - Method
+      - Class
+      - Package
+  parameters:
+      - name: expression
+        required: True
+        type: String
+        default: <em>None</em>
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+
+- name: UpdatePermission
+  description: Define security rules for updating an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+  applicationLevel:
+      - Field
+      - Method
+      - Class
+      - Package
+  parameters:
+      - name: expression
+        required: True
+        type: String
+        default: <em>None</em>
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+
+- name: DeletePermission
+  description: Define security rules for deleting an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+  applicationLevel:
+      - Field
+      - Method
+      - Class
+      - Package
+  parameters:
+      - name: expression
+        required: True
+        type: String
+        default: <em>None</em>
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+
+- name: SharePermission
+  description: Enable sharing permissions on an object through Elide. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+  applicationLevel:
+      - Method
+      - Class
+      - Package
+  parameters:
+      - name: shareable
+        required: False
+        type: Boolean
+        default: True
+        description: Enable or disable shareability for an object. Shareable permissions are evaluated identically to an entity's read permissions. See the <a href="/pages/guide/03-security.html">security section</a> for more information.
+
+- name: Exclude
+  description: Marks that a given field or entity should not be exposed through Elide.
+  applicationLevel:
+      - Field
+      - Method
+      - Class
+      - Package
+  parameters: []
+
+- name: Include
+  description: Marks that a given entity should be exposed through Elide.
+  applicationLevel:
+      - Class
+      - Package
+  parameters:
+      - name: rootLevel
+        type: Boolean
+        required: False
+        default: False
+        description: Whether or not the entity is accessible as a "rootable" entity. Namely, if this collection of objects can be queried directly or whether or not it must be queried through a relationship.
+      - name: type
+        type: String
+        default: <em>Camel-cased name of the entity class</em>
+        required: False
+        description: The API-exposed name for a particular entity type.
+
+- name: OnCreatePostCommit
+  description: A lifecycle hook that executes on a create action after the transaction has committed successfully.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnCreatePreCommit
+  description: A lifecycle hook that executes on a create action after security has run, but before the transaction has committed.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnCreatePreSecurity
+  description: A lifecycle hook that executes on a create action before the security checks have run.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnReadPostCommit
+  description: A lifecycle hook that executes on a read action after the transaction has committed successfully.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnReadPreCommit
+  description: A lifecycle hook that executes on a read action after security has run, but before the transaction has committed.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnReadPreSecurity
+  description: A lifecycle hook that executes on a read action before the security checks have run.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnUpdatePostCommit
+  description: A lifecycle hook that executes on a update action after the transaction has committed successfully.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnUpdatePreCommit
+  description: A lifecycle hook that executes on a update action after security has run, but before the transaction has committed.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnUpdatePreSecurity
+  description: A lifecycle hook that executes on a update action before the security checks have run.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnDeletePostCommit
+  description: A lifecycle hook that executes on a delete action after the transaction has committed successfully.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnDeletePreCommit
+  description: A lifecycle hook that executes on a delete action after security has run, but before the transaction has committed.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: OnDeletePreSecurity
+  description: A lifecycle hook that executes on a delete action before the security checks have run.
+  applicationLevel:
+      - Method
+  parameters: []
+
+- name: Paginate
+  description: Apply specific pagination rules to a specific entity.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: countable
+        default: True
+        required: False
+        type: Boolean
+        description: Whether or not the API will respond to request for page totals of this entity type.
+      - name: defaultLimit
+        default: 500
+        required: False
+        type: Integer
+        description: If the client does not specify a page size, this is the number of elements that will be returned.
+      - name: maxLimit
+        default: 10000
+        required: False
+        type: Integer
+        description: The maximum number of records a user can request at a given time for a particular entity.

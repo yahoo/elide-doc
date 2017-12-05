@@ -1,77 +1,57 @@
 {% include setup %}
-<!DOCTYPE html>
-<html lang="en-us">
+<!doctype html>
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>{{page.title}} | Elide</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- bootstrap -->
-  <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
-  <!-- font awesome -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
-  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/stylesheet.css" media="screen">
-  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/syntax.css" media="screen">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/main.css">
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/syntax.css">
 
   <!-- Treant -->
-  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant/raphael.js"></script>
-  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant/Treant.js"></script>
-  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/treant/Treant.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/treant-js/Treant.css">
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/raphael/raphael.min.js"></script>
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant-js/Treant.js"></script>
 </head>
 
 <body>
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <a href="https://github.com/yahoo/elide">
-        <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 2000" class="hidden-xs" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" />
-    </a>
+  {% if page.group != "guide" %}
+    {% assign nav-style = 'text-light background-dark' %}
+  {% else %}
+    {% assign nav-style = 'text-light background-dark navbar-slim' %}
+  {% endif %}
+  <div class="{{nav-style}}">
     <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-nav-mobile" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a href="/">
-          <img src="/assets/images/elide.svg" alt="Elide" class="navbar-brand" width="100px" />
+      <nav class="navbar navbar-expand-md navbar-dark p-1">
+        <a class="navbar-brand" href="{{ BASE_PATH }}">
+          <img src="{{ BASE_PATH }}/{{ ASSET_PATH }}/images/elide-white-logo.png" class="img-fluid text-light" alt="Elide Logo" />
         </a>
-      </div>
-
-      <div id="top-nav-desktop" class="collapse navbar-collapse bs-navbar-collapse" role="navigation"
-           style="padding-right: 76px">
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            <a href="{{ BASE_PATH }}/pages/guide/01-start.html" role="button" aria-haspopup="true" aria-expanded="false">Documentation</span></a>
-          </li>
-        </ul>
-      </div>
-      <div id="top-nav-mobile" class="collapse bs-navbar-collapse hidden-sm hidden-md hidden-lg" role="navigation">
-        <ul class="nav navbar-nav">
-          {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} {% if (pages.type == page.type) and (pages.group == "guide") %}
-          <li>
-            <a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a>
-          </li>
-          {% endif %} {% endfor %}
-        </ul>
-      </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navLinks" aria-controls="navLinks"
+          aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navLinks">
+          <div class="navbar-nav mx-auto">
+            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/01-start.html">Documentation</a>
+          </div>
+        </div>
+        <a class="navbar-brand mr-0 d-none d-md-block" href="https://github.com/yahoo/elide">
+          <button type="button" class="btn btn-secondary github">
+            <img src="{{ BASE_PATH }}/{{ ASSET_PATH }}/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
+            <span>Github</span>
+          </button>
+        </a>
+      </nav>
     </div>
-  </nav>
-  {{ content }}
-  <script>
-  $(function() {
-    return $("h2, h3, h4, h5, h6").each(function(i, el) {
-      var $el, icon, id;
-      $el = $(el);
-      id = $el.attr('id');
-      icon = '<i class="glyphicon glyphicon-link"></i>';
-      if (id) {
-        return $el.append($("<a />").addClass("header-link").attr("href", "#" + id).html(icon));
-      }
-    });
-  });
-  </script>
+  </div>
+
+  {{content}}
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>
