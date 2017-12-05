@@ -1,9 +1,7 @@
-{% if site.url == "http://elide.io" %}
+{% if site.github %}
   {% assign BASE_PATH = site.BASE_PATH %}
-{% elsif site.url == "http://localhost:4000" %}
-  {% assign BASE_PATH = site.url %}
 {% else %}
-  {% assign BASE_PATH = site.url | append: '/elide-doc' %}
+  {% assign BASE_PATH = 'http://localhost:4000' %}
 {% endif %}
 
 {% if site.ASSET_PATH != '' %}
