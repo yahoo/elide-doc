@@ -15,12 +15,7 @@
 </head>
 
 <body>
-  {% if page.group != "guide" %}
-    {% assign nav-style = 'text-light background-dark' %}
-  {% else %}
-    {% assign nav-style = 'text-light background-dark navbar-slim' %}
-  {% endif %}
-  <div class="{{nav-style}}">
+  <div class="text-light background-dark">
     <div class="container">
       <nav class="navbar navbar-expand-md navbar-dark p-1">
         <a class="navbar-brand" href="{{ BASE_PATH }}">
