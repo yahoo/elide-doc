@@ -1,16 +1,17 @@
+{% include setup %}
 <!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="stylesheet" type="text/css" href="/assets/styles/main.css">
-  <link rel="stylesheet" type="text/css" href="/assets/styles/syntax.css">
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/main.css">
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/syntax.css">
 
   <!-- Treant -->
-  <link rel="stylesheet" type="text/css" href="/assets/styles/treant-js/Treant.css">
-  <script src="/assets/js/raphael/raphael.min.js"></script>
-  <script src="/assets/js/treant-js/Treant.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ BASE_PATH }}/{{ ASSET_PATH }}/styles/treant-js/Treant.css">
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/raphael/raphael.min.js"></script>
+  <script src="{{ BASE_PATH }}/{{ ASSET_PATH }}/js/treant-js/Treant.js"></script>
 </head>
 
 <body>
@@ -23,7 +24,7 @@
     <div class="container">
       <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="/">
-          <img src="/assets/images/elide-white-logo.png" class="img-fluid text-light" alt="Elide Logo" />
+          <img src="{{ BASE_PATH }}/{{ ASSET_PATH }}/images/elide-white-logo.png" class="img-fluid text-light" alt="Elide Logo" />
         </a>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav mx-auto">
@@ -33,7 +34,7 @@
         </div>
         <a class="navbar-brand mr-0" href="https://github.com/yahoo/elide">
           <button type="button" class="btn btn-secondary github">
-            <img src="/assets/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
+            <img src="{{ BASE_PATH }}/{{ ASSET_PATH }}/images/GitHub-Mark-Light-32px.png" class="img-fluid" alt="Github Logo">
             <span>Github</span>
           </button>
         </a>
@@ -50,7 +51,8 @@
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
     crossorigin="anonymous"></script>
-  <script src="{{'/node_modules/bootstrap/dist/js/bootstrap.min.js' | prepend: site.baseurl}}"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+    crossorigin="anonymous"></script>
 </body>
 
 </html>
