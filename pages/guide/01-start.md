@@ -16,7 +16,7 @@ the dependencies you will need to stand up a web service. This tutorial will use
 
 ## Create A Bean
 
-JPA beans are some of the most important code in any Elide project. Your beans are the view of your database that you
+JPA beans are some of the most important code in any Elide project. Your beans are the view of your data model that you
 wish to expose. In this example we will be modeling a software artifact repository since most developers have a
 high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like. If you are interested,
 [the code][elide-demo] is tagged for each step so you can follow along.
