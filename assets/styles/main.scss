@@ -52,6 +52,11 @@ $jumbotron-bg: transparent;
   margin-right: 2rem;
 }
 
+.feature {
+  @extend .text-center;
+  @extend .text-sm-left;
+}
+
 $elbow-border: $gray-600 2px dashed;
 .elbow {
   margin: 1em 0;
@@ -60,6 +65,8 @@ $elbow-border: $gray-600 2px dashed;
     margin-left: 115px;
     margin-right: 115px;
     width: 100%;
+    @extend .d-none;
+    @extend .d-sm-block;
   }
 
   .elbow-left {
