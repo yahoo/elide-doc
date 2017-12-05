@@ -6,7 +6,7 @@ layout: default
   <div class="jumbotron">
     <div class="container text-center">
       <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in 4 simple steps</h2>
-      <a href="/pages/guide/01-start.html">
+      <a href="pages/guide/01-start.html">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
       <div class="mb-3">
@@ -25,7 +25,7 @@ layout: default
 
 <div class="usage container my-5">
   <div class="text-center display-4 mb-5">How to use it</div>
-  <div class="row align-items-center my-4">
+  <div class="feature row align-items-center my-4">
     <div class="col-sm">
       <div class="mr-3">
         <h4>1. Define a model</h4>
@@ -36,7 +36,7 @@ layout: default
       <img src="assets/images/editor/model-editor.png" class="img-fluid" alt="Editor: Model">
     </div>
   </div>
-  <div class="row align-items-center my-4">
+  <div class="feature row align-items-center my-4">
     <div class="col-sm">
       <div class="mr-3">
         <h4>2. Secure It</h4>
@@ -47,7 +47,7 @@ layout: default
       <img src="assets/images/editor/secure-editor.png" class="img-fluid" alt="Editor: Security">
     </div>
   </div>
-  <div class="row align-items-center my-4">
+  <div class="feature row align-items-center my-4">
     <div class="col-sm">
       <div class="mr-3">
         <h4>3. Expose It</h4>
@@ -58,7 +58,7 @@ layout: default
       <img src="assets/images/editor/expose-editor.png" class="img-fluid" alt="Editor: Expose">
     </div>
   </div>
-  <div class="row align-items-center my-4">
+  <div class="feature row align-items-center my-4">
     <div class="col-sm">
       <div class="mr-3">
         <h4>4. Deploy & Query</h4>
@@ -81,109 +81,121 @@ layout: default
 <div class="text-light background-dark">
   <div class="container py-5">
     <div class="text-center display-4 mb-5">Features</div>
-    <div class="row align-items-center">
-      <div class="col-sm">
+    <div class="feature row align-items-center">
+      <div class="col-sm text-center text-sm-right d-block d-sm-none text-sm-center">
+        <img src="assets/images/features/code-icon.png" class="img-fluid" alt="Features: Production Quality">
+      </div>
+      <div class="col-sm my-3 my-sm-0">
         <h4>Production Quality</h4>
         <p>Quickly build and deploy production quality web services that expose your data as a service.</p>
       </div>
-      <div class="col-sm text-right">
+      <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/code-icon.png" class="img-fluid" alt="Features: Production Quality">
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
-    <div class="row align-items-center">
+    <div class="feature row align-items-center">
       <div class="col-sm">
         <img src="assets/images/features/secure-icon.png" class="img-fluid" alt="Features: Security Comes Standard">
       </div>
-      <div class="col-sm">
+      <div class="col-sm my-3 my-sm-0">
         <h4>Security Comes Standard</h4>
         <p>Controlling access to your data is as simple as defining your rules and annotating your models.</p>
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-left"></div>
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
+    <div class="feature row align-items-center">
+      <div class="col-sm text-center text-sm-right d-block d-sm-none">
+        <img src="assets/images/features/mobile-icon.png" class="img-fluid" alt="Features: Mobile Friendly">
+      </div>
+      <div class="col-sm my-3 my-sm-0">
         <h4>Mobile Friendly</h4>
         <p>JSON-API & GraphQL lets developers fetch entire object graphs in a single round trip. Only requested elements of the data model are returned.</p>
       </div>
-      <div class="col-sm text-right">
+      <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/mobile-icon.png" class="img-fluid" alt="Features: Mobile Friendly">
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
-    <div class="row align-items-center">
+    <div class="feature row align-items-center">
       <div class="col-sm">
         <img src="assets/images/features/atom-icon.png" class="img-fluid" alt="Features: Single Atomic Request">
       </div>
-      <div class="col-sm">
+      <div class="col-sm my-3 my-sm-0">
         <h4>Single Atomic Request</h4>
         <p>Elide supports multiple data model mutations in a single request in either JSON-API or GraphQL. Create objects, add them to relationships, modify or delete together in a single atomic request.</p>
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-left"></div>
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
+    <div class="feature row align-items-center">
+      <div class="col-sm text-center text-sm-right d-block d-sm-none">
+        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
+      </div>
+      <div class="col-sm my-3 my-sm-0">
         <h4>Elide is Agnostic</h4>
         <p>Elide is agnostic to your particular persistence strategy. Use an ORM or provide your own implementation of a data store.</p>
       </div>
-      <div class="col-sm text-right">
+      <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
-    <div class="row align-items-center">
+    <div class="feature row align-items-center">
       <div class="col-sm">
         <img src="assets/images/features/globe-icon.png" class="img-fluid" alt="Features: Open API">
       </div>
-      <div class="col-sm">
+      <div class="col-sm my-3 my-sm-0">
         <h4>Open API</h4>
         <p>Explore, understand, and compose queries against your Elide API through generated <a>Swagger</a> documentation or GraphQL schema.</p>
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-left"></div>
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
-    <div class="row align-items-center">
-      <div class="col-sm">
+    <div class="feature row align-items-center">
+      <div class="col-sm text-center text-sm-right d-block d-sm-none">
+        <img src="assets/images/features/customize-icon.png" class="img-fluid" alt="Features: Customize">
+      </div>
+      <div class="col-sm my-3 my-sm-0">
         <h4>Customize</h4>
         <p>Customize the behavior of data model operations with computed attributes, data validation annotations, and request lifecycle hooks.</p>
       </div>
-      <div class="col-sm text-right">
+      <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/customize-icon.png" class="img-fluid" alt="Features: Customize">
       </div>
     </div>
-    <div class="row align-items-center elbow">
+    <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
-    <div class="row align-items-center">
+    <div class="feature row align-items-center">
       <div class="col-sm">
         <img src="assets/images/features/open-source-icon.png" class="img-fluid" alt="Features: Open Source">
       </div>
-      <div class="col-sm">
+      <div class="col-sm my-3 my-sm-0">
         <h4>Open Source</h4>
         <p>Elide is 100% open source and available on <a href="https://github.com/yahoo/elide">Github</a>. Released under the commercial-friendly <a href="/pages/license.html">Apache License, Version 2.0</a>.</p>
       </div>
