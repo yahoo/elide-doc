@@ -66,20 +66,22 @@ set of arguments that either constrain the edges fetched from a relationship or 
 4. The parameters **offset** and **first** are used to paginate a relationship across multiple API requests.
 5. The **op** argument describes the operation to perform on the relationship. When not provided, this argument
 defaults to a FETCH operation which simply reads the collection of edges.
-6. The **data** parameter is provided for operations that mutate the collection (UPSERT and REPLACE), It contains
-a list of input objects that match the data type of the relationship.
+6. The **data** parameter is provided for operations that mutate the collection (UPSERT, UPDATE, and REPLACE), It contains
+a list of input objects that match the data type of the relationship.  Each _data_ object can be a complex subgraph which contains
+other objects through nested relationships.
 
 Entity attributes generally do not take arguments.  
 
 #### Relationship Operations
 
-Elide GraphQL relationships support five operations which can be broken into two groups: data operations and id operations.
+Elide GraphQL relationships support six operations which can be broken into two groups: data operations and id operations.
 The operations are separated into those that accept a _data_ argument and those that accept an _ids_ argument:
 
 
 | Operation | Data | Ids |
 | --------- |------|-----|
 | Upsert    | ✓    | X   |
+| Update    | ✓    | X   |
 | Fetch     | X    | ✓   |
 | Replace   | ✓    | X   |
 | Remove    | X    | ✓   |
@@ -93,8 +95,10 @@ relationship with matching ids.  If no ids are specified, then the entire collec
 3. The **REMOVE** operation removes a specified set (qualified by the _ids_ argument) of objects from a relationship. This allows the caller to remove
 relationships between objects without being forced to fully delete the referenced objects.
 4. The **UPSERT** operation behaves much like SQL’s MERGE.  Namely, if the object already exists (based on the provided
-id) then it will be updated.  Otherwise, it will be created. In the case of updates, attributes that are not specified are left unmodified.
-5. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.
+id) then it will be updated.  Otherwise, it will be created. In the case of updates, attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPSERT**.
+5. The **UPDATE** operation behaves much like SQL’s UPDATE.  Namely, if the object already exists (based on the provided
+id) then it will be updated.  Attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPDATE**.
+6. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.
 **REPLACE** can be thought of as an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client
 has authorization to see & manipulate.
 
@@ -282,19 +286,26 @@ For each updated book, only the title is returned.
 
 {% include code_example example='upsert-to-modify' offset=16 %}
 
+## UPDATE Examples
+--------------------------
+
+Updates author 1's name and simultaneously updates the titles of books 2 and 3.
+
+{% include code_example example='update-graph' offset=18 %}
+
 ## DELETE Examples
 --------------------------
 
 Deletes books 1 and 2.  The id and title of the remaining books are returned in the response.
 
-{% include code_example example='delete-multiple' offset=18 %}
+{% include code_example example='delete-multiple' offset=20 %}
 
 ## REMOVE Example
 --------------------------
 
 Removes books 1 and 2 from author 1.  Author 1 is returned with the remaining books.
 
-{% include code_example example='remove-multiple' offset=20 %}
+{% include code_example example='remove-multiple' offset=22 %}
 
 ## REPLACE Example
 --------------------------
@@ -305,4 +316,4 @@ Replaces the set of authors for _every_ book with the set consisting of:
 
 The response includes the complete set of books (id & title) and their new authors (id & name).
 
-{% include code_example example='replace-multiple' offset=22 %}
+{% include code_example example='replace-multiple' offset=24 %}
