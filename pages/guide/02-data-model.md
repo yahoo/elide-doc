@@ -202,7 +202,7 @@ request:
 
 Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, read, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
 
-1. `@OnCreatePreSecurity` This annotation executes immediately when the object is created, with fields populated, on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
+1. `@OnCreatePreSecurity` This annotation executes immediately when the object is created, with fields populated, on the server-side after User checks but before _commit_ security checks execute and before it is committed/persisted in the backend.  Any non-user _inline_ and _operation_ CreatePermission checks are effectively _commit_ security checks.
 1. `@OnCreatePreCommit` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
 1. `@OnCreatePostCommit` This annotation executes after the object is created and committed/persisted on the backend.
 1. `@OnDeletePreSecurity` This annotation executes immediately when the object is deleted on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
