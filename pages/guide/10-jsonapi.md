@@ -60,7 +60,7 @@ for any given entity.  The _fields_ query parameter specifies the type (data mod
 
 For example, to fetch the book collection but only include the book titles:
 
-{% include code_example example='jsonapi-sparse' offset=2 %}
+`{% include code_example example='jsonapi-sparse' offset=2 %}`
 
 More information about sparse fields can be found [here](http://jsonapi.org/format/#fetching-sparse-fieldsets).
 
@@ -73,7 +73,7 @@ what relationships should be expanded in the document.
 The following example fetches the book collection but also includes all of the book authors.  Sparse fields are used
 to limit the book and author fields in the response:
 
-{% include code_example example='jsonapi-include' offset=4 %}
+`{% include code_example example='jsonapi-include' offset=4 %}`
 
 More information about compound documents can be found [here](http://jsonapi.org/format/#document-compound-documents).
 
@@ -230,7 +230,7 @@ The keyword _id_ can be used to sort by whatever field a given entity uses as it
 
 Sort the collection of author 1's books in descending order by the book's publisher's name:
 
-{% include code_example example='jsonapi-sort' offset=8 %}
+`{% include code_example example='jsonapi-sort' offset=8 %}`
 
 
 ## Bulk Writes And Complex Mutations
@@ -241,9 +241,9 @@ The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6
 JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
 
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
-For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
+For example, the following request creates an author (ernest hemingway), multiple of his books, and his book publisher in a single request:
 
-{% include code_example example='patch-extension' offset=10 %}
+`{% include code_example example='patch-extension' offset=10 %}`
 
 ## Swagger
 --------------------------
