@@ -6,7 +6,7 @@ layout: default
   <div class="jumbotron">
     <div class="container text-center">
       <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in 4 simple steps</h2>
-      <a href="pages/guide/01-start.html">
+      <a href="pages/guide/01-start.md">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
       <div class="mb-3">
@@ -206,7 +206,7 @@ layout: default
 <div class="container text-center my-5">
   <h2>Opinionated APIs for web & mobile</h2>
   <p>Improve the velocity and quality of your team's work.</p>
-  <a href="/pages/guide/01-start.html">
+  <a href="/pages/guide/01-start.md">
     <button type="button" class="btn btn-primary text-light">Get Started</button>
   </a>
 </div>
