@@ -207,7 +207,7 @@ The `ChangeSpec` can be used to access the before & after values for a given fie
 ```
    @OnUpdatePreSecurity("title")
    public void onUpdateTitle(RequestScope scope, ChangeSpec changeSpec) {
-      //Do something with the changeSpec.getModified or changeSpec.getOriginal
+      //Do something with changeSpec.getModified or changeSpec.getOriginal
    }
 
 ```
