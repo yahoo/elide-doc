@@ -187,8 +187,9 @@ class Book {
 }
 ```
 
-Trigger functions can either take zero parameters or a single `RequestScope` parameter.  The `RequestScope` can be used to access the user prinicipal object that initiated the
-request:
+All trigger functions can either take zero parameters or a single `RequestScope` parameter.  
+
+The `RequestScope` can be used to access the user prinicipal object that initiated the request:
 
 ```
    @OnReadPostCommit("title")
@@ -196,6 +197,17 @@ request:
       User principal = scope.getUser();
  
       //Do something with the principal object...
+   }
+
+```
+
+Update trigger functions on fields can also take both a `RequestScope` parameter and a `ChangeSpec` parameter.  
+The `ChangeSpec` can be used to access the before & after values for a given field change:
+
+```
+   @OnUpdatePreSecurity("title")
+   public void onUpdateTitle(RequestScope scope, ChangeSpec changeSpec) {
+      //Do something with changeSpec.getModified or changeSpec.getOriginal
    }
 
 ```
