@@ -141,7 +141,7 @@ The permission annotations wrap a boolean expression composed of the check(s) to
 
 To better understand how permissions work consider the following sample code. (Only the relevant portions are included.)
 
-{% include code_example example='check-expressions' %}
+{% include code_example example='03-check-expressions' %}
 
 You will notice that `IsOwner` actually defines two check classes; it does so because we might want to evaluate the same logic at distinct points in processing the request (inline when reading a post and at commit when creating a post).  For example, we could not apply `IsOwner.Inline` when creating a new post because the post's author has not yet been assigned.  Once the post has been created and all fields assigned by Elide, the security check can be evaluated.
 
