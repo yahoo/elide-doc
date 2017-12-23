@@ -60,7 +60,7 @@ Comment.java: |+2
 IsOwner.java: |+2
   ```java
   public class IsOwner {
-      public static class Inline<Post> extends InlineCheck {
+      public static class Inline<Post> extends OperationCheck {
           @Override
           boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
               return post.author.equals(requestScope.getUser());
@@ -78,7 +78,7 @@ IsOwner.java: |+2
 IsSuperuser.java: |+2
   ```java
   public class IsSuperuser {
-      public static class Inline<User> extends InlineCheck {
+      public static class Inline<User> extends OperationCheck {
           @Override
           boolean ok(User user, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
               return user.isSuperuser();
