@@ -39,7 +39,7 @@ If you need more information about JPA, please [review their documentation](http
 After creating a proper data model, exposing it through Elide requires you configure _include_ it in Elide. Elide generates its API as a _graph_; this graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
 
 ```java
-@Include
+@Include(rootLevel=true)
 @Entity
 public class Author {
     private Long id;
@@ -76,7 +76,7 @@ public class Author {
 ```
 
 ```java
-@Include(rootLevel=true)
+@Include
 @Entity
 public class Book {
     private Long id;
