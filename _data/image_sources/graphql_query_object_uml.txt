@@ -14,6 +14,6 @@ Node "1" *-up-> "many" Relationship
 Root "1" *-right-> "many" Relationship
 
 Relationship "1" *-up-> "many" Edge
-Edge "1" *-up-> "many" Node
+Edge "1" *-up-> "1" Node
 
 @enduml
