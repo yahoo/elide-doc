@@ -144,12 +144,19 @@ The same principles are analogous to `@ComputedRelationship`s.
 
 ## Lifecycle Hooks
 
-Life cycle event triggers embed business logic with the entity bean. As entity bean attributes are updated by Elide, any defined triggers will be called.  `@On...` annotations define which method to call for these triggers.
-There are separate annotations for each CRUD operation (_read_, _update_, _create_, and _delete_) and also each life cycle phase of the current transaction:
+Lifecycle event triggers allow custom business logic (defined in functions) to be invoked during CRUD operations at three distinct phases:
 
 1. *Pre Security* - Executed prior to Elide _commit_ security check evaluation.
 1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
 1. *Post Commit* - Executed immediately after transaction commit.
+
+There are two mechanisms to enable lifecycle hooks:
+1. The simplest mechanism embeds the lifecycle hook as methods within the entity bean itself.   The methods are marked with `@On...` annotations (see below).
+1. Lifecycle hook functions can also be registered with the `EntityDictionary` when initializing Elide.  
+
+### Annotation Based Hooks
+
+There are separate annotations for each CRUD operation (_read_, _update_, _create_, and _delete_) and also each life cycle phase of the current transaction:
 
 ```java
 @Entity
@@ -189,9 +196,9 @@ class Book {
 
 All trigger functions can either take zero parameters or a single `RequestScope` parameter.  
 
-The `RequestScope` can be used to access the user prinicipal object that initiated the request:
+The `RequestScope` can be used to access the user principal object that initiated the request:
 
-```
+```java
    @OnReadPostCommit("title")
    public void onReadTitle(RequestScope scope) {
       User principal = scope.getUser();
@@ -204,7 +211,7 @@ The `RequestScope` can be used to access the user prinicipal object that initiat
 Update trigger functions on fields can also take both a `RequestScope` parameter and a `ChangeSpec` parameter.  
 The `ChangeSpec` can be used to access the before & after values for a given field change:
 
-```
+```java
    @OnUpdatePreSecurity("title")
    public void onUpdateTitle(RequestScope scope, ChangeSpec changeSpec) {
       //Do something with changeSpec.getModified or changeSpec.getOriginal
@@ -226,6 +233,39 @@ Specifying an annotation without a value executes the denoted method on every in
 1. `@OnReadPreSecurity(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes immediately when the object is read on the server-side but before _commit_ security checks execute and before the transaction commits.
 1. `@OnReadPreCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and all security checks are evaluated on the server-side but before the transaction commits.
 1. `@OnReadPostCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and the transaction commits.
+
+### Registered Function Hooks
+
+To keep complex business logic separated from the data model, it is also possible to register `LifeCycleHook` functions during Elide initialization (since Elide 4.1.0):
+
+```java
+/**
+ * Function which will be invoked for Elide lifecycle triggers
+ * @param <T> The elide entity type associated with this callback.
+ */
+@FunctionalInterface
+public interface LifeCycleHook<T> {
+    /**
+     * Run for a lifecycle event
+     * @param elideEntity The entity that triggered the event
+     * @param requestScope The request scope
+     * @param changes Optionally, the changes that were made to the entity
+     */
+    public abstract void execute(T elideEntity,
+                                 RequestScope requestScope,
+                                 Optional<ChangeSpec> changes);
+```
+
+The hook functions are registered with the `EntityDictionary` by specifying the corresponding life cycle annotation (which defines when the hook triggers) along
+with the entity model class and callback function:
+
+```java
+//Register a lifecycle hook for deletes on the model Book
+dictionary.bindTrigger(Book.class, OnDeletePreSecurity.class, callback);
+
+//Register a lifecycle hook for updates on the Book model's title attribute
+dictionary.bindTrigger(Book.class, OnUpdatePostCommit.class, "title", callback);
+```
 
 ## Initializers
 
