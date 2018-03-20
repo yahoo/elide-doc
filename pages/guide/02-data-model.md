@@ -236,7 +236,7 @@ Specifying an annotation without a value executes the denoted method on every in
 
 ### Registered Function Hooks
 
-To keep complex business logic separated from the data model, it is also possible to register `LifeCycleHook` functions during Elide initialization:
+To keep complex business logic separated from the data model, it is also possible to register `LifeCycleHook` functions during Elide initialization (since Elide 4.1.0):
 
 ```java
 /**
