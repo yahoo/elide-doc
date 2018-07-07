@@ -222,8 +222,11 @@ layout: default
         <a href="/pages/license.html">Licensing</a>
       </div>
       <div class="col-sm links">
+        <a href="https://elide.slack.com">Slack Chat</a>
+        <a href="https://publicslack.com/slacks/elide/invites/new">Request invite</a>
+      </div>
+      <div class="col-sm links">
         <a href="https://github.com/yahoo/elide/releases">Releases</a>
-        <a href="https://gitter.im/yahoo/elide">Gitter Chat</a>
       </div>
       <div class="col-sm">
         <a href="https://github.com/yahoo/elide">
