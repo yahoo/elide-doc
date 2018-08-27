@@ -11,7 +11,7 @@ User.java: |+2
   @ReadPermission(expression = "Prefab.Roll.All")
   @UpdatePermission(expression = "user is a superuser OR user is this user")
   @DeletePermission(expression = "user is a superuser OR user is this user")
-  @SharePermission(expression = "Prefab.Role.All")
+  @SharePermission
   public class User {
       String name;
 
@@ -26,7 +26,7 @@ Post.java: |+2
   @UpdatePermission(expression = "user owns this post now")
   @CreatePermission(expression = "user owns this post")
   @DeletePermission(expression = "user owns this post now")
-  @SharePermission(expression = "Prefab.Role.All")
+  @SharePermission
   public class Post {
       @ManyToOne
       User author;
@@ -46,7 +46,7 @@ Comment.java: |+2
   @UpdatePermission(expression = "user made this comment")
   @CreatePermission(expression = "post is visible now")
   @DeletePermission(expression = "user made this comment")
-  @SharePermission(expression = "Prefab.Role.All")
+  @SharePermission
   public class Comment {
       @ManyToOne
       User author;
