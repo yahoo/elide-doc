@@ -114,7 +114,7 @@ public class Book {
 
 Considering the example above, we have a full data model that exposes a specific graph. Namely, a root node of the type `Author` and a bi-directional relationship from `Author` to `Book`. That is, one can access all `Author` objects directly, but must go _through_ an author to see information about any specific `Book` object.
 
-All public getters and setters are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying JPA persistence layer without exposing it through the Elide API.
+Elide supports exposing either JPA properties or fields (but not both on the same entity).  For any given entity, Elide looks at whether `@Id` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying JPA persistence layer without exposing it through the Elide API.
 
 Much of the Elide per-model configuration is done via annotations. For a description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/11-annotations.html).
 
@@ -208,8 +208,7 @@ The `RequestScope` can be used to access the user principal object that initiate
 
 ```
 
-Update trigger functions on fields can also take both a `RequestScope` parameter and a `ChangeSpec` parameter.  
-The `ChangeSpec` can be used to access the before & after values for a given field change:
+Update and Create trigger functions on fields can also take both a `RequestScope` parameter and a `ChangeSpec` parameter.  The `ChangeSpec` can be used to access the before & after values for a given field change:
 
 ```java
    @OnUpdatePreSecurity("title")
@@ -219,20 +218,25 @@ The `ChangeSpec` can be used to access the before & after values for a given fie
 
 ```
 
-Specifying an annotation without a value executes the denoted method on every instance of that action (i.e. every update, read, etc.). However, if a value is specified in the annotation, then that particular method is only executed when the specific operation occurs to the particular field. Below is a description of each of these annotations and their function:
+Lifecycle triggers can evaluate for actions on a specific field in a class, for any field in a class, or for the entire class.  The behavior is determined by the _value_ passed in the annotation:
+1. An empty value denotes that the trigger should be called exactly once per action on that given entity.
+1. A value matching an entity field/property name denotes that the trigger should be called once per action on that given field/property.
+1. A value set to `*` denotes that the trigger should be called once per action on _all_ fields or properties in the class that were referenced in the request. 
 
-1. `@OnCreatePreSecurity` This annotation executes immediately when the object is created, with fields populated, on the server-side after User checks but before _commit_ security checks execute and before it is committed/persisted in the backend.  Any non-user _inline_ and _operation_ CreatePermission checks are effectively _commit_ security checks.
-1. `@OnCreatePreCommit` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
-1. `@OnCreatePostCommit` This annotation executes after the object is created and committed/persisted on the backend.
+Below is a description of each of these annotations and their function:
+
+1. `@OnCreatePreSecurity(value)` This annotation executes immediately when the object is created, with fields populated, on the server-side after User checks but before _commit_ security checks execute and before it is committed/persisted in the backend.  Any non-user _inline_ and _operation_ CreatePermission checks are effectively _commit_ security checks.
+1. `@OnCreatePreCommit(value)` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
+1. `@OnCreatePostCommit(value)` This annotation executes after the object is created and committed/persisted on the backend.
 1. `@OnDeletePreSecurity` This annotation executes immediately when the object is deleted on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
 1. `@OnDeletePreCommit` This annotation executes after the object is deleted and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
 1. `@OnDeletePostCommit` This annotation executes after the object is deleted and committed/persisted on the backend.
-1. `@OnUpdatePreSecurity(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.  This annotation executes immediately when the field is updated on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
-1. `@OnUpdatePreCommit(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated. This annotation executes after the object is updated and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
-1. `@OnUpdatePostCommit(value)` If `value` is **not** specified, then this annotation executes on every update action to the object. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is updated.  This annotation executes after the object is updated and committed/persisted on the backend.
-1. `@OnReadPreSecurity(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes immediately when the object is read on the server-side but before _commit_ security checks execute and before the transaction commits.
-1. `@OnReadPreCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and all security checks are evaluated on the server-side but before the transaction commits.
-1. `@OnReadPostCommit(value)` If `value` is **not** specified, then this annotation executes every time an object field is read from the datastore. However, if `value` is set, then the annotated method only executes when the field corresponding to the name in `value` is read.  This annotation executes after the object is read and the transaction commits.
+1. `@OnUpdatePreSecurity(value)` This annotation executes immediately when the field is updated on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
+1. `@OnUpdatePreCommit(value)` This annotation executes after the object is updated and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
+1. `@OnUpdatePostCommit(value)` This annotation executes after the object is updated and committed/persisted on the backend.
+1. `@OnReadPreSecurity(value)` This annotation executes immediately when the object is read on the server-side but before _commit_ security checks execute and before the transaction commits.
+1. `@OnReadPreCommit(value)` This annotation executes after the object is read and all security checks are evaluated on the server-side but before the transaction commits.
+1. `@OnReadPostCommit(value)` This annotation executes after the object is read and the transaction commits.
 
 ### Registered Function Hooks
 
@@ -265,6 +269,9 @@ dictionary.bindTrigger(Book.class, OnDeletePreSecurity.class, callback);
 
 //Register a lifecycle hook for updates on the Book model's title attribute
 dictionary.bindTrigger(Book.class, OnUpdatePostCommit.class, "title", callback);
+
+//Register a lifecycle hook for updates on _any_ of the Book model's attributes
+dictionary.bindTrigger(Book.class, OnUpdatePostCommit.class, callback, true);
 ```
 
 ## Initializers
