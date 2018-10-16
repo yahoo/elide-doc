@@ -260,13 +260,6 @@ curl -X PATCH http://localhost:8080/api/v1/group/com.example.repository/products
 
 It’s just that easy to create and update data using Elide.
 
-
-
-```java
-```
-
-
-
 [elide-demo]: https://github.com/clayreimann/elide-demo
 [kotlyn-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
 [demo-schema]: /pages/resource/demo.sql
