@@ -6,8 +6,8 @@ title: Getting Started
 ## So You Want An API?
 {:.no-toc}
 
-The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of
-the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, all of the code is
+The easiest way to get started with Elide is to use the [elide-standalone][elide-standalone] library. 
+The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, all of the code is
 [available here][elide-demo]–if you want to see a more fully fleshed out example of the standalone library checkout this
 [Kotlyn blog example][kotlyn-blog].
 
@@ -260,6 +260,7 @@ curl -X PATCH http://localhost:8080/api/v1/group/com.example.repository/products
 
 It’s just that easy to create and update data using Elide.
 
+[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
 [elide-demo]: https://github.com/clayreimann/elide-demo
 [kotlyn-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
 [demo-schema]: /pages/resource/demo.sql
