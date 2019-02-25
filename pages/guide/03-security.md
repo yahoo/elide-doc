@@ -127,7 +127,7 @@ Filter expression checks are most important when a security rule is tied in some
 
 ## User
 ---------------------
-Each request is associated with a user.  By default the user is simply an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+Each request is associated with a user.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
 
 The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
 
@@ -141,7 +141,7 @@ The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https
 
 This filter will typically authenticate the request and store an identifier about the user inside the new `SecurityContext`.
 
-Elide also supports other objects besides the `SecurityContext` as the user.  You can supply any object you want by mapping the supplied 
+Elide also supports other objects besides the `SecurityContext` as the principal.  You can supply any object you want by mapping the supplied 
 `SecurityContext` to something else.  The mapping function must conform to this interface:
 
 ```java
@@ -163,7 +163,7 @@ The JSON-API and GraphQL JAX-RS endpoints are injected with this function during
             @Named("elideUserExtractionFunction") DefaultOpaqueUserFunction getUser) {
 ```
 
-The Elide standalone repository overrides the default to map the user to a [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) object instead:
+The Elide standalone repository overrides the default to map the `SecurityContext` to a [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) object instead:
 
 ```java
     /**
