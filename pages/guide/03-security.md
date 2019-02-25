@@ -1,3 +1,5 @@
+---
+layout: guide
 group: guide
 title: Security
 ---
