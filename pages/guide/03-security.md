@@ -127,7 +127,7 @@ Filter expression checks are most important when a security rule is tied in some
 
 ## User
 ---------------------
-Each request is associated with a user.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+Each request is associated with a `User` object.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
 
 The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
 
