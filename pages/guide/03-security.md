@@ -8,7 +8,7 @@ title: Security
 API authentication is largely a solved problem and generally outside the scope of Elide.
 Authorization - the act of verifying data and operation access for an _already authenticated user_ in the Elide framework involves a few core concepts:
 
-* **User** - Each API request is associated with a user principal.  The user is opaque to the Elide framework but is passed to developer-defined _check_ functions that evaluate arbitrary logic or build filter expressions.
+* **User** - Each API request is associated with a user principal.  The user is opaque to the Elide framework but is passed to developer-defined _check_ functions that evaluate arbitrary logic or build filter expressions.  More details can be found [here](#user).
 * **Checks** - a function _or_ filter expression that grants or denies a user **permission** to perform a particular action.
 * **Permissions** - a set of annotations (read, update, delete, create, and share) that correspond to actions on the data model's entities and fields.  Each **permission** is decorated with one or more checks that are evaluated when a user attempts to perform that action.
 
@@ -127,10 +127,53 @@ Filter expression checks are most important when a security rule is tied in some
 
 ## User
 ---------------------
-Each request is associated with a user. The user is computed by a function that you provide conforming to the interface:
+Each request is associated with a `User` object.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+
+The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
+
+```java
+    @Override
+    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+         containerRequestContext.setSecurityContext(new SecurityContext() {
+
+         ...
+```
+
+This filter will typically authenticate the request and store an identifier about the user inside the new `SecurityContext`.
+
+Elide also supports other objects besides the `SecurityContext` as the principal.  You can supply any object you want by mapping the supplied 
+`SecurityContext` to something else.  The mapping function must conform to this interface:
 
 ```java
 Function<SecurityContext, Object>
+```
+
+The JSON-API and GraphQL JAX-RS endpoints are injected with this function during initialization:
+
+```java
+    @Inject
+    public JsonApiEndpoint(@Named("elide") Elide elide,
+                           @Named("elideUserExtractionFunction") DefaultOpaqueUserFunction getUser) {
+```
+
+```java
+    @Inject
+    public GraphQLEndpoint(
+            @Named("elide") Elide elide,
+            @Named("elideUserExtractionFunction") DefaultOpaqueUserFunction getUser) {
+```
+
+The Elide standalone repository overrides the default to map the `SecurityContext` to a [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) object instead:
+
+```java
+    /**
+     * The function used to extract a user from the SecurityContext.
+     *
+     * @return Function for user extraction.
+     */
+    default DefaultOpaqueUserFunction getUserExtractionFunction() {
+        return SecurityContext::getUserPrincipal;
+    }
 ```
 
 ## Permission Annotations
