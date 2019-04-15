@@ -21,7 +21,7 @@ wish to expose. In this example we will be modeling a software artifact reposito
 high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like. If you are interested,
 [the code][elide-demo] is tagged for each step so you can follow along.
 
-The first bean we’ll need is the `ArtifactGroup` bean, for brevity we will omit package names and import statements. This
+The first bean we’ll need is the `ArtifactGroup` bean.  For brevity we will omit package names and import statements. This
 will represent the `<groupId>` in Maven’s dependency coordinates.
 
 ```java
@@ -35,7 +35,7 @@ public class ArtifactGroup {
 
 ## Spin up the API
 
-So now we have a bean, but without an API it is not do very useful. Before we add the API component of the we need to
+So now we have a bean, but without an API it is not do very useful. Before we add the API component, we need to
 create the schema in the database that our beans will use. Download and run the [demo setup script][demo-schema]; this
 demo uses MySQL, feel free to modify the setup script if you are using a different database provider.
 
@@ -52,14 +52,14 @@ Bringing life to our API is trivially easy. We need two new classes: Main and Se
 
 ### Supporting Files
 
-Elide standalone also requires a hibernate config file. By default the standalone API expects to find your  [hibernate
-config][hibernate-conf] at `./settings/hibernate.cfg.xml` (with respect to CWD when you launch the app). If you want to
-see the logs from your shiny new API you will also want a [logback config][logback-conf]. Your logback config should go
-in `src/main/resources` so logback can find it.
+Elide standalone uses a JPA data store that is configured programmatically (no persistence.xml required).
+
+However, if you want to see the logs from your shiny new API, you will also want a [logback config][logback-conf]. 
+Your logback config should go in `src/main/resources` so logback can find it.
 
 ### Running
 
-With these new classes you have two options for running your project, you can either run the `Main` class using your
+With these new classes, you have two options for running your project, you can either run the `Main` class using your
 favorite IDE, or we can add the following snippet to our gradle build script and run our project with ./gradlew run
 
 ```gradle
@@ -95,7 +95,7 @@ respectively.
 
 {% include code_example example="01-more-beans" %}
 
-We add the missing fields to `ArtifactGroup` since we anticipate user will want to add some informative metadata to help
+We add the missing fields to `ArtifactGroup` since we anticipate the user will want to add some informative metadata to help
 users find the products and artifacts they are interested in. If we restart the API and request `/artifactGroup` we’ll
 see the other metadata we just added.
 
