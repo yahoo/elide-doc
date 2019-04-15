@@ -263,5 +263,4 @@ It’s just that easy to create and update data using Elide.
 [elide-demo]: https://github.com/clayreimann/elide-demo
 [kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
 [demo-schema]: /pages/resources/demo.sql
-[hibernate-conf]: /pages/resources/hibernate.cfg.xml
 [logback-conf]: /pages/resources/logback.xml
