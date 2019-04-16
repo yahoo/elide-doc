@@ -24,7 +24,7 @@ title: Data Models
 }
 </style>
 
-Elide generates its API entirely based on the concept of **Data Models**. In summary, these are [JPA-annotated](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) Java classes that describe the _schema_ for each exposed endpoint. While the JPA annotations provide a high-level description on how relationships and attributes are modeled, Elide provides a set of [security annotations](/pages/guide/03-security.html) to secure this model. Data models are intended to be a _view_ on top of the [datastore](TODO: Link datastores) or the set of datastores which support your Elide-based service.
+Elide generates its API entirely based on the concept of **Data Models**. In summary, these are [JPA-annotated](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) Java classes that describe the _schema_ for each exposed endpoint. While the JPA annotations provide a high-level description on how relationships and attributes are modeled, Elide provides a set of [security annotations](/pages/guide/03-security.html) to secure this model. Data models are intended to be a _view_ on top of the [data store](/pages/guide/06-datatstores.html) or the set of data stores which support your Elide-based service.
 
 **NOTE:** This page is a description on how to _create_ data models in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation](/pages/guide/09-clientapis.html).
 
@@ -122,7 +122,7 @@ Much of the Elide per-model configuration is done via annotations. For a descrip
 
 A computed attribute is an entity attribute whose value is computed in code rather than fetched from a data store.
 
-Elide supports computed properties by way of the `@ComputedAttribute` and `@ComputedRelationship` annotations. These are useful if your datastore is also tied to your Elide view data model. For instance, if you mark a field `@Transient`, a datastore such as Hibernate will ignore it. In the absence of the `@Computed*` attributes, Elide will too. However, when applying a computed property attribute, Elide will expose this field anyway.
+Elide supports computed properties by way of the `@ComputedAttribute` and `@ComputedRelationship` annotations. These are useful if your data store is also tied to your Elide view data model. For instance, if you mark a field `@Transient`, a data store such as Hibernate will ignore it. In the absence of the `@Computed*` attributes, Elide will too. However, when applying a computed property attribute, Elide will expose this field anyway.
 
 A computed attribute can perform arbitrary computation and is exposed through Elide as a typical attribute. In the case below, this will create an attribute called `myComputedAttribute`.
 
@@ -292,51 +292,53 @@ public interface Initializer<T> {
 }
 ```
 
-Initializers can be configured in a custom `DataStore` when the method `populateEntityDictionary` is invoked:
+Initializers can be configured in the `EntityDictionary` using the following bind method:
 
 ```java
-    public void populateEntityDictionary(EntityDictionary dictionary) {
-
-        /* Assuming this DataStore extends another... */
-        super.populateEntityDictionary(dictionary);
-
-        /*
-         * Create an initializer for model Foobar, passing any runtime configuration to
-         * the constructor of the initializer.
-         */
-        ...
-
-        /* Bind the initializer to Foobar.class */
-        dictionary.bindInitializer(foobarInitializer, Foobar.class);
+    /**
+     * Bind a particular initializer to a class.
+     *
+     * @param <T>         the type parameter
+     * @param initializer Initializer to use for class
+     * @param cls         Class to bind initialization
+     */
+    public <T> void bindInitializer(Initializer<T> initializer, Class<T> cls) {
+        bindIfUnbound(cls);
+        getEntityBinding(cls).setInitializer(initializer);
     }
 ```
 
 ## Dependency Injection
 
-Dependency injection in Elide can be achieved by using [initializers](#initializers). To do so, implement your own store (or extend an existing store) and implement something like the following:
+Elide does not depend on a specific dependency injection framework.  However, Elide can inject entity models during
+their construction (to implement life cycle hooks or other functionality).
+
+Elide provides a framework agnostic, functional interface to inject entity models:
 
 ```java
-public class MyStore extends HibernateStore {
-    private final Injector injector;
+/**
+ * Used to inject all beans at time of construction.
+ */
+@FunctionalInterface
+public interface Injector {
 
-    public MyStore(Injector injector, ...) {
-        super(...);
-        this.injector = injector;
-    }
-
-    @Override
-    public void populateEntityDictionary(EntityDictionary) {
-        /* bind your entities */
-        for (Class<?> entityClass : yourEntityList) {
-            dictionary.bindInitializer(injector::inject, entityClass);
-        }
-    }
+    /**
+     * Inject an entity bean.
+     *
+     * @param entity Entity bean to inject
+     */
+    void inject(Object entity);
 }
 ```
 
-Ultimately, each time an object of `entityClass` type is instantiated by Elide, Elide will run an initializer that allows the injection framework to inject into the new object.
+An implementation of this interface can be passed to the `EntityDictionary` during its construction:
 
-If you're using the `elide-standalone` artifact, then this is already done [by default](https://github.com/yahoo/elide/blob/master/elide-standalone/src/main/java/com/yahoo/elide/standalone/datastore/InjectionAwareHibernateStore.java#L39).
+```java
+        EntityDictionary dictionary = new EntityDictionary(PermissionExpressions.getExpressions(),
+                (obj) -> injector.inject(obj));
+```
+
+If you're using the `elide-standalone` artifact, dependency injection is already setup using Jetty's `ServiceLocator`.
 
 ## Validation
 
@@ -345,9 +347,9 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 
 ## Philosophy
 
-Data models are intended to be a _view_ on top of the [datastore](TODO: Link datastores) or the set of datastores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the datastore, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping datastore requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying datastore schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesireable.
+Data models are intended to be a _view_ on top of the [data store](/pages/guide/06-datatstores.html) or the set of data stores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the data store, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping data store requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying data store schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesirable.
 
-As an example, let's consider a situation where you have two Elide-based microservices: one for your application backend and another for authentication (suppose account creation is performed out-of-band for this example). Assuming both of these rely on a common datastore, they'll both likely want to recognize the same underlying _User_ table. However, it's quite likely that the authentication service will only ever require information about user **credentials** and the application service will likely only ever need user **metadata**. More concretely, you could have a system that looks like the following:
+As an example, let's consider a situation where you have two Elide-based microservices: one for your application backend and another for authentication (suppose account creation is performed out-of-band for this example). Assuming both of these rely on a common data store, they'll both likely want to recognize the same underlying _User_ table. However, it's quite likely that the authentication service will only ever require information about user **credentials** and the application service will likely only ever need user **metadata**. More concretely, you could have a system that looks like the following:
 
 **Table schema:**
 ```
@@ -373,7 +375,7 @@ firstName
 lastName
 ```
 
-While you could certainly just use the raw table schema directly (represented as a JPA-annotated data model) and reuse it across services, the point is that you may be over-exposing information in areas where you may not want to. In the case of the _User_ object, it's quite apparent that the application service should never be _capable_ of accidentally exposing a user's private credentials. By creating isolated views per-service on top of common datastores, you sacrifice a small bit of [DRY principles](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) for much better isolation and a more targeted service. Likewise, if the underlying table schema is updated with a new field that neither one of these services needs, neither service requires a rebuild and redeploy since the change is irrelevant to their function. 
+While you could certainly just use the raw table schema directly (represented as a JPA-annotated data model) and reuse it across services, the point is that you may be over-exposing information in areas where you may not want to. In the case of the _User_ object, it's quite apparent that the application service should never be _capable_ of accidentally exposing a user's private credentials. By creating isolated views per-service on top of common data stores, you sacrifice a small bit of [DRY principles](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) for much better isolation and a more targeted service. Likewise, if the underlying table schema is updated with a new field that neither one of these services needs, neither service requires a rebuild and redeploy since the change is irrelevant to their function. 
 
-**A note about microservices:** Another common technique to building microservices is for each service to have its own set of datastores entirely independent from other services (i.e. no shared overlap); these datastores are then synced by other services as necessary through a messaging bus. If your system architecture calls for such a model, it's quite likely you will follow the same pattern we have outlined here with _one key difference_: the underlying table schema for your _individual service's datastore_ will likely be exactly the same as your service's model representing it. However, overall, the net effect is the same since only the relevant information delivered over the bus is stored in your service's schema. In fact, this model is arguably more robust in the sense that if one datastore fails not all services necessarily fail.
+**A note about microservices:** Another common technique to building microservices is for each service to have its own set of data stores entirely independent from other services (i.e. no shared overlap); these data stores are then synced by other services as necessary through a messaging bus. If your system architecture calls for such a model, it's quite likely you will follow the same pattern we have outlined here with _one key difference_: the underlying table schema for your _individual service's data store_ will likely be exactly the same as your service's model representing it. However, overall, the net effect is the same since only the relevant information delivered over the bus is stored in your service's schema. In fact, this model is arguably more robust in the sense that if one data store fails not all services necessarily fail.
 
