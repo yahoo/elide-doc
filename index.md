@@ -222,8 +222,7 @@ layout: default
         <a href="/pages/license.html">Licensing</a>
       </div>
       <div class="col-sm links">
-        <a href="https://elide.slack.com">Slack Chat</a>
-        <a href="https://publicslack.com/slacks/elide/invites/new">Request invite</a>
+        <a href="https://spectrum.chat/elide">Community</a>
       </div>
       <div class="col-sm links">
         <a href="https://github.com/yahoo/elide/releases">Releases</a>
