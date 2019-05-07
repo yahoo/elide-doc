@@ -96,9 +96,9 @@ which builds the `ElideSettings` object:
      * @return Configured ElideSettings object.
      */
     default ElideSettings getElideSettings(ServiceLocator injector) {
-        EntityManager entityManager = Util.getEntityManager(getModelPackageName(), new Properties());
+        EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(), new Properties());
         DataStore dataStore = new JpaDataStore(
-                () -> { return entityManager; },
+                () -> { return entityManagerFactory.createEntityManager(); },
                 (em -> { return new NonJtaTransaction(em); }));
 
         EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
