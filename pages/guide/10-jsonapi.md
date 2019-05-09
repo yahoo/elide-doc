@@ -160,7 +160,7 @@ public class Author {
 }
 ```
 
-Filter in the form of `filter[author]=id=20` applies the filter in `id` field as expected.
+Filter in the form of `filter[author]=id=20` applies the filter on `id` field as expected.
 
 If, however, the ID field name is not "id", such as
 
@@ -177,26 +177,8 @@ public class Author {
 }
 ```
 
-Filter in the form of `filter[author]=id=20` will applies the filter in `surrogateKey` field instead.
-
-A special case where ID field name is not "id" but there is another field called "id" like the following
-
-```java
-@Entity
-@Include(rootLevel=true)
-public class Author {
-
-    @Id
-    private Long surrogateKey;
-    private String name;
-    private String id
-
-    ...
-}
-```
-
-Filter in the form of `filter[author]=id=20` will applies the filter in `id` field and only
-`filter[author]=surrogateKey=20` will apply the filter in the true ID field, which is `surrogateKey` in this case
+Filter in the form of `filter[author]=id=20` or `filter[author]=surrogateKey=20` will apply the filter on `surrogateKey`
+field instead.
 
 
 ## Pagination
