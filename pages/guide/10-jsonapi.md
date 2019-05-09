@@ -139,8 +139,65 @@ The following RSQL operators are supported:
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
 
 #### Values & Type Coercion
+
 Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
 data type for the attribute filter.
+
+### Filterying by Surrogate Key
+
+Filtering by ID is handled in the following way. Suppose you have the [same `Author` entity](/pages/guide/02-data-model.html) as follows
+
+```java
+@Entity
+@Include(rootLevel=true)
+public class Author {
+
+    @Id
+    private Long id;
+    private String name;
+
+    ...
+}
+```
+
+Filter in the form of `filter[author]=id=20` applies the filter in `id` field as expected.
+
+If, however, the ID field name is not "id", such as
+
+```java
+@Entity
+@Include(rootLevel=true)
+public class Author {
+
+    @Id
+    private Long surrogateKey;
+    private String name;
+
+    ...
+}
+```
+
+Filter in the form of `filter[author]=id=20` will applies the filter in `surrogateKey` field instead.
+
+A special case where ID field name is not "id" but there is another field called "id" like the following
+
+```java
+@Entity
+@Include(rootLevel=true)
+public class Author {
+
+    @Id
+    private Long surrogateKey;
+    private String name;
+    private String id
+
+    ...
+}
+```
+
+Filter in the form of `filter[author]=id=20` will applies the filter in `id` field and only
+`filter[author]=surrogateKey=20` will apply the filter in the true ID field, which is `surrogateKey` in this case
+
 
 ## Pagination
 --------------------------
