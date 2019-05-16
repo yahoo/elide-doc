@@ -1,4 +1,10 @@
 {
+  "name": "elide-doc",
+  "description": "Doc site for the elide.io project",
+  "scripts": {
+    "setup": "gem install bundler; bundle install",
+    "start": "bundle exec jekyll serve"
+  },
   "dependencies": {
     "bootstrap": "4.0.0-beta.2",
     "raphael": "^2.2.7",
