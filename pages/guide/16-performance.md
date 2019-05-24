@@ -49,7 +49,11 @@ To work around this, Elide provides two different kinds of security checks:
 
 For data reads from the database, it is recommended to use User Checks and Filter Expression Checks wherever possible.
 
-## Hibernate-isms 
+## ORM-isms 
+
+Beware to-one relationships where the entity doesn't own the relationship (`mappedBy` is specified) _and_ `optional` is set to true.
+The ORM must **ALWAYS** fetch these relationships when hydrating a proxy (leading to N+1 queries depending on how the ORM is configured).  
+The ORM has no way of knowing if the relationship is null or non-null without issuing another database query.
 
 ## Database-isms 
 
