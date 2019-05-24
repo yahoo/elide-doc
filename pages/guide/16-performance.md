@@ -38,7 +38,45 @@ clause, or pagination.  Otherwise, it constructs a custom JPQL query that will j
 In general, it is recommended to configure the ORM with batch fetching so the ORM will efficiently hydrate proxy collections.
  
 ## Security Checks
+
+Elide provides different flavors of security checks for performance reasons.  In general, it is expensive to execute servers side functions for every entity row hydrated from the database.  Because Elide is handling the results of queries in a single thread, the CPU cost of these
+checks can add extra latency to your queries.
+
+To work around this, Elide provides two different kinds of security checks:
+
+1. *User Checks* -  User checks are evaluated once per request rather than per entity row.
+2. *Filter Expression Checks* - Filter Expression Checks generate filter expressions that are pushed to the persistence layer and executed in the database.
+
+For data reads from the database, it is recommended to use User Checks and Filter Expression Checks wherever possible.
+
 ## Hibernate-isms 
+
 ## Database-isms 
+
+It is highly recommended to collocate Elide servers and the database in the same data center or region to reduce the latency of 
+database queries from Elide. 
+
+It is also recommended to segregate Elide read only transactions (data fetches) to run against a read-only replica of the database for
+optimal read performance. 
+
 ## Text Search
+
+By default, text search (INFIX operator) is accomplished in Elide through a JPQL query similar to:
+```
+SELECT id, field1, field2, ... FROM table WHERE field1 like CONCAT('%', searchTerm, '%')
+```
+
+For case insensitive searches, Elide will add a lower case function to both the search field and the search value.
+
+There are a number of limitations to this approach:
+1. If the database is using a b-tree index to index the search column, a preceding wildcard ('%') will disable the use of the index.  The query will result in a full table scan.
+2. Databases have limited support for functional indices.  Use of lower or upper case functions may also disable the use of an index.
+
+Elide provides two capabilities to work around these issues for large tables that require text search:
+1. *COMING SOON* - Elide supports the ability to override the JPQL fragment that is generated for any operator on any field in any entity model.  This makes it possible to disable the use of lower/upper case functions on a database column if the database column is already case insensitive.  It is also possible to use custom SQL dialects to leverage full text index support (where available).
+2. *COMING SOON* - Elide supports a `SearchDataStore` that can wrap another ORM data store.  Whenever possible, the `SearchDataStore` can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.  
+
 ## Bespoke Fieldsets
+
+By default JSON-API fetches every relationship in an entity unless a client restricts what it asks for through sparse fields.  These relationship fetches result in extra database queries.  It is recommended to either use GraphQL or educate clients to use sparse fields in 
+JSON-API whenever possible.
