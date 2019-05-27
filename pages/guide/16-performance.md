@@ -23,13 +23,13 @@ Because Elide has to work well under a wide variety of circumstances, it has ado
 
 Whenever Elide traverses a to-one relationship, it returns the ORM proxy object directly.  In most cases, these relationships should already exist inside the session and result in no extra database queries.
 
-Whenever Elide traverses a to-many relationship, it returns the ORM proxy if there is no client supplied filter expression, sorting clause, or pagination.  Otherwise, it constructs a custom JPQL query that will join with all to-one relationships to prefetch them.
+Whenever Elide traverses a to-many relationship, it returns the ORM collection proxy if there is no client supplied filter expression, sorting clause, or pagination.  Otherwise, it constructs a custom JPQL query that will fetch the collection - joining with with all subsequent to-one relationships to prefetch them.
 
 In general, it is recommended to configure the ORM with batch fetching so the ORM will efficiently hydrate proxy collections.
  
 ## Security Checks
 
-Elide provides different flavors of security checks for performance reasons.  In general, it is expensive to execute servers side functions for every entity row hydrated from the database.  Because Elide is handling the results of queries in a single thread, the CPU cost of these checks can add extra latency to your queries.
+Elide provides different flavors of security checks for performance reasons.  In general, it is expensive to execute servers side functions for every entity row hydrated from the database.  Because Elide is handling the results of each query in a single thread, the CPU cost of these checks can add extra latency to your queries.
 
 To work around this, Elide provides two different kinds of security checks:
 
@@ -65,6 +65,6 @@ Elide provides two capabilities to work around these issues for large tables tha
 1. *COMING SOON* - Elide supports the ability to override the JPQL fragment that is generated for any operator on any field in any entity model.  This makes it possible to disable the use of lower/upper case functions on a database column if the database column is already case insensitive.  It is also possible to use custom SQL dialects to leverage full text index support (where available).
 2. *COMING SOON* - Elide supports a `SearchDataStore` that can wrap another ORM data store.  Whenever possible, the `SearchDataStore` can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.  
 
-## Bespoke Fieldsets
+## Bespoke Field Sets
 
 By default JSON-API fetches every relationship in an entity unless a client restricts what it asks for through sparse fields.  These relationship fetches result in extra database queries.  It is recommended to either use GraphQL or educate clients to use sparse fields in JSON-API whenever possible.
