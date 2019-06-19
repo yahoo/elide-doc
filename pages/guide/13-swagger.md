@@ -53,7 +53,7 @@ Pull in swagger core :
 
 Create and initialize an entity dictionary.
 
-```
+```java
 EntityDictionary dictionary = new EntityDictionary(Maps.newHashMap());
 
 dictionary.bindEntity(Book.class);
@@ -63,21 +63,40 @@ dictionary.bindEntity(Publisher.class);
 
 Create a swagger info object.
 
-```
+```java
 Info info = new Info().title("My Service").version("1.0");
 ```
 
 Initialize a swagger builder.
 
-```
+```java
 SwaggerBuilder builder = new SwaggerBuilder(dictionary, info);
 ```
 
-Build the document & convert to JSON.
+Build the swagger document
 
-```
+```java
 Swagger document = builder.build();
+```
+
+#### Convert Swagger to JSON
+
+You can directly convert to JSON:
+
+```java
 String jsonOutput = SwaggerBuilder.getDocument(document);
+```
+
+#### Configure JAX-RS Endpoint
+
+Or you can use the Swagger document directly to configure the [provided JAX-RS Endpoint](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-swagger/src/main/java/com/yahoo/elide/contrib/swagger/resources/DocEndpoint.java):
+
+```java
+Map<String, Swagger> swaggerDocs = new HashMap<>();
+docs.put("publishingModels", document)
+
+//Dependency Inject the DocEndpoint JAX-RS resource
+bind(docs).named("swagger").to(new TypeLiteral<Map<String, Swagger>>() { });
 ```
 
 ### Supporting OAuth
@@ -85,7 +104,7 @@ String jsonOutput = SwaggerBuilder.getDocument(document);
 If you want swagger UI to acquire & use a bearer token from an OAuth identity provider, you can configure
 the swagger document similar to:
 
-```
+```java
 SecuritySchemeDefinition oauthDef = new OAuth2Definition().implicit(CONFIG_DATA.zuulAuthorizeUri());
 SecurityRequirement oauthReq = new SecurityRequirement().requirement("myOuath");
 
@@ -101,7 +120,7 @@ Swagger document = builder.build();
 
 A query or header parameter can be added globally to all Elide API endpoints:
 
-```
+```java
 HeaderParameter oauthParam = new HeaderParameter()
     .name("Authorization")
     .type("string")
@@ -116,7 +135,7 @@ SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
 
 An HTTP response can be added globally to all Elide API endpoints:
 
-```
+```java
 Response rateLimitedResponse = new Response().description("Too Many Requests");
 
 SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
@@ -130,7 +149,7 @@ SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
 The Swagger UI is very slow when the number of generated URL paths exceeds a few dozen.  For large, complex data models, it is recommended to 
 generate separate swagger documents for subgraphs of the model.  
 
-```
+```java
 Set<Class<?>> entities = Sets.newHashSet(
     Book.class,
     Author.class,
@@ -148,7 +167,7 @@ In the above example, swagger will only generate paths that exclusively traverse
 The size of the swagger document can be reduced significantly by limiting the number of filter operators that are used to generate query parameter
 documentation.
 
-```
+```java
 SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
    .withFilterOps(Sets.newHashSet(Operator.IN));
 ```
