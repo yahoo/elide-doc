@@ -6,43 +6,30 @@ title: Getting Started
 ## So You Want An API?
 {:.no-toc}
 
-The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of
-the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, all of the code is
-[available here][elide-demo]–if you want to see a more fully fleshed out example of the standalone library checkout this
-[Kotlin blog example][kotlin-blog].
+The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, and all of the code is [available here][elide-demo].
+
+You can deploy and play with this example on Heroku:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-heroku-example)
+
+If you'd rather look at Kotlin code (a different example), checkout this [Kotlin blog example][kotlin-blog].
 
 1. Contents
 {:toc}
 
 ## Create A Bean
 
-JPA beans are some of the most important code in any Elide project. Your beans are the view of your data model that you
-wish to expose. In this example we will be modeling a software artifact repository since most developers have a
-high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like. If you are interested,
-[the code][elide-demo] is tagged for each step so you can follow along.
+JPA beans are some of the most important code in any Elide project. Your beans are the view of your data model that you wish to expose. In this example we will be modeling a software artifact repository since most developers have a high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like.
+ 
+The first beans we’ll need are the `ArtifactGroup`, `ArtifactProduct`, and `ArtifactVersion` beans.  For brevity we will omit package names and import statements. 
 
-The first bean we’ll need is the `ArtifactGroup` bean.  For brevity we will omit package names and import statements. This
-will represent the `<groupId>` in Maven’s dependency coordinates.
-
-```java
-@Include(rootLevel = true)
-@Entity
-public class ArtifactGroup {
-    @Id
-    public String name = "";
-}
-```
+{% include code_example example="01-more-beans" %}
 
 ## Spin up the API
 
-So now we have a bean, but without an API it is not do very useful. Before we add the API component, we need to
-create the schema in the database that our beans will use. Download and run the [demo setup script][demo-schema]; this
-demo uses MySQL, feel free to modify the setup script if you are using a different database provider.
+So now we have some beans, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our beans will use.   Out example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
 
-You may notice that there are more tables that just `ArtifactGroup`, and that the `ArtifactGroup` table has more fields
-that our bean. Not only will our bean work just fine, we expect that beans will normally expose only a subset of the
-fields present in the database. Elide is an ideal tool for building micro-services, each service in your system can
-expose only the slice of the database that it requires.
+There may be more tables in your database than beans in your project.  Similarly, there may be more columns in a table than in a particular bean.  Not only will our beans work just fine, but we expect that beans will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
 
 ### Classes
 
@@ -52,57 +39,32 @@ Bringing life to our API is trivially easy. We need two new classes: Main and Se
 
 ### Supporting Files
 
-Elide standalone uses a JPA data store that is configured programmatically (no persistence.xml required).
+Elide standalone uses a JPA data store (the thing that talks to the database) that is [configured programmatically][settings-config] (no persistence.xml required).
 
-However, if you want to see the logs from your shiny new API, you will also want a [logback config][logback-conf]. 
-Your logback config should go in `src/main/resources` so logback can find it.
+If you want to see the logs from your shiny new API, you will also want a [log4j config][log4j-conf]. 
+Your log4j config should go in `src/main/resources` so log4j can find it.
 
 ### Running
 
-With these new classes, you have two options for running your project, you can either run the `Main` class using your
-favorite IDE, or we can add the following snippet to our gradle build script and run our project with ./gradlew run
+With these new classes, you have two options for running your project.  You can either run the `Main` class using your
+favorite IDE, or you can run the service from the command line:
 
-```gradle
-plugins {
-  ...
-  id 'application'
-}
+```mvn exec:java -Dexec.mainClass="example.Main"```
 
-mainClassName = 'com.example.repository.Main' // the actual path to your Main class should go here
-```
+Either way, our example requires the following environment variables to be set to work correctly with Heroku:
 
-With the `Main` and `Settings` classes we can now run our API. If you navigate to
-`http://localhost:8080/api/v1/artifactGroup` in your browser you can see some of the sample data that the bootstrap
-script added for us. Exciting!
+1. JDBC_DATABASE_URL
+2. JDBC_DATABASE_USERNAME
+3. JDBC_DATABASE_PASSWORD
 
-```json
-{
-  "data": [{
-    "type": "artifactGroup",
-    "id": "com.example.repository"
-  }, {
-    "type": "artifactGroup",
-    "id": "com.yahoo.elide"
-  }]
-}
-```
+If running inside a Heroku dyno, Heroku sets these variables for us.
 
-## Adding More Data
-
-Now that we have an API that returns data, let’s add some more interesting behavior. Let’s update `ArtifactGroup`, and
-add the `ArtifactProduct` and `ArtifactVersion` classes–which will be the `<artifactId>` and `<version>` tags
-respectively.
-
-{% include code_example example="01-more-beans" %}
-
-We add the missing fields to `ArtifactGroup` since we anticipate the user will want to add some informative metadata to help
-users find the products and artifacts they are interested in. If we restart the API and request `/artifactGroup` we’ll
-see the other metadata we just added.
+With the `Main` and `Settings` classes we can now run our API. If you navigate to `http://localhost:8080/api/v1/group` (or alternately http://your-heroku-dyno/api/v1/group) in your browser you can see some of the sample data that the liquibase migrations added for us. Exciting!
 
 ```json
 {
   "data": [{
-    "type": "artifactGroup",
+    "type": "group",
     "id": "com.example.repository",
     "attributes": {
       "commonName": "Example Repository",
@@ -114,7 +76,7 @@ see the other metadata we just added.
       }
     }
   }, {
-    "type": "artifactGroup",
+    "type": "group",
     "id": "com.yahoo.elide",
     "attributes": {
       "commonName": "Elide",
@@ -123,13 +85,13 @@ see the other metadata we just added.
     "relationships": {
       "products": {
         "data": [{
-          "type": "artifactProduct",
+          "type": "product",
           "id": "elide-core"
         }, {
-          "type": "artifactProduct",
+          "type": "product",
           "id": "elide-standalone"
         }, {
-          "type": "artifactProduct",
+          "type": "product",
           "id": "elide-datastore-hibernate5"
         }]
       }
@@ -138,61 +100,17 @@ see the other metadata we just added.
 }
 ```
 
-So now we have an API that can display information for a full `<group>:<product>:<version>` set. We can fetch data from
-our API in the following ways:
+## Looking at more data
+
+You can navigate through the entity relationship graph defined in the beans and explore relationships:
 
 ```
-List groups:                 /artifactGroup/
-Show a group:                /artifactGroup/<group id>
-List a group's products:     /artifactGroup/<group id>/products/
-Show a product:              /artifactGroup/<group id>/products/<product id>
-List a product's versions:   /artifactGroup/<group id>/products/<product id>/versions/
-Show a version:              /artifactGroup/<group id>/products/<product id>/versions/<version id>
-```
-
-We can now fetch almost all of the data we would wish, but let’s clean it up a bit. Right now all of our data types are
-prefixed with Artifact. This might make sense in Java so that we don’t have naming collisions with classes from other
-libraries, however the consumers of our API do not care about naming collisions. We can control how Elide exposes our
-classes by setting the type on our `@Include` annotations.
-
-```java
-@Include(type = "group")
-@Entity
-public class ArtifactGroup { ... }
-
-@Include(type = "product")
-@Entity
-public class ArtifactProduct { ... }
-
-@Include(type = "version")
-@Entity
-public class ArtifactVersion{ ... }
-```
-
-Now, instead of making a call to `http://localhost:8080/api/v1/artifactGroup` to fetch our data, we make a request to
-`http://localhost:8080/api/v1/group`. Our API returns the same data as before, mostly. The types of our objects now
-reflect our preferences from the `Include` annotations.
-
-```json
-{
-    "data": [{
-    "type": "group",
-    "id": "com.example.repository",
-    ...
-  }, {
-    "type": "group",
-    "id": "com.yahoo.elide",
-    ...
-    "relationships": {
-      "products": {
-        "data": [{
-          "type": "product",
-          "id": "elide-core"
-        }, ...]
-      }
-    }
-  }]
-}
+List groups:                 ap1/v1/group/
+Show a group:                ap1/v1/group/<group id>
+List a group's products:     ap1/v1/group/<group id>/products/
+Show a product:              ap1/v1/group/<group id>/products/<product id>
+List a product's versions:   ap1/v1/group/<group id>/products/<product id>/versions/
+Show a version:              ap1/v1/group/<group id>/products/<product id>/versions/<version id>
 ```
 
 ## Writing Data
@@ -260,7 +178,8 @@ curl -X PATCH http://localhost:8080/api/v1/group/com.example.repository/products
 
 It’s just that easy to create and update data using Elide.
 
-[elide-demo]: https://github.com/clayreimann/elide-demo
+[elide-demo]: https://github.com/aklish/elide-heroku-example
 [kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
-[demo-schema]: /pages/resources/demo.sql
-[logback-conf]: /pages/resources/logback.xml
+[demo-schema]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/db/changelog/changelog.xml
+[log4j-conf]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/log4j2.xml
+[settings-config]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/java/example/Settings.java#L95-L111

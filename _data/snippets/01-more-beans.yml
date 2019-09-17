@@ -5,7 +5,7 @@ files:
 
 ArtifactGroup.java: |+2
   ```java
-  @Include(rootLevel = true)
+  @Include(rootLevel = true, type = "group")
   @Entity
   public class ArtifactGroup {
       @Id
@@ -22,7 +22,7 @@ ArtifactGroup.java: |+2
 
 ArtifactProduct.java: |+2
   ```java
-  @Include
+  @Include(type = "product")
   @Entity
   public class ArtifactProduct {
       @Id
@@ -42,7 +42,7 @@ ArtifactProduct.java: |+2
 
 ArtifactVersion.java: |+2
   ```java
-  @Include
+  @Include(type = "version")
   @Entity
   public class ArtifactVersion {
       @Id
