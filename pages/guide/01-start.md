@@ -8,7 +8,7 @@ title: Getting Started
 
 The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, and all of the code is [available here][elide-demo].
 
-You can deploy and play with this example on Heroku:
+You can deploy and play with this example on Heroku.  The landing page will display the [swagger UI][swagger-ui] for the example service.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-heroku-example)
 
@@ -183,3 +183,4 @@ It’s just that easy to create and update data using Elide.
 [demo-schema]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/db/changelog/changelog.xml
 [log4j-conf]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/log4j2.xml
 [settings-config]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/java/example/Settings.java#L95-L111
+[swagger-ui]: https://swagger.io/tools/swagger-ui/
