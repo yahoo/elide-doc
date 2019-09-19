@@ -62,7 +62,8 @@ If running inside a Heroku dyno, Heroku sets these variables for us.  If you don
 
 With the `Main` and `Settings` classes we can now run our API. 
 
-You can now run the following curl commands (replace localhost:8080 with your Heroku URL if running from Heroku) see some of the sample data that the liquibase migrations added for us:
+You can now run the following curl commands to see some of the sample data that the liquibase migrations added for us:
+Don't forget to replace localhost:8080 with your Heroku URL if running from Heroku!
 
 {% include code_example example="01-data-fetch" %}
 
@@ -100,8 +101,7 @@ When you run that cURL call you should see a bunch of json returned, that is our
 
 ## Modifying Data
 
-Notice that, when we created it, we did not set any of the attributes of our new product record. Unfortunately for our
-users this leaves the meaning of our elide-demo product ambiguous. What does it do, why should they use it? Updating our
+Notice that, when we created it, we did not set any of the attributes of our new product record.  Updating our
 data to help our users is just as easy as it is to add new data. Let’s update our bean with the following cURL call.
 
 {% include code_example example="01-data-update" %}
