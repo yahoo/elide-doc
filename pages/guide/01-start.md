@@ -75,12 +75,12 @@ Here are the respective repsonses:
 You can navigate through the entity relationship graph defined in the beans and explore relationships:
 
 ```
-List groups:                 ap1/v1/group/
-Show a group:                ap1/v1/group/<group id>
-List a group's products:     ap1/v1/group/<group id>/products/
-Show a product:              ap1/v1/group/<group id>/products/<product id>
-List a product's versions:   ap1/v1/group/<group id>/products/<product id>/versions/
-Show a version:              ap1/v1/group/<group id>/products/<product id>/versions/<version id>
+List groups:                 group/
+Show a group:                group/<group id>
+List a group's products:     group/<group id>/products/
+Show a product:              group/<group id>/products/<product id>
+List a product's versions:   group/<group id>/products/<product id>/versions/
+Show a version:              group/<group id>/products/<product id>/versions/<version id>
 ```
 
 ## Writing Data
@@ -92,38 +92,11 @@ we have only read data from the database.
 
 Fortunately for us adding data is just as easy as reading data. For now let’s use cURL to put data in the database.
 
-```curl
-curl -X POST http://localhost:8080/api/v1/group/com.example.repository/products \
-  -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
-  -d '{"data": {"type": "product", "id": "elide-demo"}}'
-```
+{% include code_example example="01-data-insert" %}
 
-When you run that cURL call you should see a bunch of json returned, that is our newly inserted object! If we query
-`http://localhost:8080/api/v1/group/com.example.repository/products/`
+When you run that cURL call you should see a bunch of json returned, that is our newly inserted object! 
 
-```json
-{
-  "data": [{
-    "type": "product",
-    "id": "elide-demo",
-    "attributes": {
-      "commonName": "",
-      "description": ""
-    }
-    "relationships": {
-      "group": {
-        "data": {
-          "type": "group",
-          "id": "com.example.repository"
-        }
-      },
-      "versions": {
-        "data": []
-      }
-    }
-  }]
-}
-```
+{% include code_example example="01-data-insert-rsp" %}
 
 ## Modifying Data
 
@@ -131,20 +104,7 @@ Notice that, when we created it, we did not set any of the attributes of our new
 users this leaves the meaning of our elide-demo product ambiguous. What does it do, why should they use it? Updating our
 data to help our users is just as easy as it is to add new data. Let’s update our bean with the following cURL call.
 
-```curl
-curl -X PATCH http://localhost:8080/api/v1/group/com.example.repository/products/elide-demo \
-  -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
-  -d '{
-    "data": {
-      "type": "product",
-      "id": "elide-demo",
-      "attributes": {
-        "commonName": "demo application",
-        "description": "An example implementation of an Elide web service that showcases many Elide features"
-      }
-    }
-  }'
-```
+{% include code_example example="01-data-update" %}
 
 It’s just that easy to create and update data using Elide.
 
