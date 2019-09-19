@@ -1,0 +1,20 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```curl 
+  curl -X POST http://localhost:8080/api/v1/group/com.example.repository/products \
+  -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
+  -d '{"data": {"type": "product", "id": "elide-demo"}}'
+  ```
+
+GraphQL: |+2
+  ```curl
+  curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
+      "http://localhost:8080/graphql/api/v1" \
+      -d'{   
+             "query" : "mutation { group(ids: [\"com.example.repository\"]) { edges { node { products(op: UPSERT, data: {name: \"elide-demo\"}) { edges { node { name } } } } } } }"
+         }'
+
+  ```

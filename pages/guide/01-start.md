@@ -60,46 +60,15 @@ Our example requires the following environment variables to be set to work corre
 
 If running inside a Heroku dyno, Heroku sets these variables for us.  If you don't set them, the example will use the H2 in memory database.
 
-With the `Main` and `Settings` classes we can now run our API. If you navigate to `http://localhost:8080/api/v1/group` (or alternately http://your-heroku-dyno/api/v1/group) in your browser you can see some of the sample data that the liquibase migrations added for us. Exciting!
+With the `Main` and `Settings` classes we can now run our API. 
 
-```json
-{
-  "data": [{
-    "type": "group",
-    "id": "com.example.repository",
-    "attributes": {
-      "commonName": "Example Repository",
-      "description": "The code for this project"
-    },
-    "relationships": {
-      "products": {
-        "data": []
-      }
-    }
-  }, {
-    "type": "group",
-    "id": "com.yahoo.elide",
-    "attributes": {
-      "commonName": "Elide",
-      "description": "The magical library powering this project"
-    },
-    "relationships": {
-      "products": {
-        "data": [{
-          "type": "product",
-          "id": "elide-core"
-        }, {
-          "type": "product",
-          "id": "elide-standalone"
-        }, {
-          "type": "product",
-          "id": "elide-datastore-hibernate5"
-        }]
-      }
-    }
-  }]
-}
-```
+You can now run the following curl commands (replace localhost:8080 with your Heroku URL if running from Heroku) see some of the sample data that the liquibase migrations added for us:
+
+{% include code_example example="01-data-fetch" %}
+
+Here are the respective repsonses:
+
+{% include code_example example="01-data-fetch-rsp" %}
 
 ## Looking at more data
 
@@ -140,7 +109,7 @@ When you run that cURL call you should see a bunch of json returned, that is our
     "attributes": {
       "commonName": "",
       "description": ""
-    },
+    }
     "relationships": {
       "group": {
         "data": {
