@@ -14,6 +14,7 @@ You can deploy and play with this example on Heroku or locally.  The landing pag
 
 If you'd rather look at Kotlin code (a different example), checkout this [Kotlin blog example][kotlin-blog].
 
+## Contents
 1. Contents
 {:toc}
 
