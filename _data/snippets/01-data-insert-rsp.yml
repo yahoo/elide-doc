@@ -4,52 +4,52 @@ files:
 
 JSON-API: |+2
   ```json
-	{   
-		"data": [
-			{   
-				"attributes": {
-					"commonName": "",
-					"description": ""
-				},
-				"id": "elide-demo",
-				"relationships": {
-					"group": {
-						"data": {
-							"id": "com.example.repository",
-							"type": "group"
-						}
-					},
-					"versions": {
-						"data": []
-					}
-				},
-				"type": "product"
-			}
-		]
-	}
+  {   
+    "data": [
+      {   
+        "attributes": {
+          "commonName": "",
+          "description": ""
+        },
+        "id": "elide-demo",
+        "relationships": {
+          "group": {
+            "data": {
+              "id": "com.example.repository",
+              "type": "group"
+            }
+          },
+          "versions": {
+            "data": []
+          }
+        },
+        "type": "product"
+      }
+    ]
+  }
   ```
 
 GraphQL: |+2
   ```json
     {
-        "data": {
-            "group": {
+      "data": {
+        "group": {
+          "edges": [
+            {
+              "node": {
+                "products": {
                 "edges": [
-                    {
-                        "node": {
-                            "products": {
-                                "edges": [
-                                    {
-                                        "node": {
-                                            "name": "elide-demo"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
+                  {
+                    "node": {
+                      "name": "elide-demo"
                     }
+                  }
                 ]
+              }
             }
-        }
+          }
+        ]
+      }
     }
+  }
   ```
