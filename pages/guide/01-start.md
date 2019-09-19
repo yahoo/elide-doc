@@ -8,7 +8,7 @@ title: Getting Started
 
 The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, and all of the code is [available here][elide-demo].
 
-You can deploy and play with this example on Heroku.  The landing page will display the [swagger UI][swagger-ui] for the example service.
+You can deploy and play with this example on Heroku or locally.  The landing page will display the [swagger UI][swagger-ui] for the example service.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-heroku-example)
 
@@ -51,13 +51,13 @@ favorite IDE, or you can run the service from the command line:
 
 ```mvn exec:java -Dexec.mainClass="example.Main"```
 
-Either way, our example requires the following environment variables to be set to work correctly with Heroku:
+Our example requires the following environment variables to be set to work correctly with Heroku and Postgres.  
 
 1. JDBC_DATABASE_URL
 2. JDBC_DATABASE_USERNAME
 3. JDBC_DATABASE_PASSWORD
 
-If running inside a Heroku dyno, Heroku sets these variables for us.
+If running inside a Heroku dyno, Heroku sets these variables for us.  If you don't set them, the example will use the H2 in memory database.
 
 With the `Main` and `Settings` classes we can now run our API. If you navigate to `http://localhost:8080/api/v1/group` (or alternately http://your-heroku-dyno/api/v1/group) in your browser you can see some of the sample data that the liquibase migrations added for us. Exciting!
 
