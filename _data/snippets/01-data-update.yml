@@ -20,7 +20,7 @@ JSON-API: |+2
 
 GraphQL: |+2
   ```curl
-  curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
+   curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
       "http://localhost:8080/graphql/api/v1" \
       -d'{   
              "query" : "mutation { group(ids: [\"com.example.repository\"]) { edges { node { products(op: UPDATE, data: { name: \"elide-demo\", commonName: \"demo application\", description: \"An example implementation of an Elide web service that showcases many Elide features\" }) { edges { node { name } } } } } } }"
