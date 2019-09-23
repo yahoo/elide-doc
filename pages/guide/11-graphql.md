@@ -1,6 +1,7 @@
 ---
 layout: guide
 group: guide
+subtopic: true
 title: GraphQL
 ---
 
