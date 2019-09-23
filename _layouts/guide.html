@@ -6,9 +6,15 @@ layout: default
   <div class="row">
     <div class="col-sm side-bar">
       <ul class="nav flex-column">
-        {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} {% if pages.group == "guide" %}
+        {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
+        {% if pages.group == "guide" %}
+        {% if pages.subtopic == true %}
+        <li class="subtopic"><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
+        {% else %}
         <li><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
-        {% endif %} {% endfor %}
+        {% endif %} 
+        {% endif %} 
+        {% endfor %}
       </ul>
     </div>
     <div class="col-sm-9 docs">
