@@ -106,7 +106,7 @@ the swagger document similar to:
 
 ```java
 SecuritySchemeDefinition oauthDef = new OAuth2Definition().implicit(CONFIG_DATA.zuulAuthorizeUri());
-SecurityRequirement oauthReq = new SecurityRequirement().requirement("myOuath");
+SecurityRequirement oauthReq = new SecurityRequirement().requirement("myOauth");
 
 SwaggerBuilder builder = new SwaggerBuilder(entityDictionary, info);
 Swagger document = builder.build();
