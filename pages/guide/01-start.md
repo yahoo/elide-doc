@@ -28,7 +28,7 @@ The first beans we’ll need are the `ArtifactGroup`, `ArtifactProduct`, and `Ar
 
 ## Spin up the API
 
-So now we have some beans, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our beans will use.   Out example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
+So now we have some beans, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our beans will use.   Our example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
 
 There may be more tables in your database than beans in your project.  Similarly, there may be more columns in a table than in a particular bean.  Not only will our beans work just fine, but we expect that beans will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
 
