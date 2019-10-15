@@ -4,7 +4,7 @@ layout: default
 {% include setup %}
 <div class="container mt-3">
   <div class="row">
-    <div class="col-sm side-bar">
+    <div class="col-sm side-bar hidden-phone">
       <ul class="nav flex-column">
         {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
         {% if pages.group == "guide" %}
