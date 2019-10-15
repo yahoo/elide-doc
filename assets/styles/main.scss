@@ -131,3 +131,17 @@ $elbow-border: $gray-600 2px dashed;
 li.subtopic {
   margin-left:25px;
 }
+
+.show-phone {
+  display: none;
+}
+
+@media only screen and (max-width: 760px) {
+  .hidden-phone {
+    display: none;
+  }
+
+  .show-phone {
+    display: block;
+  }
+}

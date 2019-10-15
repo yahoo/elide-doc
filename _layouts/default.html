@@ -40,7 +40,16 @@
         </button>
         <div class="collapse navbar-collapse" id="navLinks">
           <div class="navbar-nav mx-auto">
-            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/01-start.html">Documentation</a>
+            {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
+            {% if pages.group == "guide" %}
+            {% if pages.subtopic == true %}
+            <a class="show-phone nav-item nav-link text-light ml-auto subtopic" href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a>
+            {% else %}
+            <a class="show-phone nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a>
+            {% endif %} 
+            {% endif %} 
+            {% endfor %}
+            <a class="hidden-phone nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/01-start.html">Documentation</a>
             <a class="nav-item nav-link text-light ml-auto" href="https://spectrum.chat/elide">Community</a>
           </div>
         </div>
