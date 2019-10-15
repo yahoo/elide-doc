@@ -13,5 +13,5 @@ sass:
 exclude: []
 
 # site-specific configuration
-BASE_PATH: http://localhost:4000
+BASE_PATH: https://elide.io
 ASSET_PATH: /assets
