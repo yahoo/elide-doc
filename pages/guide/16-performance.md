@@ -62,8 +62,50 @@ There are a number of limitations to this approach:
 2. Databases have limited support for functional indices.  Use of lower or upper case functions may also disable the use of an index.
 
 Elide provides two capabilities to work around these issues for large tables that require text search:
-1. *COMING SOON* - Elide supports the ability to override the JPQL fragment that is generated for any operator on any field in any entity model.  This makes it possible to disable the use of lower/upper case functions on a database column if the database column is already case insensitive.  It is also possible to use custom SQL dialects to leverage full text index support (where available).
-2. *COMING SOON* - Elide supports a `SearchDataStore` that can wrap another ORM data store.  Whenever possible, the `SearchDataStore` can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.  
+1. Elide supports the [ability to override the JPQL fragment](#jpql-fragment-override) that is generated for any operator on any field in any entity model.  This makes it possible to disable the use of lower/upper case functions on a database column if the database column is already case insensitive.  It is also possible to use custom SQL dialects to leverage full text index support (where available).
+2. Elide supports a [Text Search Data Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) that can wrap another ORM data store.  Whenever possible, the text search data store can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.  
+
+### JPQL Fragment Override
+
+To override the JPQL fragment Elide generates for a filter operator, you must define a JPQL Predicate Generator:
+
+```java
+/**
+ * Converts a JPQL column alias and list of arguments into a JPQL filter predicate fragment.
+ */
+@FunctionalInterface
+public interface JPQLPredicateGenerator {
+
+    /**
+     * Generate a JPQL fragment for a particular filter operator.
+     * @param columnAlias The entity attribute being filtered.
+     * @param parameters A list of prepared statement parameters that will be populated.
+     * @return A JPQL fragment.
+     */
+    String generate(String columnAlias, List<FilterPredicate.FilterParameter> parameters);
+}
+```
+
+And then register it with Elide for the filter operator you want to modify.  This can either be done globally:
+
+```java
+FilterTranslator.registerJPQLGenerator(Operator.NOTNULL, 
+    (columnAlias, params) -> {
+        return String.format("%s IS NOT NULL", columnAlias);
+    }
+);
+```
+
+Or the override can be registered for a specific model attribute:
+
+```java
+FilterTranslator.registerJPQLGenerator(Operator.NOTNULL, Book.class, "title",
+    (columnAlias, params) -> {
+        return String.format("%s IS NOT NULL", columnAlias);
+    }
+);
+
+```
 
 ## Bespoke Field Sets
 
