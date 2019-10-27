@@ -30,7 +30,7 @@ Elide generates its API entirely based on the concept of **Data Models**. In sum
 
 ## JPA Annotations
 
-The [JPA (Java Persistence API)](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) library provides a set of annotations for describing relationships between entities. Elide makes use of the following JPA annotations: `@Entity`, `@OneToOne`, `@OneToMany`, `@ManyToOne`, and `@ManyToMany`. Any JPA property or field that is exposed via Elide and is not a _relationship_ is considered an _attribute_ of the entity.
+The [JPA (Java Persistence API)](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) library provides a set of annotations for describing relationships between entities. Elide makes use of the following JPA annotations: `@Entity`, `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@Id`, and `@GeneratedValue`.  Any JPA property or field that is exposed via Elide and is not a _relationship_ is considered an _attribute_ of the entity.
 
 If you need more information about JPA, please [review their documentation](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) or see our examples below.
 
@@ -42,36 +42,14 @@ After creating a proper data model, exposing it through Elide requires you confi
 @Include(rootLevel=true)
 @Entity
 public class Author {
-    private Long id;
-    private String name;
-    private Set<Book> books;
-
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
+    private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String name;
 
     @ManyToMany
-    public Set<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(Set<Book> books) {
-        this.books = books;
-    }
+    private Set<Book> books;
 }
 ```
 
@@ -79,40 +57,37 @@ public class Author {
 @Include
 @Entity
 public class Book {
-    private Long id;
-    private String title;
-    private Set<Author> authors;
-
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
+    private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    private String title;
 
     @ManyToMany
-    public Set<Author> getAuthors() {
-        return authors;
-    }
-
-    public void setAuthors(Set<Author> authors) {
-        this.authors = authors;
-    }
+    private Set<Author> authors;
 }
 ```
 
 Considering the example above, we have a full data model that exposes a specific graph. Namely, a root node of the type `Author` and a bi-directional relationship from `Author` to `Book`. That is, one can access all `Author` objects directly, but must go _through_ an author to see information about any specific `Book` object.
+
+## Model Identifiers
+
+Every model in Elide must have an ID.  This is a requirement of both the JSON-API specification and Elide's GraphQL API.  Identifiers can be assigned by the persistence layer automatically or 
+the client.  Elide must know two things:
+
+1. What field is the ID of the model.  This is determined by the `@Id` annotation.
+2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
+
+Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
+
+## Attributes vs Relationships
+
+Elide distinguishes between attributes and relationships in a data model:
+1. *Relationships* are links from one model to another.  They can be traversed directly through the API.  If the relationship represents a collection, they can also be sorted, filtered, and paginated 
+in the API.  Relationships can be bidirectional or unidirectional.
+2. *Attributes* are properties of a model.  Attributes can be primitive types, objects, or collections of objects or primitives.  Attributes which are collections cannot be sorted, filtered, or paginated in the API.  Complex attributes (collections or objects) cannot be used in a filter predicate.
+
+## Model Properties or Fields
 
 Elide supports exposing either JPA properties or fields (but not both on the same entity).  For any given entity, Elide looks at whether `@Id` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying JPA persistence layer without exposing it through the Elide API.
 
@@ -344,6 +319,22 @@ If you're using the `elide-standalone` artifact, dependency injection is already
 
 Data models can be validated using [bean validation](http://beanvalidation.org/1.0/spec/).  This requires
 *JSR303* data model annotations and wiring in a bean validator in the `DataStore`.
+
+## Type Coercion
+
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/09-clientapis.html#type-coercion).
+
+## Inheritance
+
+Elide supports two kinds of inheritance:
+1. Non-entity inheritance via the JPA annotation `@MappedSuperclass`.
+2. Entity inheritance via the JPA annotation `@Inheritance`.
+
+Entity inheritance has a few caveats:
+1. Only the `InheritanceType.JOINED` and `InheritanceType.SINGLE_TABLE` strategies are supported.
+2. Entity relationships whose type is a superclass have different behavior in JSON-API and GraphQL:
+   1. JSON-API will return the type and attributes of the subclass (as well as the super class).
+   2. GraphQL will return the type and attributes of the superclass only.
 
 ## Philosophy
 
