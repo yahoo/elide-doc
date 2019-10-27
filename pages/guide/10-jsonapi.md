@@ -98,13 +98,19 @@ RSQL also adds a richer set of operators.
 
 #### Filter Syntax
 
-Filter query parameters look like `filter[TYPE]` where 'TYPE' is the name of the data model/entity.  
-Any number of filter parameters can be specified provided the 'TYPE' is different for each parameter.
+Filter query parameters either look like: 
+1. `filter[TYPE]` where 'TYPE' is the name of the data model/entity.   These are type specific filters and only apply to filtering collections of the given type.
+1. `filter` with no type specified.   This is a global filter and can be used to filter across relationships (by performing joins in the persistence layer).
+
+Any number of typed filter parameters can be specified provided the 'TYPE' is different for each parameter.  There can only be a single global filter for the entire
+query.  
 
 The value of any query parameter is a RSQL expression composed of predicates.  Each predicate contains an attribute of the data model,
 an operator, and zero or more comparison values.
 
-#### Filter Examples
+Typed filters can be used for any collection returned by Elide.  Global filters can only be used to filter root level collections.
+
+#### Typed Filter Examples
 
 Return all the books written by author '1' with the genre exactly equal to 'Science Fiction':
 
@@ -122,6 +128,12 @@ or 'Science Fiction':
 Return all the books whose title contains 'Foo'.  Include all the authors of those books whose name does not equal 'Orson Scott Card':
 
 `/book?include=authors&filter[book]=title==*Foo*&filter[author]=name!='Orson Scott Card'`
+
+#### Global Filter Examples
+
+Return all the books with an author whose name is 'Null Ned' and whose title is 'Life with Null Ned':
+
+`/book?filter=authors.name=='Null Ned';title=='Life with Null Ned'`
 
 #### Operators
 
