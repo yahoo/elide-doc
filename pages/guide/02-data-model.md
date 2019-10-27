@@ -70,7 +70,7 @@ public class Book {
 
 Considering the example above, we have a full data model that exposes a specific graph. Namely, a root node of the type `Author` and a bi-directional relationship from `Author` to `Book`. That is, one can access all `Author` objects directly, but must go _through_ an author to see information about any specific `Book` object.
 
-## Model Identitiers
+## Model Identifiers
 
 Every model in Elide must have an ID.  This is a requirement of both the JSON-API specification and Elide's GraphQL API.  Identifiers can be assigned by the persistence layer automatically or 
 the client.  Elide must know two things:
@@ -78,7 +78,14 @@ the client.  Elide must know two things:
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
 
-Identifier fields in Elide are typically integers, longs, or strings.
+Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
+
+## Attributes vs Relationships
+
+Elide distinguishes between attributes and relationships in a data model:
+1. *Relationships* are links from one model to another.  They can be traversed directly through the API.  If the relationship represents a collection, they can also be sorted, filtered, and paginated 
+in the API.  Relationships can be bidirectional or unidirectional.
+2. *Attributes* are properties of a model.  Attributes can be primitive types, objects, or collections of objects or primitives.  Attributes which are collections cannot be sorted, filtered, or paginated in the API.  Complex attributes (collections or objects) cannot be used in a filter predicate.
 
 ## Model Properties or Fields
 
@@ -316,6 +323,18 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 ## Type Coercion
 
 Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/09-clientapis.html#type-coercion).
+
+## Inheritance
+
+Elide supports two kinds of inheritance:
+1. Non-entity inheritance via the JPA annotation `@MappedSuperclass`.
+2. Entity inheritance via the JPA annotation `@Inheritance`.
+
+Entity inheritance has a few caveats:
+1. Only the `InheritanceType.JOINED` and `InheritanceType.SINGLE_TABLE` strategies are supported.
+2. Entity relationships whose type is a superclass have different behavior in JSON-API and GraphQL:
+   1. JSON-API will return the type and attributes of the subclass (as well as the super class).
+   2. GraphQL will return the type and attributes of the superclass only.
 
 ## Philosophy
 
