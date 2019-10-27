@@ -10,6 +10,8 @@ Elide supports the generation of [Swagger](http://swagger.io/) documentation fro
 conforming to the swagger specification that can be used by tools like Swagger UI (among others) to explore, understand, and compose queries against
 your Elide API.
 
+Only JSON-API endpoints are documented.  The GraphQL API schema can be explored directly with tools like [Graphiql](https://github.com/graphql/graphiql).
+
 ## Features Supported
 
 * **JaxRS Endpoint** - Elide ships with a customizable JaxRS endpoint that can publish one or more swagger documents.
@@ -49,7 +51,46 @@ Pull in swagger core :
 </dependency>
 ```
 
+### Elide Standalone Setup
+
+If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone), you can extend `ElideStandaloneSettings` to configure swagger.  The `enableSwagger` function returns a map of Swagger documents keyed by a name for each document that will be exposed in the swagger document URL.
+
+
+```java
+    @Override
+    public Map<String, Swagger> enableSwagger() {
+
+        //Create a dictionary of the entities that will be exposed in swagger
+        EntityDictionary dictionary = new EntityDictionary(new HashMap());
+        dictionary.bindEntity(ArtifactGroup.class);
+        dictionary.bindEntity(ArtifactProduct.class);
+        dictionary.bindEntity(ArtifactVersion.class);
+
+        //Title and version your service
+        Info info = new Info().title("Test Service").version("1.0");
+
+        //Build the swagger document with the base API path
+        SwaggerBuilder builder = new SwaggerBuilder(dictionary, info);
+        Swagger swagger = builder.build().basePath("/api/v1");
+
+        //Return the map of swagger documents
+        Map<String, Swagger> docs = new HashMap<>();
+        docs.put("test", swagger);
+        return docs;
+    }
+```
+
+The code above exposes a single swagger document at the URL `/swagger/doc/test`.  To change the path where swagger will be exposed, override this function in `ElideStandaloneSettings`:
+
+```java
+    @Override
+    public String getSwaggerPathSepc() {
+        return "/mySwaggerPath/*";
+    }
+```
+
 ### Basic Setup
+If you are using Elide directly as a library (and not using Elide Standalone), follow these instructions:
 
 Create and initialize an entity dictionary.
 
