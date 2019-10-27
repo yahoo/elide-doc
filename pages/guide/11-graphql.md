@@ -318,3 +318,9 @@ Replaces the set of authors for _every_ book with the set consisting of:
 The response includes the complete set of books (id & title) and their new authors (id & name).
 
 {% include code_example example='replace-multiple' offset=24 %}
+
+## Type Serialization/Deserialization
+-------------------------------------
+
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/09-clientapis.html#type-coercion).
+
