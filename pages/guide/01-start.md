@@ -8,7 +8,7 @@ title: Getting Started
 
 The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, and all of the code is [available here][elide-demo].
 
-You can deploy and play with this example on Heroku or locally.  The landing page will display the [swagger UI][swagger-ui] for the example service.
+You can deploy and play with this example on Heroku or locally.  The landing page will let you toggle between the [swagger UI][swagger-ui] and [Graphiql](https://github.com/graphql/graphiql) for the example service.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-heroku-example)
 
