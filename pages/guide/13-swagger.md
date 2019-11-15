@@ -22,6 +22,7 @@ Only JSON-API endpoints are documented.  The GraphQL API schema can be explored 
 * **Sort by Attribute** - All _GET_ requests support sort query parameters.
 * **Pagination** - All _GET_ requests support pagination query parameters.
 * **Permission Exposition** - Elide permissions are exported as documentation for entity schemas.
+* **Attribute Properties** - The _required_, _readOnly_, _example_ and _value_ fields are extracted from `ApiModelProperty` annotations.  
 
 ## Getting Started
 
@@ -214,3 +215,18 @@ SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
 ```
 
 In the above example, filter query parameters are only generated for the _IN_ operator.
+
+### Attribute Properties
+
+Elide extracts properties from the `ApiModelProperty` annotation and adds them to the swagger documentation.
+
+```java
+class Book {
+
+    @ApiModelProperty(required = true)
+    public String title;
+}
+```
+
+Only the _required_, _value_, _example_, and _readOnly_ properties are extracted.  This is currently only supported for attributes on Elide models.
+
