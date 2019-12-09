@@ -287,3 +287,17 @@
         required: False
         type: Integer
         description: The maximum number of records a user can request at a given time for a particular entity.
+
+- name: ToMany
+  description: Marks a method or field as a relationship (to many) that should be exposed via Elide Despite JPA bindings.
+  applicationLevel:
+      - Method
+      - Field
+  parameters: []
+
+- name: ToOne
+  description: Marks a method or field as a relationship (to one) that should be exposed via Elide Despite JPA bindings.
+  applicationLevel:
+      - Method
+      - Field
+  parameters: []

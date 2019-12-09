@@ -87,6 +87,7 @@ The operations are separated into those that accept a _data_ argument and those 
 | Replace   | ✓    | X   |
 | Remove    | X    | ✓   |
 | Delete    | X    | ✓   |
+{:.table}
 
 --------------------------
 

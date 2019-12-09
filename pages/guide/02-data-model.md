@@ -24,19 +24,38 @@ title: Data Models
 }
 </style>
 
-Elide generates its API entirely based on the concept of **Data Models**. In summary, these are [JPA-annotated](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) Java classes that describe the _schema_ for each exposed endpoint. While the JPA annotations provide a high-level description on how relationships and attributes are modeled, Elide provides a set of [security annotations](/pages/guide/03-security.html) to secure this model. Data models are intended to be a _view_ on top of the [data store](/pages/guide/06-datatstores.html) or the set of data stores which support your Elide-based service.
-
 **NOTE:** This page is a description on how to _create_ data models in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation](/pages/guide/09-clientapis.html).
 
-## JPA Annotations
+---------------------
 
-The [JPA (Java Persistence API)](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) library provides a set of annotations for describing relationships between entities. Elide makes use of the following JPA annotations: `@Entity`, `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@Id`, and `@GeneratedValue`.  Any JPA property or field that is exposed via Elide and is not a _relationship_ is considered an _attribute_ of the entity.
+Elide generates its API entirely based on the concept of **Data Models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
+All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/03-security.html). 
+
+## Annotations
+
+Elide has first class support for [JPA (Java Persistence API)](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) annotations.  These annotations serve double duty by both:
+ - describing the attributes, relationships, and id field of a model.
+ - provide an object relational mapping that can be used by an Elide data store to persist the model.
+
+Elide makes use of the following JPA annotations: `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@Id`, and `@GeneratedValue`.  
 If you need more information about JPA, please [review their documentation](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) or see our examples below.
+
+However, JPA is not required and Elide supports its own set of annotations for describing models:
+
+| Annotation Purpose       | JPA                         | Non-JPA           | 
+|--------------------------|-----------------------------|-------------------|
+| Expose a model in elide  |                             | `@Include`        |
+| To One Relationship      | `@OneToOne`, `@ManyToOne`   | `@ToOne`          |
+| To Many Relationship     | `@OneToMany`, `@ManyToMany` | `@ToMany`         |
+| Mark an identifier field | `@Id`                       |                   |
+{:.table}
+
+Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/15-annotations.html).
 
 ## Exposing a Model as an Elide Endpoint
 
-After creating a proper data model, exposing it through Elide requires you configure _include_ it in Elide. Elide generates its API as a _graph_; this graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
+After creating a proper data model, you can expose it through Elide by marking with with `@Include`.  Elide generates its API as a _graph_.  This graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
 
 ```java
 @Include(rootLevel=true)
@@ -72,8 +91,7 @@ Considering the example above, we have a full data model that exposes a specific
 
 ## Model Identifiers
 
-Every model in Elide must have an ID.  This is a requirement of both the JSON-API specification and Elide's GraphQL API.  Identifiers can be assigned by the persistence layer automatically or 
-the client.  Elide must know two things:
+Every model in Elide must have an ID.  This is a requirement of both the JSON-API specification and Elide's GraphQL API.  Identifiers can be assigned by the persistence layer automatically or the client.  Elide must know two things:
 
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
@@ -83,15 +101,12 @@ Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
 ## Attributes vs Relationships
 
 Elide distinguishes between attributes and relationships in a data model:
-1. *Relationships* are links from one model to another.  They can be traversed directly through the API.  If the relationship represents a collection, they can also be sorted, filtered, and paginated 
-in the API.  Relationships can be bidirectional or unidirectional.
-2. *Attributes* are properties of a model.  Attributes can be primitive types, objects, or collections of objects or primitives.  Attributes which are collections cannot be sorted, filtered, or paginated in the API.  Complex attributes (collections or objects) cannot be used in a filter predicate.
+1. *Relationships* are links from one model to another.  They can be traversed directly through the API.  If the relationship represents a collection, they can also be sorted, filtered, and paginated.  Relationships must be explicitly marked with an annotation (for example - `@ToMany`) in the model.  Relationships can be bidirectional or unidirectional.
+2. *Attributes* are properties of a model.  Attributes can be primitive types, objects, or collections of objects or primitives.  Attributes which are collections cannot be sorted, filtered, or paginated in the API.  Complex attributes (collections or objects) cannot be used in a filter predicate.  Attributes are not marked with annotations in Elide.
 
 ## Model Properties or Fields
 
-Elide supports exposing either JPA properties or fields (but not both on the same entity).  For any given entity, Elide looks at whether `@Id` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying JPA persistence layer without exposing it through the Elide API.
-
-Much of the Elide per-model configuration is done via annotations. For a description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/15-annotations.html).
+An elide model can be described using properties (getter and setter functions) or fields (class member variables) but not both on the same entity.  For any given entity, Elide looks at whether `@Id` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying persistence layer without exposing it through the Elide API.
 
 ## Computed Attributes
 
