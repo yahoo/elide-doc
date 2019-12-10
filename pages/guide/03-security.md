@@ -127,7 +127,16 @@ Filter expression checks are most important when a security rule is tied in some
 
 ## User
 ---------------------
-Each request is associated with a `User` object.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+
+Each request is associated with a `User` object.  The User is simply an opaque object that wraps something meaningful to the underlying framework.
+
+### Spring Boot User Object
+
+When using Spring Boot, the user object always wraps the [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) extracted by Spring Security.
+
+### Elide Library & Standalone User Object
+
+When using elide standalone or Elide directly as a library, the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
 
 The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
 

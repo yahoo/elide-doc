@@ -88,8 +88,25 @@ Stores can be included through the following artifact dependencies:
 
 # Overriding the Store
 
-The elide-standalone artifact is the simplest way to get started with Elide.  It runs an embedded Jetty container with
-common default settings including the JPA data store.
+## Overriding in Spring Boot
+
+[Elide Spring Boot][elide-spring] is configured by default with the JPA data store.
+
+To change the store, override the `DataStore` autoconfigure bean:
+
+```java
+    @Bean
+    public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
+
+        return new JpaDataStore(
+                () -> { return entityManagerFactory.createEntityManager(); },
+                    (em -> { return new NonJtaTransaction(em); }));
+    }
+```
+
+## Overriding in Elide Standalone
+
+[Elide Standalone][elide-standalone] is configured by default with the JPA data store.
 
 To change the store, the `ElideStandaloneSettings` interface can be overridden to change the function 
 which builds the `ElideSettings` object:
@@ -168,3 +185,6 @@ The Data Store Transaction can inform Elide of its capabilities by overriding th
         return true;
     }
 ```
+
+[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure

@@ -328,6 +328,7 @@ An implementation of this interface can be passed to the `EntityDictionary` duri
                 (obj) -> injector.inject(obj));
 ```
 
+If you're using the `elide-spring-boot*` artifacts, dependency injection is already setup using Spring.
 If you're using the `elide-standalone` artifact, dependency injection is already setup using Jetty's `ServiceLocator`.
 
 ## Validation
