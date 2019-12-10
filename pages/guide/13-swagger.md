@@ -264,4 +264,4 @@ class Book {
 Only the _required_, _value_, _example_, and _readOnly_ properties are extracted.  This is currently only supported for attributes on Elide models.
 
 [elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
-[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter

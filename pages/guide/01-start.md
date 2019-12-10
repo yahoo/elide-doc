@@ -19,7 +19,7 @@ Don't like Java?  [Here][kotlin-blog] is a different tutorial in Kotlin.
 1. Contents
 {:toc}
 
-### Add Elide as a Dependency
+## Add Elide as a Dependency
 
 To include elide into your spring project, add the single starter dependency:	
 ```xml	
@@ -117,8 +117,7 @@ If running inside a Heroku dyno, Heroku sets these variables for us.  If you don
 
 With the `App` class and application yaml file, we can now run our API. 
 
-You can now run the following curl commands to see some of the sample data that the liquibase migrations added for us:
-Don't forget to replace localhost:8080 with your Heroku URL if running from Heroku!
+You can now run the following curl commands to see some of the sample data that the liquibase migrations added for us.  Don't forget to replace localhost:8080 with your Heroku URL if running from Heroku!
 
 {% include code_example example="01-data-fetch" %}
 
@@ -154,7 +153,7 @@ When you run that cURL call you should see a bunch of json returned, that is our
 
 {% include code_example example="01-data-insert-rsp" %}
 
-## Modifying Data
+### Modifying Data
 
 Notice that, when we created it, we did not set any of the attributes of our new product record.  Updating our
 data to help our users is just as easy as it is to add new data. Let’s update our model with the following cURL call.

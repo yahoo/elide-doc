@@ -33,8 +33,8 @@ All Elide APIs share a common set of concepts:
 
 ### Type Coercion
 
-Elide attempts to deserialize and coerce data model fields in the client payload into the underlying type defined in the JPA model.  Similarly, Elide 
-will serialize JPA model fields into the text format defined by the schema of the client payload.
+Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 
+will serialize the data model fields into the text format defined by the schema of the client payload.
 
 Beyond primitive, numeric, and String types, Elide can serialize and deserialize complex and user defined types.
 
