@@ -19,6 +19,34 @@ in API expression, but also little direction for best practices for common mutat
 
 Elide offers an opinionated GraphQL API that addresses exactly how to do these things in a uniform way across your entire data model graph.
 
+## JSON Envelope
+--------------------------
+Elide accepts GraphQL queries embedded in HTTP POST requests.  It follows the [convention defined by GraphQL](https://graphql.org/learn/serving-over-http/) for serving over HTTP.  Namely, ever GraphQL query is wrapped in a JSON envelope object with one required attribute and two optional attributes:
+1. *query* - _Required_.  Contains the actual graphQL query.
+2. *operationName* - Used if multiple operations are present in the same query.
+3. *variables* - Contains a json object of key/value pairs where the keys map to variable names in the query and the values map to the variable values.
+
+```json
+{
+    "query": "mutation myMutation($bookName: String $authorName: String) {book(op: UPSERT data: {id:2,title:$bookName}) {edges {node {id title authors(op: UPSERT data: {id:2,name:$authorName}) {edges {node {id name}}}}}}}",
+    "variables": {
+        "authorName": "John Setinbeck",
+        "bookName": "Grapes of Wrath"
+    }
+}
+```
+
+The response is also a JSON payload:
+
+```json
+{
+  "data": { ... },
+  "errors": [ ... ]
+}
+```
+
+The 'data' field contains the graphQL response object, and the 'errors' field (only present when they exist) contains one or more errors encountered when executing the query.  Note that it is possible to receive a 200 HTTP OK from Elide but also have errors in the query.
+
 ## API Structure
 --------------------------
 
