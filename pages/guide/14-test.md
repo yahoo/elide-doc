@@ -17,7 +17,7 @@ The example leverages:
 3. [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-contrib/elide-test-helpers) for the JSON-API and GraphQL DSLs.
 4. [Rest Assured](http://rest-assured.io/) for issuing HTTP requests against the test service.
 5. [Spring Boot Test Starter](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test) for adding test data for each test.
-6. [H2 In Memory Database](https://https://www.h2database.com/html/main.html) for an in memory test database.
+6. [H2 In Memory Database](https://www.h2database.com/html/main.html) for an in memory test database.
 
 ### Maven 
 ```xml
