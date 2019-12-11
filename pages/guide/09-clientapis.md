@@ -33,8 +33,8 @@ All Elide APIs share a common set of concepts:
 
 ### Type Coercion
 
-Elide attempts to deserialize and coerce data model fields in the client payload into the underlying type defined in the JPA model.  Similarly, Elide 
-will serialize JPA model fields into the text format defined by the schema of the client payload.
+Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 
+will serialize the data model fields into the text format defined by the schema of the client payload.
 
 Beyond primitive, numeric, and String types, Elide can serialize and deserialize complex and user defined types.
 
@@ -73,11 +73,30 @@ CoerceUtil.register(targetType, serde);
 
 #### Date Coercion
 
-[Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone) has built-in support for either:
+Elide has built-in support for either:
  - Epoch based dates (serialized as a long)
  - [ISO8601](https://www.iso.org/iso-8601-date-and-time-format.html) based dates (serialized as a String `yyyy-MM-dd'T'HH:mm'Z')
 
-Elide standalone defaults to ISO8601 dates.  This can be toggled by overriding the following setting in `ElideStandaloneSettings`:
+##### Spring Boot Configuration
+
+[Elide Spring Boot][elide-spring] is configured by default to use IS08601 dates.
+
+This can be toggled by overriding the `Elide` autoconfigure bean:
+
+```java
+    @Bean
+    public Elide initializeElide(EntityDictionary dictionary, DataStore dataStore, ElideConfigProperties settings) {
+
+        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+                ...
+                .withEpochDates();
+
+        return new Elide(builder.build());
+```
+
+##### Elide Standalone Configuration
+
+[Elide standalone][elide-standalone] defaults to ISO8601 dates.  This can be toggled by overriding the following setting in `ElideStandaloneSettings`:
 
 ```java
     /**
@@ -88,6 +107,8 @@ Elide standalone defaults to ISO8601 dates.  This can be toggled by overriding t
         return true;
     }
 ```
+
+##### Elide Library Configuration
 
 If using Elide as a library, the following date serdes can be registered:
 1. [IS8601 Serde](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/utils/coerce/converters/ISO8601DateSerde.java)
@@ -100,3 +121,6 @@ Elide has built in support for converting between String and UUIDs.  The convers
 #### Enum Coercion
 
 Elide has built in support for converting between Strings or Integers to enumeration types (by name or value respectively).
+
+[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure

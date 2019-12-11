@@ -28,7 +28,7 @@ Only JSON-API endpoints are documented.  The GraphQL API schema can be explored 
 
 ### Maven
 
-Pull in the following elide dependencies :
+If you are not using [Elide Spring Starter][elide-spring] or [Elide Standalone][elide-standalone] (which package swagger as a dependency), you will need to pull in the following elide dependencies :
 
 ```
 <dependency>
@@ -52,7 +52,40 @@ Pull in swagger core :
 </dependency>
 ```
 
-### Elide Standalone Setup
+### Spring Boot Configuration
+
+If you are using [Elide Spring Autoconfigure](https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure), you can override the `Swagger` bean:
+
+```java
+    @Bean
+    public Swagger buildSwagger(EntityDictionary dictionary, ElideConfigProperties settings) {
+        Info info = new Info()
+                .title(settings.getSwagger().getName())
+                .version(settings.getSwagger().getVersion());
+
+        SwaggerBuilder builder = new SwaggerBuilder(dictionary, info);
+
+        Swagger swagger = builder.build().basePath(settings.getJsonApi().getPath());
+
+        return swagger;
+    }
+```
+
+The application yaml file has settings: 
+ - to enable the swagger document endpoint 
+ - to set the URL path for the swagger document endpoint
+ - to set the API version number
+
+```yaml
+elide:
+  swagger:
+    path: /doc
+    enabled: true
+    version: "1.0"
+
+```
+
+### Elide Standalone Configuration
 
 If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone), you can extend `ElideStandaloneSettings` to configure swagger.  The `enableSwagger` function returns a map of Swagger documents keyed by a name for each document that will be exposed in the swagger document URL.
 
@@ -90,7 +123,7 @@ The code above exposes a single swagger document at the URL `/swagger/doc/test`.
     }
 ```
 
-### Basic Setup
+### Elide Library Configuration
 If you are using Elide directly as a library (and not using Elide Standalone), follow these instructions:
 
 Create and initialize an entity dictionary.
@@ -230,3 +263,5 @@ class Book {
 
 Only the _required_, _value_, _example_, and _readOnly_ properties are extracted.  This is currently only supported for attributes on Elide models.
 
+[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter

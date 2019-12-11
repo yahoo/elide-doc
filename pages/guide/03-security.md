@@ -20,7 +20,7 @@ Security is applied hierarchically with three goals:
 1. **Filtering a model.**  If a user has read access to a model, but only for a subset of a model’s fields, the disallowed fields are excluded from the output (rather than denying the request). However, when the user explicitly requests a field-set that contains a restricted field, the request is rejected rather than filtered.
 
 ### Hierarchical Security
-Both JSON-API and GraphQL define mechanisms to fetch and manipulate entities defined by the data model schema.  Some (rootable) entities can be reached directly by providing their data type and unique identifier in the query. Other entities can only be reached through relationships to other entities– by traversing the entity relationship graph.  The Elide framework supports both methods of access. This is beneficial because it alleviates the need for all models to be accessible at the root of the graph. When everything is exposed at the root, the developer needs to enumerate all of the valid access patterns for all of the data models which quickly becomes unmanageable. In addition to eliminating redundancy in security declaration, this form of security can have significant performance benefits for enforcing security on large collections stored in key-value stores that have limited ability for the underlying persistence layer to directly apply security filters. It is often possible to deny access to an entire collection (i.e. hierarchical relationship) before attempting to verify access to each individual member within that collection.  Typically, security rules only need to be defined for a subset of models and relationships– often near the roots of the graph. Applying security rules to the relationships to prune the graph can eliminate invalid access patterns.  To better understand the sequence of how security is applied, consider the data model depicted in Figure 1 consisting of articles where each contains zero or more comments. 
+Both JSON-API and GraphQL define mechanisms to fetch and manipulate entities defined by the data model schema.  Some (rootable) entities can be reached directly by providing their data type and unique identifier in the query. Other entities can only be reached through relationships to other entities– by traversing the entity relationship graph.  The Elide framework supports both methods of access. This is beneficial because it alleviates the need for all models to be read-accessible at the root of the graph. When everything is exposed at the root, the developer needs to enumerate all of the valid access patterns for all of the data models which can be unwieldy.  In addition to eliminating redundancy in security declaration, this form of security can have significant performance benefits for enforcing security on large collections stored in key-value stores that have limited ability for the underlying persistence layer to directly apply security filters. It is often possible to deny read access to an entire collection (i.e. hierarchical relationship) before attempting to verify access to each individual member within that collection.  Typically, security rules only need to be defined for a subset of models and relationships– often near the roots of the graph. Applying security rules to the relationships to prune the graph can eliminate invalid access patterns.  To better understand the sequence of how security is applied, consider the data model depicted in Figure 1 consisting of articles where each contains zero or more comments. 
 
 ![Security Article Comment UML](/assets/images/security_article_comment_uml.png){:class="img-responsive"} 
 
@@ -127,7 +127,16 @@ Filter expression checks are most important when a security rule is tied in some
 
 ## User
 ---------------------
-Each request is associated with a `User` object.  By default the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+
+Each request is associated with a `User` object.  The User is simply an opaque object that wraps something meaningful to the underlying framework.
+
+### Spring Boot User Object
+
+When using Spring Boot, the user object always wraps the [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) extracted by Spring Security.
+
+### Elide Library & Standalone User Object
+
+When using elide standalone or Elide directly as a library, the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
 
 The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
 
@@ -219,6 +228,37 @@ Whenever a model instance is newly created, initialized fields are evaluated aga
 
 Graph APIs generally have two ways to reference an entity for CRUD operations. In the first mechanism, an entity is navigable through the entity relationship graph. An entity can be reached only through other entities. The alternative is to provide a mechanism to directly reference any entity by its data type and an instance identifier. The former approach is especially useful for modeling object composition (as opposed to aggregation). It enables the definition of hierarchical security.  The latter approach is especially useful when directly manipulating relationships or links between edges. More specifically, to add an existing entity to a collection, it is simplest to reference this entity by its type and ID in the API request rather than defining a path to it through the entity relationship graph.  Elide distinguishes between these two scenarios by tracking an object's lineage or path through the entity relationship graph. By default, Elide explicitly denies adding an existing (not newly created) entity to a relationship with another entity if it has no lineage. For object composition, this is typically the desired behavior. For aggregation, this default can be overridden by adding an explicit SharePermission.  SharePermission is always either identical to ReadPermission for the entity _or_ it is explicitly disallowed.
 
+## Registering Checks in Elide
+
+Once an elide model has been annotated with Permission annotations, the textual descriptions of the checks must be tied to actual check classes and registered in Elide.  The binding of textual descriptions to classes is done by creating a `Map<String, Class<? extends Check>>` where they key is the description and the value is the Check class.
+
+### Registering in Spring Boot
+
+To register the check map in [Spring Boot][elide-spring], override the `EntityDictionary` autoconfigure bean:
+
+```java
+    @Bean
+    public EntityDictionary buildDictionary(AutowireCapableBeanFactory beanFactory) {
+        Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
+        checkMappings.put("User is an admin", AdminCheck.class);
+        return new EntityDictionary(checkMappings, beanFactory::autowireBean);
+    }
+```
+
+We hope to release a version of the elide autoconfigure package soon that simply scans for `Check` classes eliminating this step.
+
+### Registering in Elide Standalone
+
+To register the check map in [Elide standalone][elide-standalone], simply override the following function in `ElideStandaloneSettings`:
+
+```java
+    Map<String, Class<? extends Check>> getCheckMappings() {
+        Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
+        checkMappings.put("User is an admin", AdminCheck.class);
+        return checkMappings;
+    }
+```
+
 <script>
   new Treant({
     chart: {
@@ -248,3 +288,5 @@ Graph APIs generally have two ways to reference an entity for CRUD operations. I
 
 [javadoc-annotations]: http://www.javadoc.io/doc/com.yahoo.elide/elide-annotations/ "Elide-Annotations documentation"
 [source-grammar]: https://github.com/yahoo/elide/blob/master/elide-core/src/main/antlr4/com/yahoo/elide/generated/parsers/Expression.g4#L25
+[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure

@@ -9,152 +9,121 @@ type safe DSL that simplifies adding integration tests to your service.  The DSL
 
 ## Dependencies
 
-The tests described here are based on a [simple blog example](https://github.com/yahoo/elide/tree/master/elide-example/elide-blog-example).
+The tests described here are based on a [the getting started example repo][elide-demo].
 
 The example leverages: 
-1. [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone) for running the test service.
+1. [Elide Spring Boot Starter][elide-spring] for running the test service and setting up Elide.
 2. [JUnit 5](https://junit.org/junit5/) for adding tests.
 3. [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-contrib/elide-test-helpers) for the JSON-API and GraphQL DSLs.
 4. [Rest Assured](http://rest-assured.io/) for issuing HTTP requests against the test service.
+5. [Spring Boot Test Starter](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test) for adding test data for each test.
+6. [H2 In Memory Database](https://https://www.h2database.com/html/main.html) for an in memory test database.
 
 ### Maven 
 ```xml
         <dependency>
             <groupId>com.yahoo.elide</groupId>
-            <artifactId>elide-standalone</artifactId>
+            <artifactId>elide-spring-boot-starter</artifactId>
             <version>${elide.version}</version>
-            <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.yahoo.elide</groupId>
             <artifactId>elide-test-helpers</artifactId>
             <version>${elide.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-runtime</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.jayway.restassured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>${rest-assured.version}</version>
+            <version>2.9.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit5.version}</version>
+            <version>5.5.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit5.version}</version>
+            <version>5.5.2</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
         </dependency>
 ```
 
 ## Setup
 
-Using elide standalone, you can setup a test service for integration tests
-by having your test classes extend a common test base class like this one:
+Using elide with Spring Boot, you can setup a test service for integration tests by having your test classes extend a common test base class like this one:
 
 ```java
+/**
+ * Base class for running a set of functional Elide tests.  This class
+ * sets up an Elide instance with an in-memory H2 database.
+ */
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class IntegrationTest {
-    private ElideStandalone elide;
 
-    protected static final String JDBC_URL = "jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;MVCC=TRUE";
-    protected static final String JDBC_USER = "sa";
-    protected static final String JDBC_PASSWORD = "";
+    @LocalServerPort
+    int port;
 
     @BeforeAll
-    public void init() throws Exception {
-
-        //Instantiate elide standalone with common setting overrides:
-        elide = new ElideStandalone(new ElideStandaloneSettings() {
-
-            //Set the service port
-            @Override
-            public int getPort() {
-                return 8080;
-            }
-
-            //Tell elide standalone where the models live
-            @Override
-            public String getModelPackageName() {
-                return "com.foo.bar.models";
-            }
-
-            //Configure JPA properties
-            public Properties getDatabaseProperties() {
-                Properties options = new Properties();
-
-                options.put("hibernate.show_sql", "true");
-                options.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-                options.put("hibernate.current_session_context_class", "thread");
-                options.put("hibernate.jdbc.use_scrollable_resultset", "true");
-
-                options.put("javax.persistence.jdbc.driver", "org.h2.Driver");
-                options.put("javax.persistence.jdbc.url", JDBC_URL);
-                options.put("javax.persistence.jdbc.user", JDBC_USER);
-                options.put("javax.persistence.jdbc.password", JDBC_PASSWORD);
-
-                return options;
-            }
-        });
-
-        //Start elide in non-blocking mode.
-        elide.start(false);
-    }
-
-
-    @AfterAll
-    public void shutdown() throws Exception {
-        elide.stop();
+    public void setUp() {
+        RestAssured.port = port;
     }
 }
-
 ```
 ## JSON-API DSL
 
-Using Rest Assured and the JSON-API DSL, you can issue JSON-API requests and verify responses against your test service like this:
+Using Rest Assured and the JSON-API DSL, you can issue JSON-API requests and verify responses against your test service.  This example uses Spring Boot to initialize the H2 database with a clean set of test records.
 
 ```java
-
     @Test
-    void jsonApiTest() {
+    @Sql(statements = {
+            "DELETE FROM ArtifactVersion; DELETE FROM ArtifactProduct; DELETE FROM ArtifactGroup;",
+            "INSERT INTO ArtifactGroup (name, commonName, description) VALUES\n" +
+                    "\t\t('com.example.repository','Example Repository','The code for this project');"
+    })
+    void jsonApiGetTest() {
         when()
-                .get("/api/v1/user")
-                .then()
-                .body(equalTo(
-                        data(
-                                resource(
-                                        type( "user"),
-                                        id("1"),
-                                        attributes(
-                                                attr("name", "Jon Doe"),
-                                                attr("role", "Registered")
-                                        )
-                                ),
-                                resource(
-                                        type( "user"),
-                                        id("2"),
-                                        attributes(
-                                                attr("name", "Jane Doe"),
-                                                attr("role", "Registered")
-
-
-                                        )
-                                )
-                        ).toJSON())
-                )
-                .statusCode(HttpStatus.SC_OK);
+            .get("/api/v1/group")
+            .then()
+            .log().all()
+            .body(equalTo(
+                data(
+                    resource(
+                        type( "group"),
+                        id("com.example.repository"),
+                        attributes(
+                            attr("commonName", "Example Repository"),
+                            attr("description", "The code for this project")
+                        ),
+                        relationships(
+                            relation("products")
+                        )
+                    )
+                ).toJSON())
+            )
+            .log().all()
+            .statusCode(HttpStatus.SC_OK);
     }
-
 ```
 
 The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/jsonapi/JsonApiDSL.java).
@@ -165,6 +134,13 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 
 ```java
     @Test
+    @Sql(statements = {
+            "DELETE FROM ArtifactVersion; DELETE FROM ArtifactProduct; DELETE FROM ArtifactGroup;",
+            "INSERT INTO ArtifactGroup (name, commonName, description) VALUES\n" +
+                    "\t\t('com.example.repository','Example Repository','The code for this project');",
+            "INSERT INTO ArtifactGroup (name, commonName, description) VALUES\n" +
+                    "\t\t('com.yahoo.elide','Elide','The magical library powering this project');"
+    })
     void graphqlTest() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -172,11 +148,11 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
             .body("{ \"query\" : \"" + GraphQLDSL.document(
                 query(
                     selection(
-                        field("user",
+                        field("group",
                             selections(
-                                field("id"),
                                 field("name"),
-                                field("role")
+                                field("commonName"),
+                                field("description")
                             )
                         )
                     )
@@ -189,16 +165,16 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
             .body(equalTo(GraphQLDSL.document(
                 selection(
                     field(
-                        "user",
+                        "group",
                         selections(
-                            field("id", "1"),
-                            field( "name", "Jon Doe"),
-                            field("role", "Registered")
+                            field("name", "com.example.repository"),
+                            field( "commonName", "Example Repository"),
+                            field("description", "The code for this project")
                         ),
                         selections(
-                            field("id", "2"),
-                            field( "name", "Jane Doe"),
-                            field("role", "Registered")
+                            field("name", "com.yahoo.elide"),
+                            field( "commonName", "Elide"),
+                            field("description", "The magical library powering this project")
                         )
                     )
                 )
@@ -209,3 +185,6 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 
 
 The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/graphql/GraphQLDSL.java).
+
+[elide-demo]: https://github.com/aklish/elide-spring
+[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter

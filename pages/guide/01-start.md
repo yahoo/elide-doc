@@ -6,51 +6,106 @@ title: Getting Started
 ## So You Want An API?
 {:.no-toc}
 
-The easiest way to get started with Elide is to use the elide-standalone library. The standalone library bundles all of the dependencies you will need to stand up a web service. This tutorial will use elide-standalone, and all of the code is [available here][elide-demo].
+The easiest way to get started with Elide is to use the [Spring Boot starter dependency](https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter). The starter bundles all of the dependencies you will need to stand up a web service. This tutorial uses the starter, and all of the code is [available here][elide-demo].
 
 You can deploy and play with this example on Heroku or locally.  The landing page will let you toggle between the [swagger UI][swagger-ui] and [Graphiql](https://github.com/graphql/graphiql) for the example service.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-heroku-example)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/aklish/elide-spring)
 
-If you'd rather look at Kotlin code (a different example), checkout this [Kotlin blog example][kotlin-blog].
+Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone).
+Don't like Java?  [Here][kotlin-blog] is a different tutorial in Kotlin.
 
 ## Contents
 1. Contents
 {:toc}
 
-## Create A Bean
+## Add Elide as a Dependency
 
-JPA beans are some of the most important code in any Elide project. Your beans are the view of your data model that you wish to expose. In this example we will be modeling a software artifact repository since most developers have a high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like.
+To include elide into your spring project, add the single starter dependency:	
+```xml	
+<dependency>
+  <groupId>com.yahoo.elide</groupId>
+  <artifactId>elide-spring-boot-starter</artifactId>
+  <version>${elide.version}</version>
+</dependency>
+```
+
+## Create Models
+
+Elide models are some of the most important code in any Elide project. Your models are the view of your data that you wish to expose. In this example we will be modeling a software artifact repository since most developers have a high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like.
  
-The first beans we’ll need are the `ArtifactGroup`, `ArtifactProduct`, and `ArtifactVersion` beans.  For brevity we will omit package names and import statements. 
+The first models we’ll need are `ArtifactGroup`, `ArtifactProduct`, and `ArtifactVersion`.  For brevity we will omit package names and import statements. 
 
 {% include code_example example="01-more-beans" %}
 
 ## Spin up the API
 
-So now we have some beans, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our beans will use.   Our example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
+So now we have some models, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our models will use.   Our example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
 
-There may be more tables in your database than beans in your project.  Similarly, there may be more columns in a table than in a particular bean.  Not only will our beans work just fine, but we expect that beans will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
+There may be more tables in your database than models in your project or vice versa.  Similarly, there may be more columns in a table than in a particular model or vice versa.  Not only will our models work just fine, but we expect that models will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
 
 ### Classes
 
-Bringing life to our API is trivially easy. We need two new classes: Main and Settings.
+Bringing life to our API is trivially easy.  We need a single Application class:
 
-{% include code_example example="01-running" %}
+```java
+/**
+ * Example app using elide-spring.
+ */
+@SpringBootApplication
+public class App {
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(App.class, args);
+    }
+}
+```
 
 ### Supporting Files
 
-Elide standalone uses a JPA data store (the thing that talks to the database) that is [configured programmatically][settings-config] (no persistence.xml required).
+The application is configured with a Spring application yaml file (broken into sections below).  
 
-If you want to see the logs from your shiny new API, you will also want a [log4j config][log4j-conf]. 
-Your log4j config should go in `src/main/resources` so log4j can find it.
+The Elide Spring starter uses a JPA data store (the thing that talks to the database).  This can be configured like any other Spring data source and JPA provider.  The one below uses an H2 in-memory database:
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      show_sql: true
+      naming:
+        physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
+      dialect: 'org.hibernate.dialect.H2Dialect'
+      ddl-auto: 'validate'
+      jdbc:
+        use_scrollable_resultset: true
+  datasource:
+    url: 'jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1'
+    username: 'sa'
+    password: ''
+    driver-class-name: 'org.h2.Driver'
+```
+
+Elide has its own configuration to turn on APIs and setup their URL paths:
+
+```yaml
+elide:
+  json-api:
+    path: /api/v1
+    enabled: true
+  graphql:
+    path: /graphql/api/v1
+    enabled: true
+  swagger:
+    path: /doc
+    enabled: true
+    version: "1.0"
+```
 
 ### Running
 
-With these new classes, you have two options for running your project.  You can either run the `Main` class using your
+With these new classes, you have two options for running your project.  You can either run the `App` class using your
 favorite IDE, or you can run the service from the command line:
 
-```mvn exec:java -Dexec.mainClass="example.Main"```
+```java -jar target/elide-spring-boot-1.0.jar```
 
 Our example requires the following environment variables to be set to work correctly with Heroku and Postgres.  
 
@@ -60,10 +115,9 @@ Our example requires the following environment variables to be set to work corre
 
 If running inside a Heroku dyno, Heroku sets these variables for us.  If you don't set them, the example will use the H2 in memory database.
 
-With the `Main` and `Settings` classes we can now run our API. 
+With the `App` class and application yaml file, we can now run our API. 
 
-You can now run the following curl commands to see some of the sample data that the liquibase migrations added for us:
-Don't forget to replace localhost:8080 with your Heroku URL if running from Heroku!
+You can now run the following curl commands to see some of the sample data that the liquibase migrations added for us.  Don't forget to replace localhost:8080 with your Heroku URL if running from Heroku!
 
 {% include code_example example="01-data-fetch" %}
 
@@ -73,7 +127,7 @@ Here are the respective repsonses:
 
 ## Looking at more data
 
-You can navigate through the entity relationship graph defined in the beans and explore relationships:
+You can navigate through the entity relationship graph defined in the models and explore relationships:
 
 ```
 List groups:                 group/
@@ -99,18 +153,16 @@ When you run that cURL call you should see a bunch of json returned, that is our
 
 {% include code_example example="01-data-insert-rsp" %}
 
-## Modifying Data
+### Modifying Data
 
 Notice that, when we created it, we did not set any of the attributes of our new product record.  Updating our
-data to help our users is just as easy as it is to add new data. Let’s update our bean with the following cURL call.
+data to help our users is just as easy as it is to add new data. Let’s update our model with the following cURL call.
 
 {% include code_example example="01-data-update" %}
 
 It’s just that easy to create and update data using Elide.
 
-[elide-demo]: https://github.com/aklish/elide-heroku-example
+[elide-demo]: https://github.com/aklish/elide-spring
 [kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
-[demo-schema]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/db/changelog/changelog.xml
-[log4j-conf]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/resources/log4j2.xml
-[settings-config]: https://github.com/aklish/elide-heroku-example/blob/master/src/main/java/example/Settings.java#L95-L111
+[demo-schema]: https://github.com/aklish/elide-spring/blob/master/src/main/resources/db/changelog/changelog.xml
 [swagger-ui]: https://swagger.io/tools/swagger-ui/
