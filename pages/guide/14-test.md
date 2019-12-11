@@ -65,7 +65,7 @@ The example leverages:
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
-        </dependency
+        </dependency>
 ```
 
 ## Setup
