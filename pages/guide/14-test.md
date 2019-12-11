@@ -134,6 +134,13 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 
 ```java
     @Test
+    @Sql(statements = {
+            "DELETE FROM ArtifactVersion; DELETE FROM ArtifactProduct; DELETE FROM ArtifactGroup;",
+            "INSERT INTO ArtifactGroup (name, commonName, description) VALUES\n" +
+                    "\t\t('com.example.repository','Example Repository','The code for this project');",
+            "INSERT INTO ArtifactGroup (name, commonName, description) VALUES\n" +
+                    "\t\t('com.yahoo.elide','Elide','The magical library powering this project');"
+    })
     void graphqlTest() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
