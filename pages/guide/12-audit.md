@@ -26,7 +26,7 @@ To enable logging to see these queries, set the following property (based on the
 
 ```xml
 <!-- Log Hibernate 3 Datastore HQL Statements -->
-<logger name="com.yahoo.elide.datastores.hibernate5.porting.SessionWrapper level="DEBUG" />
+<logger name="com.yahoo.elide.datastores.hibernate3.porting.SessionWrapper level="DEBUG" />
 ```
 
 This will enable logs similar to:
@@ -44,7 +44,7 @@ To get extra information why a particular error was returned to a client, enable
 <logger name="com.yahoo.elide.Elide" level="DEBUG" />
 ```
 
-This is particularly helpful to understand what permissions in a complex permission rule have passed, failed, and or were not evaluated.  For example, the following indicates that
+This is particularly helpful to understand what permissions in a complex permission rule have passed, failed, or were not evaluated.  For example, the following indicates that
 _'User is Admin'_ permission rule failed:
 
 ```
@@ -76,16 +76,16 @@ By default these descriptions are disabled.  They can be turned on in Elide Sett
 If using [Elide standalone][elide-standalone], override the following function in `ElideStandaloneSettings` and enable the `VerbosePermissionExecutor`:
 
 ```java
-    @Override
-    public ElideSettings getElideSettings(ServiceLocator injector) {
+@Override
+public ElideSettings getElideSettings(ServiceLocator injector) {
 
-        ...
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                .withPermissionExecutor(VerbosePermissionExecutor::new)
-        ...
+    ...
+    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+            .withPermissionExecutor(VerbosePermissionExecutor::new)
+    ...
 
-        return builder.build();
-    } 
+    return builder.build();
+} 
 ```
 
 ### Elide Spring Boot
@@ -93,16 +93,17 @@ If using [Elide standalone][elide-standalone], override the following function i
 If using [Elide spring boot][elide-spring], override the following bean and enable the `VerbosePermissionExecutor`:
 
 ```java
-    @Bean
-    public Elide initializeElide(EntityDictionary dictionary,
-                          DataStore dataStore, ElideConfigProperties settings) {
+@Bean
+public Elide initializeElide(EntityDictionary dictionary,
+                      DataStore dataStore, ElideConfigProperties settings) {
 
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                 ...
-                .withPermissionExecutor(VerbosePermissionExecutor::new)
-                 ...
+    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+             ...
+            .withPermissionExecutor(VerbosePermissionExecutor::new)
+             ...
 
-        return new Elide(builder.build());
+    return new Elide(builder.build());
+}
 ```
 
 ## Hibernate HQL Logging
@@ -113,6 +114,12 @@ You can configure Hibernate to display the SQL commands it runs including the pa
 <!-- Log Hibernate SQL Statements -->
 <logger name="org.hibernate.SQL" level="DEBUG" />
 <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
+```
+
+This will produce logs like:
+```
+select products0_.group_name as group_na4_1_0_, products0_.name as name1_1_0_, products0_.name as name1_1_1_, products0_.commonName as commonNa2_1_1_, products0_.description as descript3_1_1_, products0_.group_name as group_na4_1_1_ from ArtifactProduct products0_ where products0_.group_name=?
+binding parameter [1] as [VARCHAR] - [com.yahoo.elide]
 ```
 
 Be sure to configure Hibernate to show SQL in the JDBC configuration as well:
@@ -129,15 +136,14 @@ spring:
 ### Elide Standalone Settings:
 
 ```java
-            @Override
-            public Properties getDatabaseProperties() {
-                Properties options = new Properties();
-                ...
+@Override
+public Properties getDatabaseProperties() {
+    Properties options = new Properties();
+    ...
 
-                options.put("hibernate.show_sql", "true");
-                return options;
-            }
-
+    options.put("hibernate.show_sql", "true");
+    return options;
+}
 ```
 
 ## HTTP Request & Response Logging
@@ -145,12 +151,11 @@ spring:
 Sometimes it is useful to log the actual HTTP request and response bodies.   This example requires spring boot and logback-access-spring-boot-starter:
 
 ```xml
-        <dependency>
-            <groupId>net.rakugakibox.spring.boot</groupId>
-            <artifactId>logback-access-spring-boot-starter</artifactId>
-            <version>${logback-acccess-version}</version>
-        </dependency>
-
+<dependency>
+    <groupId>net.rakugakibox.spring.boot</groupId>
+    <artifactId>logback-access-spring-boot-starter</artifactId>
+    <version>${logback-acccess-version}</version>
+</dependency>
 ```
 
 The actual logging of the requests and responses is performed by Logback's `TeeFilter`.  To add the servlet filter, you must provide the `FilterRegistrationBean` as follows:
@@ -196,6 +201,7 @@ Finally, configure logback access by creating a logback-access-spring.xml file i
 ```
 
 The pattern extracts the following fields from the HTTP request & response:
+
 | Field Name                | Explanation                               |
 | ------------------------- | ----------------------------------------- |
 | %t{yyyy-MM-dd:HH:mm:ss Z} | The date and time of the log              |         
