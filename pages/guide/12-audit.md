@@ -10,7 +10,7 @@ Elide emits a number of useful log messages that can aid in debugging.  This sec
 
 ## Elide JPQL/HQL Logging
 
-When using the JPA or Hibernate datastores, Elide generates HQL/JPQL queries that are sent to the ORM layer.  These queries are similar to SQL but they use the model names instead of physical table names.  
+When using the JPA or Hibernate datastores, Elide generates [HQL/JPQL](https://docs.oracle.com/html/E13946_04/ejb3_langref.html) queries that are sent to the [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) layer.  These queries are similar to SQL but they use the model names instead of physical table names.  
 
 To enable logging to see these queries, set the following property (based on the data store) to DEBUG:
 
@@ -148,7 +148,7 @@ public Properties getDatabaseProperties() {
 
 ## HTTP Request & Response Logging
 
-Sometimes it is useful to log the actual HTTP request and response bodies.   This example requires spring boot and logback-access-spring-boot-starter:
+Sometimes it is useful to log the actual HTTP request and response bodies (be careful in production if the entity bodies contain sensitive data).   This example requires spring boot and [logback-access-spring-boot-starter](https://github.com/akihyro/logback-access-spring-boot-starter):
 
 ```xml
 <dependency>
@@ -158,7 +158,7 @@ Sometimes it is useful to log the actual HTTP request and response bodies.   Thi
 </dependency>
 ```
 
-The actual logging of the requests and responses is performed by Logback's `TeeFilter`.  To add the servlet filter, you must provide the `FilterRegistrationBean` as follows:
+The actual logging of the requests and responses is performed by Logback's [TeeFilter](http://logback.qos.ch/recipes/captureHttp.html).  To add the servlet filter, you must provide the `FilterRegistrationBean` as follows:
 ```java
 @Configuration
 public class FilterConfiguration {
@@ -182,6 +182,7 @@ Finally, configure logback access by creating a logback-access-spring.xml file i
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- Make sure this property is set in your application.yaml -->
     <springProperty scope="context" name="logDir" source="logging.path"/>
 
     <appender name="ACCESSFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -233,12 +234,12 @@ This example uses [Spring Cloud Sleuth](https://cloud.spring.io/spring-cloud-sle
 </dependency>
 ```
 
-Cloud Sleuth will use [logback MDC logging](http://logback.qos.ch/manual/mdc.html) to pass (if provided in headers) or set a number of unique identifiers that can be added to log statements.  
+Cloud Sleuth will use [logback MDC logging](http://logback.qos.ch/manual/mdc.html) to pass (if provided in headers) or set a number of unique identifiers that can be added to log statements to trace requests.   These headers ('X-B3-TraceId' and 'X-B3-SpanId') can also be logged in the access log to get the complete picture of a request.
 
 The following logback-spring.xml file can be added to your classpath.  It does the following:
 1. Logs to the console and a rotating file.
 2. Turns on Elide, JPQL, and Hibernate logging.
-3. Logs the time, thread identifier, request trace identifier, log level, log class, and finally the log message.
+3. Logs the time, thread identifier, request trace identifier (X-B3-TraceId), log level, log class, and finally the log message.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
