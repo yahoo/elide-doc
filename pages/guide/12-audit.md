@@ -106,7 +106,7 @@ public Elide initializeElide(EntityDictionary dictionary,
 }
 ```
 
-## Hibernate HQL Logging
+## Hibernate SQL Logging
 
 You can configure Hibernate to display the SQL commands it runs including the parameters it binds to prepared statements:
 
