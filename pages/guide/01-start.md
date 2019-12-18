@@ -164,5 +164,5 @@ It’s just that easy to create and update data using Elide.
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
 [kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
-[demo-schema]: https://github.com/aklish/elide-spring/blob/master/src/main/resources/db/changelog/changelog.xml
+[demo-schema]: https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml
 [swagger-ui]: https://swagger.io/tools/swagger-ui/
