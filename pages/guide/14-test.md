@@ -186,5 +186,5 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 
 The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/graphql/GraphQLDSL.java).
 
-[elide-demo]: https://github.com/aklish/elide-spring
+[elide-demo]: https://github.com/yahoo/elide-spring-boot-example
 [elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
