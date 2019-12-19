@@ -95,13 +95,13 @@ Stores can be included through the following artifact dependencies:
 To change the store, override the `DataStore` autoconfigure bean:
 
 ```java
-    @Bean
-    public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
+@Bean
+public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
 
-        return new JpaDataStore(
-                () -> { return entityManagerFactory.createEntityManager(); },
-                    (em -> { return new NonJtaTransaction(em); }));
-    }
+    return new JpaDataStore(
+            () -> { return entityManagerFactory.createEntityManager(); },
+                (em -> { return new NonJtaTransaction(em); }));
+}
 ```
 
 ## Overriding in Elide Standalone
@@ -112,37 +112,37 @@ To change the store, the `ElideStandaloneSettings` interface can be overridden t
 which builds the `ElideSettings` object:
 
 ```java
-    /**
-     * Elide settings to be used for bootstrapping the Elide service. By default, this method constructs an
-     * ElideSettings object using the application overrides provided in this class. If this method is overridden,
-     * the returned settings object is used over any additional Elide setting overrides.
-     *
-     * That is to say, if you intend to override this method, expect to fully configure the ElideSettings object to
-     * your needs.
-     *
-     * @param injector Service locator for web service for dependency injection.
-     * @return Configured ElideSettings object.
-     */
-    default ElideSettings getElideSettings(ServiceLocator injector) {
-        EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(), new Properties());
-        DataStore dataStore = new JpaDataStore(
-                () -> { return entityManagerFactory.createEntityManager(); },
-                (em -> { return new NonJtaTransaction(em); }));
+/**
+ * Elide settings to be used for bootstrapping the Elide service. By default, this method constructs an
+ * ElideSettings object using the application overrides provided in this class. If this method is overridden,
+ * the returned settings object is used over any additional Elide setting overrides.
+ *
+ * That is to say, if you intend to override this method, expect to fully configure the ElideSettings object to
+ * your needs.
+ *
+ * @param injector Service locator for web service for dependency injection.
+ * @return Configured ElideSettings object.
+ */
+default ElideSettings getElideSettings(ServiceLocator injector) {
+    EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(), new Properties());
+    DataStore dataStore = new JpaDataStore(
+            () -> { return entityManagerFactory.createEntityManager(); },
+            (em -> { return new NonJtaTransaction(em); }));
 
-        EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
+    EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
 
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                .withUseFilterExpressions(true)
-                .withEntityDictionary(dictionary)
-                .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
-                .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary));
+    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+            .withUseFilterExpressions(true)
+            .withEntityDictionary(dictionary)
+            .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
+            .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary));
 
-        if (enableIS06081Dates()) {
-            builder = builder.withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
-        }
+    if (enableIS06081Dates()) {
+        builder = builder.withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
+    }
 
-        return builder.build();
-    }  
+    return builder.build();
+}  
 ```
 
 # Custom Stores
@@ -157,33 +157,98 @@ this function in-memory instead.
 The Data Store Transaction can inform Elide of its capabilities by overriding the following methods:
 
 ```java
-    /**
-     * Whether or not the transaction can filter the provided class with the provided expression.
-     * @param entityClass The class to filter
-     * @param expression The filter expression
-     * @return FULL, PARTIAL, or NONE
-     */
-    default FeatureSupport supportsFiltering(Class<?> entityClass, FilterExpression expression) {
-        return FeatureSupport.FULL;
-    }
+/**
+ * Whether or not the transaction can filter the provided class with the provided expression.
+ * @param entityClass The class to filter
+ * @param expression The filter expression
+ * @return FULL, PARTIAL, or NONE
+ */
+default FeatureSupport supportsFiltering(Class<?> entityClass, FilterExpression expression) {
+    return FeatureSupport.FULL;
+}
 
-    /**
-     * Whether or not the transaction can sort the provided class.
-     * @param entityClass
-     * @return true if sorting is possible
-     */
-    default boolean supportsSorting(Class<?> entityClass, Sorting sorting) {
-        return true;
-    }
+/**
+ * Whether or not the transaction can sort the provided class.
+ * @param entityClass
+ * @return true if sorting is possible
+ */
+default boolean supportsSorting(Class<?> entityClass, Sorting sorting) {
+    return true;
+}
 
-    /**
-     * Whether or not the transaction can paginate the provided class.
-     * @param entityClass
-     * @return true if pagination is possible
-     */
-    default boolean supportsPagination(Class<?> entityClass) {
-        return true;
-    }
+/**
+ * Whether or not the transaction can paginate the provided class.
+ * @param entityClass
+ * @return true if pagination is possible
+ */
+default boolean supportsPagination(Class<?> entityClass) {
+    return true;
+}
+```
+
+
+# Multiple Stores
+
+A common pattern in Elide is the need to support multiple data stores.  Typically, one data store manages most models, but some models may require a different persistence backend or have other needs to specialize the behavior of the store.  The multiplex store (`MultiplexManager`) in Elide manages multiple stores - delegating calls to the appropriate store which is responsible for a particular model.
+
+## Spring Boot
+
+To setup the multiplex store in spring boot, create a `DataStore` bean:
+
+
+```java
+@Bean
+public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
+
+    //Store 1 manages Book, Author, and Publisher
+    DataStore store1 = new JpaDataStore(
+            () -> { return entityManagerFactory.createEntityManager(); },
+            (em -> { return new NonJtaTransaction(em); }),
+            Book.class, Author.class, Publisher.class
+    );
+
+    //Store 2 is a custom store that manages Manufacturer
+    DataStore store2 = new MyCustomDataStore(...);
+
+    //Return the new multiplex store...
+    return new MultiplexManager(store1, store2);
+}
+```
+
+## Elide Standalone
+
+To setup the multiplex store in Elide standalone, override the getElideSettings function:
+
+```java
+ElideSettings getElideSettings(ServiceLocator injector) {
+    EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(),
+            getDatabaseProperties());
+    //Store 1 manages Book, Author, and Publisher
+    DataStore store1 = new JpaDataStore(
+            () -> { return entityManagerFactory.createEntityManager(); },
+            (em -> { return new NonJtaTransaction(em); }),
+            Book.class, Author.class, Publisher.class
+    );
+
+    //Store 2 is a custom store that manages Manufacturer
+    DataStore store2 = new MyCustomDataStore(...);
+
+    //Create the new multiplex store...
+    DataStore multiplexStore = new MultiplexManager(store1, store2);
+
+    EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
+
+    //Construct the ElideSettings with the new multiplex store...
+    ElideSettingsBuilder builder = new ElideSettingsBuilder(multiplexStore)
+            .withUseFilterExpressions(true)
+            .withEntityDictionary(dictionary)
+            .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
+            .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
+            .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
+            .withAuditLogger(getAuditLogger());
+
+    return builder.build();
+}
 ```
 
 [elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
