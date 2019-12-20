@@ -230,33 +230,57 @@ Graph APIs generally have two ways to reference an entity for CRUD operations. I
 
 ## Registering Checks in Elide
 
-Once an elide model has been annotated with Permission annotations, the textual descriptions of the checks must be tied to actual check classes and registered in Elide.  The binding of textual descriptions to classes is done by creating a `Map<String, Class<? extends Check>>` where they key is the description and the value is the Check class.
+Once an elide model has been annotated with Permission annotations, the textual descriptions of the checks must be tied to actual check classes and registered in Elide.   This can be done in one of two ways:
 
-### Registering in Spring Boot
+1. Automatically by marking the `Check` classes with a `SecurityCheck` annotation.  Elide Spring Boot and Standalone will automatically scan for `SecurityCheck` classes and bind them.
+2. Manually by creating a `Map<String, Class<? extends Check>>` where they key is the description and the value is the Check class.  This is then passed to the constructor of the `EntityDictionary`.
 
-To register the check map in [Spring Boot][elide-spring], override the `EntityDictionary` autoconfigure bean:
+### Automatic Scanning
+
+Elide will find your security checks in the classpath if they are tagged with the `SecurityCheck` annotation:
 
 ```java
-    @Bean
-    public EntityDictionary buildDictionary(AutowireCapableBeanFactory beanFactory) {
-        Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
-        checkMappings.put("User is an admin", AdminCheck.class);
-        return new EntityDictionary(checkMappings, beanFactory::autowireBean);
+@SecurityCheck(AdminCheck.USER_IS_ADMIN)
+public class AdminCheck extends UserCheck {
+
+    public static final String USER_IS_ADMIN = "User is Admin";
+
+    @Override
+    boolean ok(User user) {
+       ...
     }
+}
 ```
 
-We hope to release a version of the elide autoconfigure package soon that simply scans for `Check` classes eliminating this step.
+The `EntityDictionary` must be told to scan for checks (by calling `dictionary.scanForSecurityChecks`).  This is done automatically in elide spring boot and elide standalone at startup.  
 
-### Registering in Elide Standalone
+### Manual Registration
 
-To register the check map in [Elide standalone][elide-standalone], simply override the following function in `ElideStandaloneSettings`:
+If not using Elide spring boot or standalone, you can register checks when creating the `Elide` instance:
 
 ```java
-    Map<String, Class<? extends Check>> getCheckMappings() {
-        Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
-        checkMappings.put("User is an admin", AdminCheck.class);
-        return checkMappings;
-    }
+
+//Create the check mappings
+Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
+checkMappings.put("User is an admin", AdminCheck.class);
+
+//Bind them in the dictionary
+EntityDictionary dictionary = new EntityDictionary(checkMappings, beanFactory::autowireBean);
+
+//Create a data store
+DataStore dataStore = ...
+
+//Configure Elide settings
+ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+    .withUseFilterExpressions(true)
+    .withEntityDictionary(dictionary)
+    .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
+    .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
+    .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
+    .withAuditLogger(new Slf4jLogger());
+
+//Create the Elide instance
+Elide elide = new Elide(builder.build());
 ```
 
 <script>

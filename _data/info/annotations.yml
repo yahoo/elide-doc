@@ -288,6 +288,17 @@
         type: Integer
         description: The maximum number of records a user can request at a given time for a particular entity.
 
+- name: SecurityCheck
+  description: Binds a security Check class in Elide with its human readable description.  Elide scans for these and binds them during startup.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: value
+        default: <em>None</em>
+        type: String
+        required: True
+        description: The human readable string that is used in Permissions (e.g. - "User is Admin")
+
 - name: ToMany
   description: Marks a method or field as a relationship (to many) that should be exposed via Elide Despite JPA bindings.
   applicationLevel:
