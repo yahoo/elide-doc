@@ -267,6 +267,32 @@
       - Method
   parameters: []
 
+- name: ElideTypeConverter 
+  description: Automatically registers the decorated Serde class with Elide.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: type
+        default: <em>None</em>
+        required: True
+        type: Class<?>
+        description: The type that will be serialized & deserialized.
+      - name: name
+        default: <em>None</em>
+        required: True
+        type: String
+        description: The name of the serialized type exposed in the GraphQL schema.
+      - name: description
+        default: "Custom Elide type"
+        required: False
+        type: String
+        description: The description of the serialized type exposed in the GraphQL schema.
+      - name: subTypes
+        default: "{}"
+        required: False
+        type: Class<?> []
+        description: Subclasses of <em>type</em> that will also be handled by the registered Serde.
+
 - name: Paginate
   description: Apply specific pagination rules to a specific entity.
   applicationLevel:

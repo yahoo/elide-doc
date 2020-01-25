@@ -65,10 +65,21 @@ public interface Serde<S, T> {
 }
 ```
 
-Then register the `Serde` with Elide:
+At startup, Elide will automatically discover any `Serde` classes annotated with `ElideTypeConverter`:
 
 ```java
-CoerceUtil.register(targetType, serde);
+@ElideTypeConverter(type = OffsetDateTime.class, name = "OffsetDateTime")
+public class OffsetDateTimeSerde implements Serde<String, OffsetDateTime> {
+    @Override
+    public OffsetDateTime deserialize(String val) {
+        return OffsetDateTime.parse(val, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
+    @Override
+    public String serialize(OffsetDateTime val) {
+        return val.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+}
 ```
 
 #### Date Coercion
