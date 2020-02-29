@@ -1,4 +1,8 @@
-{% assign annotations = site.data.info['annotations'] | sort: 'name' %}
+{% if page.version == 4 %}
+{% assign annotations = site.data.info.v4['annotations'] | sort: 'name' %}
+{% else %}
+{% assign annotations = site.data.info.v5['annotations'] | sort: 'name' %}
+{% endif %}
 
 {% for annotation in annotations %}
   {% assign name = annotation['name'] %}
