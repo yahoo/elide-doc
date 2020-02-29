@@ -3,6 +3,7 @@ layout: guide
 group: guide
 subtopic: true
 title: Json API
+version: 4
 ---
 
 --------------------------
@@ -261,10 +262,10 @@ For example, the following request creates an author (earnest hemingway), multip
 ## Type Serialization/Deserialization
 -------------------------------------
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Swagger
 --------------------------
 
 Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
-initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/13-swagger.html).
+initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html).

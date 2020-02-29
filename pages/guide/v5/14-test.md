@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Test
+version: 5
 ---
 
 The [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-contrib/elide-test-helpers) package provides a JSON-API and GraphQL

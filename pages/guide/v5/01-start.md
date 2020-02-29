@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Getting Started
+version: 5
 ---
 ## So You Want An API?
 {:.no-toc}

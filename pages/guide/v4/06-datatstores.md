@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Data Stores
+version: 4
 ---
 
 A data store is responsible for:
