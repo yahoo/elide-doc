@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Security
+version: 5
 ---
 ## Core Concepts
 ---------------------

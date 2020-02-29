@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Client APIs
+version: 4
 ---
 
 ## Supported APIs
@@ -17,8 +18,8 @@ They have a number of characteristics that make them well suited to this task:
 
 Elide supports the two most widely adopted standards for graph APIs: 
 
-* [JSON-API]({{site.baseurl}}/pages/guide/10-jsonapi.html)
-* [GraphQL]({{site.baseurl}}/pages/guide/11-graphql.html)
+* [JSON-API]({{site.baseurl}}/pages/guide/v{{ page.version }}/10-jsonapi.html)
+* [GraphQL]({{site.baseurl}}/pages/guide/v{{ page.version }}/11-graphql.html)
 
 ## Common Concepts
 

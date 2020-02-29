@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Getting Started
+version: 5
 ---
 ## So You Want An API?
 {:.no-toc}
@@ -13,7 +14,7 @@ You can deploy and play with this example on Heroku or locally.  The landing pag
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-spring-boot-example)
 
 Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone).
-Don't like Java?  [Here][navi-example] is an example project using Elide with Kotlin.
+Don't like Java?  [Here][kotlin-blog] is a different tutorial in Kotlin.
 
 ## Contents
 1. Contents
@@ -163,6 +164,6 @@ data to help our users is just as easy as it is to add new data. Let’s update 
 It’s just that easy to create and update data using Elide.
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
-[navi-example]: https://github.com/yahoo/navi/tree/master/packages/webservice
+[kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
 [demo-schema]: https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml
 [swagger-ui]: https://swagger.io/tools/swagger-ui/

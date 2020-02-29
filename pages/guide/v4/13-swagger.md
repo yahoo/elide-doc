@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Swagger 
+version: 4
 ---
 
 ## Overview

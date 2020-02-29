@@ -7,7 +7,7 @@ layout: default
     <div class="col-sm side-bar hidden-phone">
       <ul class="nav flex-column">
         {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
-        {% if pages.group == "guide" %}
+        {% if pages.group == "guide" and page.version == pages.version %}
         {% if pages.subtopic == true %}
         <li class="subtopic"><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
         {% else %}

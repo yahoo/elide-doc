@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Annotation Overview
+version: 4
 ---
 <style>
 .annotation-list {

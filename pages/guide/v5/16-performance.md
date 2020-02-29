@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Performance 
+version: 5
 ---
 
 ## N+1 Problem
