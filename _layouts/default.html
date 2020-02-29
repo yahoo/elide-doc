@@ -34,6 +34,11 @@
         <a class="navbar-brand mr-0" href="{{ BASE_PATH }}">
           <img src="{{ BASE_PATH }}/{{ ASSET_PATH }}/images/elide-white-logo.png" class="img-fluid text-light" alt="Elide Logo" />
         </a>
+        {% if page.version != nil %}
+        <span class="navbar-text ml-2">
+        Version {{ page.version }}
+        </span>
+        {% endif %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navLinks" aria-controls="navLinks"
           aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -49,7 +54,7 @@
             {% endif %} 
             {% endif %} 
             {% endfor %}
-            <a class="hidden-phone nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/{{ page.version }}/01-start.html">Documentation</a>
+            <a class="hidden-phone nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/v{{ page.version }}/01-start.html">Documentation</a>
             <a class="nav-item nav-link text-light ml-auto" href="https://spectrum.chat/elide">Community</a>
           </div>
         </div>
