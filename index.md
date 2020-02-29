@@ -6,7 +6,7 @@ layout: default
   <div class="jumbotron">
     <div class="container text-center">
       <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in 4 simple steps</h2>
-      <a href="pages/guide/v5/01-start.html">
+      <a href="pages/guide/v4/01-start.html">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
       <div class="mb-3">
@@ -71,7 +71,7 @@ layout: default
   </div>
   <div class="text-center mt-5">
     <h2>Wanna learn more?</h2>
-    <a href="/pages/guide/v5/01-start.html">
+    <a href="/pages/guide/v4/01-start.html">
       <button type="button" class="btn btn-primary text-light mb-2">Documentation</button>
     </a>
     <p>Or see our features below</p>
@@ -206,7 +206,7 @@ layout: default
 <div class="container text-center my-5">
   <h2>Opinionated APIs for web & mobile</h2>
   <p>Improve the velocity and quality of your team's work.</p>
-  <a href="/pages/guide/v5/01-start.html">
+  <a href="/pages/guide/v4/01-start.html">
     <button type="button" class="btn btn-primary text-light">Get Started</button>
   </a>
 </div>
@@ -218,7 +218,7 @@ layout: default
         <img src="assets/images/elide-white-logo.png" class="img-fluid" alt="Elide Logo">
       </div>
       <div class="col-sm links">
-        <a href="/pages/guide/v5/01-start.html">Documentation</a>
+        <a href="/pages/guide/v4/01-start.html">Documentation</a>
         <a href="/pages/license.html">Licensing</a>
       </div>
       <div class="col-sm links">
