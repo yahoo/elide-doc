@@ -1,11 +1,11 @@
 ---
 layout: guide
 group: guide
-title: Migration 
+title: Migration From Elide 4
 version: 5
 ---
 
-Elide 4 documentation can be found [here](/pages/guide/v4/01-getting-started.html).
+Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 
 ## New Features in Elide 5.X
 
@@ -18,7 +18,7 @@ Elide 5 introduces two primary new features:
 
 These capabilities were developed in conjunction with a powerful Analytics UI called [Navi](https://yahoo.github.io/navi/).
 
-## Migrating from Elide 4.X
+## Interface Changes
 
 In addition to new features, Elide 5 streamlines a number of public interfaces to simplify concepts.  This includes:
  - A simpler `Check` class hierarchy.
@@ -81,8 +81,8 @@ Elide's `User` abstraction has four new changes:
 2. `User` includes methods to get the identity/name of the underlying principal as well as any role memberships the principal has.
 3. Elide JAXRS endpoints no longer require a function (named 'elideUserExtractionFunction') to map the `SecurityContext` to an underlying principal object.
 4. Elide environments (spring & standalone) have their own predefined User subclasses:
-  1. Elide Spring creates a subclass of User (`AuthenticationUser`) which wraps a Spring `org.springframework.security.core.Authentication` object.   
-  2. Elide standalone creates a subclass of User (`SecurityContextUser`) which wraps a `javax.ws.rs.core.SecurityContext` object.
+    1. Elide Spring creates a subclass of User (`AuthenticationUser`) which wraps a Spring `org.springframework.security.core.Authentication` object.   
+    2. Elide standalone creates a subclass of User (`SecurityContextUser`) which wraps a `javax.ws.rs.core.SecurityContext` object.
 
 Security checks which dereference the `User` object will require changes to access the underlying principal object depending on the framework they use.
 
