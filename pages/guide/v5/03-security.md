@@ -11,7 +11,7 @@ Authorization - the act of verifying data and operation access for an _already a
 
 * **User** - Each API request is associated with a user principal.  The user is opaque to the Elide framework but is passed to developer-defined _check_ functions that evaluate arbitrary logic or build filter expressions.  More details can be found [here](#user).
 * **Checks** - a function _or_ filter expression that grants or denies a user **permission** to perform a particular action.
-* **Permissions** - a set of annotations (read, update, delete, create, and share) that correspond to actions on the data model's entities and fields.  Each **permission** is decorated with one or more checks that are evaluated when a user attempts to perform that action.
+* **Permissions** - a set of annotations (read, update, delete, create, and transfer) that correspond to actions on the data model's entities and fields.  Each **permission** is decorated with one or more checks that are evaluated when a user attempts to perform that action.
 
 ## Security Evaluation
 Security is applied hierarchically with three goals:
@@ -38,33 +38,35 @@ Checks are simply functions that either return:
 * a filter expression that can be used to filter a collection to what is visible to a given user.
 
 Checks can either be invoked:
-* immediately prior to the (create, read, update, and delete) action being performed.
-* immediately before committing the transaction that wraps the entire API request.
+* immediately prior to the (create, read, update, and delete) action being performed.  This is the default case.
+* immediately before committing the transaction that wraps the entire API request.  This is limited to checks on fields of newly created objects.
 
-The former is useful for checks that depend on data that is already persisted. Read, delete, and most update checks fall into this category. The latter is useful for checks involving complex mutations to the object graph for newly created data. These checks cannot execute until the data model has been fully updated to reflect the entire set of modifications.  Corresponding to these categories, there are two types of checks in Elide: InlineCheck and CommitCheck. Checks must be implemented by extending one of these abstract classes. The class you choose to extend impacts how Elide will evaluate your the check. There are specific types of check described by the following hierarchy:
+Elide supports three different concrete `Check` classes depending on what is being checked: 
 
 <div id="check-tree" style="height: 250px"></div>
 
-`InlineCheck` is the abstract super class of the three specific variants:
+`Check` is the root intrface of all three variants:
 
 ### Operation Checks
 Operation checks are inline checks whose evaluation requires the entity instance being read from or written to. They operate in memory of the process executing the Elide library.
 
 Operation checks are expected to implement the following `Check` interface:
+
 ```java
     /**
      * Determines whether the user can access the resource.
      *
-     * @param object Fully modified object
+     * @param object The object that is being read/written.
      * @param requestScope Request scope object
      * @param changeSpec Summary of modifications
      * @return true if security check passed
      */
-    boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
+    public abstract boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
+}
 ```
 
 ### User Checks
-User checks depend strictly on the user principal. These are inline checks (i.e. they run as operations occur rather than deferring until commit time) and only take a User object as input. Because these checks only depend on who is performing the operation and not on what has changed, these checks are only evaluated once per request - an optimization that accelerates the filtering of large collections.
+User checks depend strictly on the user principal.  They only take a User object as input. Because these checks only depend on who is performing the operation and not on what has changed, these checks are only evaluated once per request - an optimization that accelerates the filtering of large collections.
 
 User checks are expected to implement the following `Check` interface:
 ```java
@@ -74,30 +76,24 @@ User checks are expected to implement the following `Check` interface:
      * @param user User to check
      * @return True if user check passes, false otherwise
      */
-    boolean ok(User user);
+    public abstract boolean ok(User user);
 ```
 
 ### Filter Expression Checks
 In some cases, the check logic can be pushed down to the data store itself. For example, a filter can be added to a database query to remove elements from a collection where access is disallowed. These checks return a `FilterExpression` predicate that your data store can use to limit the queries that it uses to marshal the data. Checks which extend the `FilterExpessionCheck` must conform to the interface:
 
 ```java
-
 /**
- * Check for FilterExpression. This is a super class for user defined FilterExpression check. The subclass should
- * override getFilterExpression function and return a FilterExpression which will be passed down to datastore.
- * @param <T> Type of class
+ * Returns a FilterExpression from FilterExpressionCheck.
+ *
+ * @param entityClass entity type
+ * @param requestScope Request scope object
+ * @return FilterExpression for FilterExpressionCheck.
  */
-public abstract class FilterExpressionCheck<T> extends InlineCheck<T> {
-
-    /**
-     * Returns a FilterExpression from FilterExpressionCheck.
-     * @param entityClass The entity collection to filter
-     * @param requestScope Request scope object
-     * @return FilterExpression for FilterExpressionCheck.
-     */
-    public abstract FilterExpression getFilterExpression(Class<?> entityClass, RequestScope requestScope);
-}
+public abstract FilterExpression getFilterExpression(Class<?> entityClass, RequestScope requestScope);
 ```
+
+`FilterExpressionCheck` _is_ an `OperationCheck`.  If a security rule combines both an `OperationCheck` and `FilterExpression` in a disjunction (logical OR), Elide will evaluate both in memory as operation checks.  
 
 Most `FilterExpressionCheck` functions construct a `FilterPredicate` which is a concrete implementation of the `FilterExpression` interface:
 
@@ -129,15 +125,18 @@ Filter expression checks are most important when a security rule is tied in some
 ## User
 ---------------------
 
-Each request is associated with a `User` object.  The User is simply an opaque object that wraps something meaningful to the underlying framework.
+Each request is associated with a `User` object.  The User is simply an object that wraps a `java.security.Principal` object.  It includes methods to:
+1.  Extract the user name.
+2.  Extract the underlying principal.
+3.  Check if the user belongs to a particular role.
 
 ### Spring Boot User Object
 
-When using Spring Boot, the user object always wraps the [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) extracted by Spring Security.
+When using Spring Boot, the `User` object always wraps the `org.springframework.security.core.Authentication` extracted by Spring Security.
 
-### Elide Library & Standalone User Object
+### Elide Standalone User Object
 
-When using elide standalone or Elide directly as a library, the user is simply an opaque object that wraps an instance of a [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.  
+When using elide standalone, the `User` objects wraps the JAXRS [SecurityContext](https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/SecurityContext.html) object.
 
 The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https://jcp.org/en/jsr/detail?id=311) [ContainerRequestFilter](https://docs.oracle.com/javaee/7/api/javax/ws/rs/container/ContainerRequestFilter.html):
 
@@ -151,54 +150,15 @@ The `SecurityContext` is created outside the Elide framework in a [JAX-RS](https
 
 This filter will typically authenticate the request and store an identifier about the user inside the new `SecurityContext`.
 
-Elide also supports other objects besides the `SecurityContext` as the principal.  You can supply any object you want by mapping the supplied 
-`SecurityContext` to something else.  The mapping function must conform to this interface:
-
-```java
-Function<SecurityContext, Object>
-```
-
-The JSON-API and GraphQL JAX-RS endpoints are injected with this function during initialization:
-
-```java
-    @Inject
-    public JsonApiEndpoint(@Named("elide") Elide elide,
-                           @Named("elideUserExtractionFunction") DefaultOpaqueUserFunction getUser) {
-```
-
-```java
-    @Inject
-    public GraphQLEndpoint(
-            @Named("elide") Elide elide,
-            @Named("elideUserExtractionFunction") DefaultOpaqueUserFunction getUser) {
-```
-
-The Elide standalone repository overrides the default to map the `SecurityContext` to a [Principal](https://docs.oracle.com/javase/10/docs/api/java/security/Principal.html) object instead:
-
-```java
-    /**
-     * The function used to extract a user from the SecurityContext.
-     *
-     * @return Function for user extraction.
-     */
-    default DefaultOpaqueUserFunction getUserExtractionFunction() {
-        return SecurityContext::getUserPrincipal;
-    }
-```
-
 ## Permission Annotations
 ---------------------
-The permission annotations include `ReadPermission`, `UpdatePermission`, `CreatePermission`, `DeletePermission`, and `SharePermission`. Permissions are annotations which can be applied to a model at the `package`, `entity`, or `field`-level. The most specific annotation always take precedence (`package < entity < field`).  More specifically, a field annotation overrides the behavior of an entity annotation.  An entity annotation overrides the behavior of a package annotation.  Entity annotations can be inherited from superclasses.  When no annotation is provided at any level, access is implicitly granted for `ReadPermission`, `UpdatePermission`, `CreatePermission`, and `DeletePermission` and implicitly denied for `SharePermission`.
+The permission annotations include `ReadPermission`, `UpdatePermission`, `CreatePermission`, and `DeletePermission`.  Permissions are annotations which can be applied to a model at the `package`, `entity`, or `field`-level. The most specific annotation always take precedence (`package < entity < field`).  More specifically, a field annotation overrides the behavior of an entity annotation.  An entity annotation overrides the behavior of a package annotation.  Entity annotations can be inherited from superclasses.  When no annotation is provided at any level, access is implicitly granted for `ReadPermission`, `UpdatePermission`, `CreatePermission`, and `DeletePermission`.
 
 The permission annotations wrap a boolean expression composed of the check(s) to be evaluated combined with `AND`, `OR`, and `NOT` operators and grouped using parenthesis.  The checks are uniquely identified within the expression by a string - typically a human readable phrase that describes the intent of the check (_"principal is admin at company OR principal is super user with write permissions"_).  These strings are mapped to the explicit `Check` classes at runtime by registering them with Elide.  When no registration is made, the checks can be identified by their fully qualified class names.  The complete expression grammar can be found [here][source-grammar].
 
 To better understand how permissions work consider the following sample code. (Only the relevant portions are included.)
 
 {% include code_example example='03-check-expressions' %}
-
-You will notice that `IsOwner` actually defines two check classes; it does so because we might want to evaluate the same logic at distinct points in processing the request (inline when reading a post and at commit when creating a post).  For example, we could not apply `IsOwner.Inline` when creating a new post because the post's author has not yet been assigned.  Once the post has been created and all fields assigned by Elide, the security check can be evaluated.
-
-Contrast `IsOwner` to `IsSuperuser` which only defines one check. `IsSuperuser` only defines one check because it only depends on who is performing the action and not on the data model being manipulated.  
 
 ### Read
 `ReadPermission` governs whether a model or field can be read by a particular user. If the expression evaluates to `true` then access is granted. Notably, `ReadPermission` is evaluated as the user navigates through the entity relationship graph.  Elide's security model is focused on field-level access, with permission annotations applied on an entity or package being shorthand for applying that same security to every field in that scope. For example, if a request is made to `GET /users/1/posts/3/comments/99` the permission execution will be as follows: 
@@ -224,10 +184,10 @@ Whenever a model instance is newly created, initialized fields are evaluated aga
 ### Delete
 `DeletePermission` governs whether a model can be deleted.
 
-### Share
-`SharePermission` governs whether an existing model instance (one created in a prior transaction) can be assigned to another collection other than the one in which it was initially created.  Basically, does a collection 'own' the  model instance in a private sense (composition) or can it be moved or referenced by other collections (aggregation).
+### NonTransferable
+`NonTransferable` governs whether an existing model instance (one created in a prior transaction) can be assigned to another collection other than the one in which it was initially created.  Basically, does a collection 'own' the  model instance in a private sense (composition) or can it be moved or referenced by other collections (aggregation).
 
-Graph APIs generally have two ways to reference an entity for CRUD operations. In the first mechanism, an entity is navigable through the entity relationship graph. An entity can be reached only through other entities. The alternative is to provide a mechanism to directly reference any entity by its data type and an instance identifier. The former approach is especially useful for modeling object composition (as opposed to aggregation). It enables the definition of hierarchical security.  The latter approach is especially useful when directly manipulating relationships or links between edges. More specifically, to add an existing entity to a collection, it is simplest to reference this entity by its type and ID in the API request rather than defining a path to it through the entity relationship graph.  Elide distinguishes between these two scenarios by tracking an object's lineage or path through the entity relationship graph. By default, Elide explicitly denies adding an existing (not newly created) entity to a relationship with another entity if it has no lineage. For object composition, this is typically the desired behavior. For aggregation, this default can be overridden by adding an explicit SharePermission.  SharePermission is always either identical to ReadPermission for the entity _or_ it is explicitly disallowed.
+Marking an object `NonTransferable` means that it is owned by its containing collections at object creation.  It cannot be moved or copied to another collection after creation.  Excluding this annotation means that instances of the class can be moved or copied to other collections _provided the user agent can read the object_ (`ReadPermission` is satisifed on at least some of its fields).
 
 ## Registering Checks in Elide
 
@@ -296,13 +256,11 @@ Elide elide = new Elide(builder.build());
       text: {name: 'Check'},
       children: [
         {
-          text: {name: 'CommitCheck'}
+          text: {name: 'UserCheck'}
         },
         {
-          text: {name: 'InlineCheck'},
+          text: {name: 'OperationCheck'},
           children: [
-            {text: {name: 'UserCheck'}},
-            {text: {name: 'OperationCheck'}},
             {text: {name: 'FilterExpressionCheck'}}
           ]
         }
@@ -311,7 +269,4 @@ Elide elide = new Elide(builder.build());
   })
 </script>
 
-[javadoc-annotations]: http://www.javadoc.io/doc/com.yahoo.elide/elide-annotations/ "Elide-Annotations documentation"
 [source-grammar]: https://github.com/yahoo/elide/blob/master/elide-core/src/main/antlr4/com/yahoo/elide/generated/parsers/Expression.g4#L25
-[elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
-[elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure
