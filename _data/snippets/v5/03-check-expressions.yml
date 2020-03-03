@@ -1,0 +1,88 @@
+files:
+  - User.java
+  - Post.java
+  - Comment.java
+  - IsOwner.java
+  - IsSuperuser.java
+  - MyElide.java
+
+User.java: |+2
+  ```java
+  @ReadPermission(expression = "Prefab.Roll.All")
+  @UpdatePermission(expression = "user is a superuser OR user is this user")
+  @DeletePermission(expression = "user is a superuser OR user is this user")
+  @SharePermission
+  public class User {
+      String name;
+
+      @OneToMany(mappedBy = "author")
+      Set<Post> posts;
+  }
+  ```
+
+Post.java: |+2
+  ```java
+  @ReadPermission(expression = "Post.isVisible OR user owns this post OR user is a superuser")
+  @UpdatePermission(expression = "user owns this post")
+  @CreatePermission(expression = "user owns this post")
+  @DeletePermission(expression = "user owns this post")
+  @SharePermission
+  public class Post {
+      @ManyToOne
+      User author;
+
+      @UpdatePermission(expression = "user owns this post OR user is a superuser")
+      boolean published;
+
+      @OneToMany(mappedBy = "post")
+      Set<Comment> comments;
+  }
+  ```
+
+Comment.java: |+2
+  ```java
+  // user has to be able to see the post and to see the comment, or else be a super user
+  @ReadPermission(expression = "((Post.isVisible OR user owns this post) AND (comment is visible OR user made this comment)) OR user is a superuser")
+  @UpdatePermission(expression = "user made this comment")
+  @CreatePermission(expression = "post is visible")
+  @DeletePermission(expression = "user made this comment")
+  @SharePermission
+  public class Comment {
+      @ManyToOne
+      User author;
+      @ManyToOne
+      Post post;
+      @UpdatePermission(expression = "user owns this post OR user is a superuser")
+      boolean suppressed;
+  }
+  ```
+
+IsOwner.java: |+2
+  ```java
+  public static class IsOwner<Post> extends OperationCheck {
+      @Override
+      boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+          return post.author.equals(requestScope.getUser());
+      }
+  }
+  ```
+
+IsSuperuser.java: |+2
+  ```java
+  public static class IsSuperuser extends UserCheck {
+      @Override
+      boolean ok(User user) {
+          return user.isInRole("SUPER_USER");
+      }
+  }
+  ```
+
+MyElide.java: |+2
+  ```java
+  HashMap checks = new HashMap();
+  checks.put("post is visible", IsPublished.class);
+  checks.put("user owns this post", IsOwner.class);
+  checks.put("user is a superuser", IsSuperuser.class);
+  //...
+  EntityDictionary dictionary = new EntityDictionary(checks);
+  ```
