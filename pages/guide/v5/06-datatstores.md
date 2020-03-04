@@ -24,6 +24,7 @@ Elide comes bundled with a number of data stores:
 4. Multiplex Store - A multiplex store delegates persistence to different underlying stores depending on the data model.
 5. Noop Store - A store which does nothing, allowing business logic in computed attributes and life cycle hooks to entirely implement CRUD operations on the model.
 6. [Search Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) - A store which provides full text search on text fields while delegating other requests to another provided store.
+7. [Aggregation Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-aggregation) - A store which provides computation of groupable measures (similar to SQL group by).  The aggregation store has custom annotations that map an Elide model to native SQL queries against a JDBC database.
 
 Stores can be included through the following artifact dependencies:
 
@@ -87,6 +88,16 @@ Stores can be included through the following artifact dependencies:
 </dependency>
 ```
 
+## Aggregation Store
+
+```xml
+<dependency>
+    <groupId>com.yahoo.elide</groupId>
+    <artifactId>elide-datastore-aggregation</artifactId>
+    <version>${elide.version}</version>
+</dependency>
+```
+
 # Overriding the Store
 
 ## Overriding in Spring Boot
@@ -133,7 +144,6 @@ default ElideSettings getElideSettings(ServiceLocator injector) {
     EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
 
     ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-            .withUseFilterExpressions(true)
             .withEntityDictionary(dictionary)
             .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
             .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary));
@@ -186,7 +196,6 @@ default boolean supportsPagination(Class<?> entityClass) {
     return true;
 }
 ```
-
 
 # Multiple Stores
 
@@ -241,7 +250,6 @@ ElideSettings getElideSettings(ServiceLocator injector) {
 
     //Construct the ElideSettings with the new multiplex store...
     ElideSettingsBuilder builder = new ElideSettingsBuilder(multiplexStore)
-            .withUseFilterExpressions(true)
             .withEntityDictionary(dictionary)
             .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
             .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
