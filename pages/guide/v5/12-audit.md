@@ -82,7 +82,7 @@ public ElideSettings getElideSettings(ServiceLocator injector) {
 
     ...
     ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-            .withPermissionExecutor(VerbosePermissionExecutor::new)
+            .withVerboseErrors()
     ...
 
     return builder.build();
@@ -100,7 +100,7 @@ public Elide initializeElide(EntityDictionary dictionary,
 
     ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
              ...
-            .withPermissionExecutor(VerbosePermissionExecutor::new)
+            .withVerboseErrors()
              ...
 
     return new Elide(builder.build());
@@ -341,7 +341,7 @@ A customized logger extends the following abstract class:
 ```java
 public abstract class AuditLogger {
     public void log(LogMessage message);
-    public abstract void commit(RequestScope requestScope) throws IOException;
+    public abstract void commit() throws IOException;
 }
 ```
 
