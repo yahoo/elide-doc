@@ -1,0 +1,42 @@
+files:
+  - Elide Standalone
+  - Elide Spring
+
+Elide Standalone: |+2
+  ```java
+  /**
+   * Thread Size for Async queries to run in parallel.
+   * @return Default: 5
+   */
+  @Override
+  default Integer getAsyncThreadSize() {
+      return 5;
+  }
+
+  /**
+   * Number of days history to retain for async query executions and results.
+   * @return Default: 7
+   */
+  @Override
+  public Integer getAsyncQueryCleanupDays() {
+      return 7;
+  }
+
+  /**
+   * Maximum Query Run time for Async Queries to mark as TIMEDOUT.
+   * @return Default: 60
+   */
+  @Override
+  public Integer getAsyncMaxRunTimeMinutes() {
+      return 60;
+  }
+  ```
+
+Elide Spring: |+2
+  ```yaml
+  elide:
+    async:
+      threadPoolSize: 7
+      maxRunTimeMinutes: 65
+      queryCleanupDays: 7
+  ```

@@ -1,0 +1,46 @@
+files:
+  - JSON-API
+  - GraphQL
+
+JSON-API: |+2
+  ```json
+  {
+    "data": {
+        "type": "asyncQuery",
+        "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263d",
+        "attributes": {
+            "createdOn": "2020-04-08T21:25Z",
+            "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
+            "queryType": "JSONAPI_V1_0",
+            "status": "COMPLETE",
+            "updatedOn": "2020-04-08T21:25Z"
+        },
+        "relationships": {
+            "result": {
+                "data": {
+                    "type": "asyncQueryResult",
+                    "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263d"
+                }
+            }
+        }
+    }
+  }
+  ```
+
+GraphQL: |+2
+  ```json
+  {
+    "data": {
+        "asyncQuery": {
+            "edges": [{
+                "node": {
+                    "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263e",
+                    "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
+                    "queryType": "GRAPHQL_V1_0",
+                    "status": "COMPLETE"
+                }
+            }]
+        }
+    }
+  }
+  ```

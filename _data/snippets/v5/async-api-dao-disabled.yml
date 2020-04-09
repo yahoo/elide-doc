@@ -1,0 +1,36 @@
+files:
+  - Elide Standalone
+  - Elide Spring
+
+Elide Standalone: |+2
+  ```java
+  /**
+   * Implementation of AsyncQueryDAO to use.
+   *
+   * @return AsyncQueryDAO type object.
+   */
+  default AsyncQueryDAO getAsyncQueryDAO() {
+      return yourDAOImplementationObject;
+  }
+  ```
+
+Elide Spring: |+2
+  <br/>
+  Update your application.yaml with below mentioned additional code (Only the relevant portions are included). You will have to initialize your implementation as a Bean.
+
+  ```yaml
+  elide:
+    async:
+      defaultAsyncQueryDAO: false
+  ```
+
+  ```java
+    /**
+     * Configure the AsyncQueryDAO used by async query requests.
+     * @return an AsyncQueryDAO object.
+     */
+    @Bean
+    public AsyncQueryDAO buildAsyncQueryDAO() {
+        return YourDAOImplementationObject;
+    }
+  ```

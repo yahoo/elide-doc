@@ -4,6 +4,10 @@
 {% assign example = site.data.snippets.v5[include.example] %}
 {% endif %}
 
+{% if example == null %}
+{% assign example = site.data.snippets[include.example] %}
+{% endif %}
+
 {% assign files = example.files %}
 <ul class="nav nav-tabs" role="tablist">
   {% assign class = "active" %}

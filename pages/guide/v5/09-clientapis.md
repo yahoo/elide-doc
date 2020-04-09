@@ -16,10 +16,14 @@ They have a number of characteristics that make them well suited to this task:
     shrinks payload sizes and simplifies the process of schema evolution.
 3.  There is a **well defined standard** for the API that fosters a community approach to development of supporting tools & best practices.
 
-Elide supports the two most widely adopted standards for graph APIs: 
+Elide supports the two most widely adopted standards for graph APIs:
 
 * [JSON-API]({{site.baseurl}}/pages/guide/v{{ page.version }}/10-jsonapi.html)
 * [GraphQL]({{site.baseurl}}/pages/guide/v{{ page.version }}/11-graphql.html)
+
+Elide also supports fetching the results from calls to JSON-API and GraphQL end points asynchronously:
+
+* [Async-API]({{site.baseurl}}/pages/guide/v{{ page.version }}/12-asyncapi.html)
 
 ## Common Concepts
 
@@ -34,7 +38,7 @@ All Elide APIs share a common set of concepts:
 
 ### Type Coercion
 
-Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 
+Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide
 will serialize the data model fields into the text format defined by the schema of the client payload.
 
 Beyond primitive, numeric, and String types, Elide can serialize and deserialize complex and user defined types.
@@ -128,7 +132,7 @@ If using Elide as a library, the following date serdes can be registered:
 
 #### UUID Coercion
 
-Elide has built in support for converting between String and UUIDs.  The conversion leverages `UUID.fromString`. 
+Elide has built in support for converting between String and UUIDs.  The conversion leverages `UUID.fromString`.
 
 #### Enum Coercion
 

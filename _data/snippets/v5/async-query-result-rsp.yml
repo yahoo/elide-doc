@@ -1,0 +1,53 @@
+files:
+  - JSON-API
+  - GraphQL
+
+JSON-API: |+2
+  ```json
+  {
+    "data": {
+        "type": "asyncQueryResult",
+        "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263d",
+        "attributes": {
+            "contentLength": 282,
+            "createdOn": "2020-04-08T21:25Z",
+            "responseBody": "{\"data\":[{\"type\":\"group\",\"id\":\"com.yahoo.elide\",\"attributes\":{\"commonName\":\"Elide\",\"description\":\"The magical library powering this project\"}},{\"type\":\"group\",\"id\":\"com.example.repository\",\"attributes\":{\"commonName\":\"Example Repository\",\"description\":\"The code for this project\"}}]}",
+            "status": 200,
+            "updatedOn": "2020-04-08T21:25Z"
+        },
+        "relationships": {
+            "query": {
+                "data": {
+                    "type": "asyncQuery",
+                    "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263d"
+                }
+            }
+        }
+    }
+  }
+  ```
+
+GraphQL: |+2
+  ```json
+  {
+    "data": {
+        "asyncQuery": {
+            "edges": [{
+                "node": {
+                    "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263e",
+                    "result": {
+                        "edges": [{
+                            "node": {
+                                "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263e",
+                                "responseBody": "{\"data\":{\"group\":{\"edges\":[{\"node\":{\"name\":\"com.example.repository\"}},{\"node\":{\"name\":\"com.yahoo.elide\"}},{\"node\":{\"name\":\"elide-demo\"}}]}}}",
+                                "contentLength": 140,
+                                "status": 200
+                            }
+                        }]
+                    }
+                }
+            }]
+        }
+    }
+  }
+  ```
