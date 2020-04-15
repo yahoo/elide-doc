@@ -30,6 +30,8 @@ Elide Spring: |+2
   <br/>
   Update your application.yaml with below mentioned additional code.(Only the relevant portions are included.)
 
+  If you rely on Spring to autodiscover the entities which are placed in the same package/sub-package as the application class with @SpringBootApplication annotation, you will have to add the @EntityScan annotation to that application class for those entities to be discovered after async is enabled.
+
   ```yaml
   elide:
     async:

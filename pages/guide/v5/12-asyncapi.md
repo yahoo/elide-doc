@@ -20,7 +20,7 @@ The principal of submitter is associated with each query submission. The result 
 
 ## Enable the Async API
 
-By default the async API is disabled. The entity models needed to support the Async API are built-in. Before we enable the Async API, we need to create the schema in the database for the async models to use. You can refer [demo-schema](https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml) for the schema details. Feel free to modify the schema based on your database provider and query/result size. Once the schema has been created, you can enable Async API easily.
+By default the async API is disabled. The entity models needed to support the Async API are built-in. Before we enable the Async API, we need to create the schema in the database for the async models to use. You can refer [demo-schema](https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml) for the schema details. Feel free to modify the query/result column size as per your needs. Do not update the types of these columns if you rely on hibernate to validate the schema as it could result in errors. Once the schema has been created, you can enable Async API easily.
 
 {% include code_example example="async-api-enable" %}
 
