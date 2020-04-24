@@ -258,7 +258,10 @@ For example, the following request creates an author (earnest hemingway), multip
 
 {% include code_example example='patch-extension' offset=10 %}
 
-Elide's patch extension support requires that all resources have assigned IDs when fixing up relationships.  For newly created objects, the IDs can simply be placeholders.
+Important Caveats:
+
+1. Patch extension requires a different content-type: `application/vnd.api+json; ext=jsonpatch`
+2. Elide's patch extension support requires that all resources have assigned IDs when fixing up relationships.  For newly created objects, the IDs can simply be placeholders.
 
 ## Type Serialization/Deserialization
 -------------------------------------
