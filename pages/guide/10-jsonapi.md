@@ -258,6 +258,8 @@ For example, the following request creates an author (earnest hemingway), multip
 
 {% include code_example example='patch-extension' offset=10 %}
 
+Elide's patch extension support requires that all resources have assigned IDs when fixing up relationships.  For newly created objects, the IDs can simply be placeholders.
+
 ## Type Serialization/Deserialization
 -------------------------------------
 
