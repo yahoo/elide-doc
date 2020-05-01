@@ -254,7 +254,7 @@ The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6
 JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
 
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
-For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
+For example, the following request creates an author (ernest hemingway), multiple of his books, and his book publisher in a single request:
 
 {% include code_example example='patch-extension' offset=10 %}
 
