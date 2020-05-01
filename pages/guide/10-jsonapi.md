@@ -7,14 +7,14 @@ title: Json API
 
 --------------------------
 
-[JSON-API](jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
+[JSON-API](http://jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.
 Similar to GraphQL: 
 *  It allows the client to control what is returned in the response payload.  
 *  It provided an API extension (the [_patch extension_](#bulk-writes-and-complex-mutations) that allowed multiple mutations to the graph to occur in a single request.
 
 Unlike GraphQL, the JSON-API specification spells out exactly how to perform common CRUD operations including complex graph mutations.  
 JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting 
-an [Open API Initiative](www.openapis.org) document (formerly known as [Swagger](swagger.io)).
+an [Open API Initiative](http://www.openapis.org) document (formerly known as [Swagger](http://swagger.io)).
 
 The [json-api specification](http://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
 commonly used JSON-API features as well as Elide additions for filtering, pagination, sorting, and swagger.
