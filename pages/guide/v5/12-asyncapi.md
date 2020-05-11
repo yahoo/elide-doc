@@ -15,7 +15,7 @@ API responses can be slowed down due to multiple reasons. The most common reason
 
 ## Security
 
-The principal of submitter is associated with each query submission. The result and status of the query are only accessible to the principal that submitted the query request. If principal was not set in the context then the query and results are accessible to everyone.
+The name of the submitter principal is associated with each query submission. The result and status of the query are only accessible to the principal that submitted the query request. If principal was not set in the context then the query and results are accessible to all null principals.
 
 ## Enable the Async API
 
