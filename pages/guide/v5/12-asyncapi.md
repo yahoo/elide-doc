@@ -10,13 +10,12 @@ version: 5
 
 API responses can be slowed down due to multiple reasons. The most common reasons for slowness but not limited to can be complex computational logic or heavy load on the backend database or the API trying to fetch data over a long date range, etc. This could result in a timeout error by the web server. Elide supports fetching the results from calls to JSON-API and GraphQL endpoints asynchronously. Some of the features available are:
 * Each Elide instance runs a background process which is responsible for running the query in the background and posting the results in the database.
-* Queries executing longer than a configurable threshold are killed automatically.
 * Status for Queries which may have stopped executing due to an application reboot is also updated.
 * Historical queries and result stored in the database longer than a configurable threshold are deleted.
 
 ## Security
 
-The principal of submitter is associated with each query submission. The result and status of the query are only accessible to the principal that submitted the query request.
+The principal of submitter is associated with each query submission. The result and status of the query are only accessible to the principal that submitted the query request. If principal was not set in the context then the query and results are accessible to everyone.
 
 ## Enable the Async API
 
