@@ -1,7 +1,7 @@
 ---
 layout: guide
 group: guide
-title: Performance 
+title: Performance
 version: 5
 ---
 
@@ -12,7 +12,7 @@ The N+1 problem is a performance issue where an ORM issues a large number of dat
 
 Most ORMs solve this problem by providing a number of different fetching strategies that are enabled when a proxy object or collection is hydrated.  These strategies fall into one of two categories:
 
-1. A join is used to fetch both the parent and the children in a single query.  The ORM populates its session cache with all entities fetched in the join.  Joining works well for fetching singular relationships.  It is important to note that a singular join that fetches an entire subgraph (spanning multiple relationships) is impractical and would break row based pagination (offset & limit).  Furthermore, large joins put considerable memory stress on the ORM server.  
+1. A join is used to fetch both the parent and the children in a single query.  The ORM populates its session cache with all entities fetched in the join.  Joining works well for fetching singular relationships.  It is important to note that a singular join that fetches an entire subgraph (spanning multiple relationships) is impractical and would break row based pagination (offset & limit).  Furthermore, large joins put considerable memory stress on the ORM server.
 2. Instead of a single query per element of a collection, the number of queries is reduced by fetching multiple children in fewer queries.
 
 These strategies may or not be available to the developer depending on how the ORM is leveraged.  If the developer interacts with a proxy object directly, all fetch strategies are available.  However, the SQL queries generated from proxy objects cannot be customized with additional filters, sorting, or pagination.
@@ -27,7 +27,7 @@ Whenever Elide traverses a to-one relationship, it returns the ORM proxy object 
 Whenever Elide traverses a to-many relationship, it returns the ORM collection proxy if there is no client supplied filter expression, sorting clause, or pagination.  Otherwise, it constructs a custom JPQL query that will fetch the collection - joining with with all subsequent to-one relationships to prefetch them.
 
 In general, it is recommended to configure the ORM with batch fetching so the ORM will efficiently hydrate proxy collections.
- 
+
 ## Security Checks
 
 Elide provides different flavors of security checks for performance reasons.  In general, it is expensive to execute servers side functions for every entity row hydrated from the database.  Because Elide is handling the results of each query in a single thread, the CPU cost of these checks can add extra latency to your queries.
@@ -39,15 +39,15 @@ To work around this, Elide provides two different kinds of security checks:
 
 For data reads from the database, it is recommended to use User Checks and Filter Expression Checks wherever possible.
 
-## ORM-isms 
+## ORM-isms
 
 Beware to-one relationships where the entity doesn't own the relationship (`mappedBy` is specified) _and_ `optional` is set to true.  The ORM must **ALWAYS** fetch these relationships when hydrating a proxy (leading to N+1 queries depending on how the ORM is configured).  The ORM has no way of knowing if the relationship is null or non-null without issuing another database query.
 
-## Database-isms 
+## Database-isms
 
-It is highly recommended to collocate Elide servers and the database in the same data center or region to reduce the latency of database queries from Elide. 
+It is highly recommended to collocate Elide servers and the database in the same data center or region to reduce the latency of database queries from Elide.
 
-It is also recommended to segregate Elide read only transactions (data fetches) to run against a read-only replica of the database for optimal read performance. 
+It is also recommended to segregate Elide read only transactions (data fetches) to run against a read-only replica of the database for optimal read performance.
 
 ## Text Search
 
@@ -64,7 +64,7 @@ There are a number of limitations to this approach:
 
 Elide provides two capabilities to work around these issues for large tables that require text search:
 1. Elide supports the [ability to override the JPQL fragment](#jpql-fragment-override) that is generated for any operator on any field in any entity model.  This makes it possible to disable the use of lower/upper case functions on a database column if the database column is already case insensitive.  It is also possible to use custom SQL dialects to leverage full text index support (where available).
-2. Elide supports a [Text Search Data Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) that can wrap another ORM data store.  Whenever possible, the text search data store can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.  
+2. Elide supports a [Text Search Data Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) that can wrap another ORM data store.  Whenever possible, the text search data store can delegate queries to a local Lucene index or a Elasticsearch cluster rather than the default data store.
 
 ### JPQL Fragment Override
 
@@ -90,7 +90,7 @@ public interface JPQLPredicateGenerator {
 And then register it with Elide for the filter operator you want to modify.  This can either be done globally:
 
 ```java
-FilterTranslator.registerJPQLGenerator(Operator.NOTNULL, 
+FilterTranslator.registerJPQLGenerator(Operator.NOTNULL,
     (columnAlias, params) -> {
         return String.format("%s IS NOT NULL", columnAlias);
     }
@@ -111,3 +111,28 @@ FilterTranslator.registerJPQLGenerator(Operator.NOTNULL, Book.class, "title",
 ## Bespoke Field Sets
 
 By default JSON-API fetches every relationship in an entity unless a client restricts what it asks for through sparse fields.  These relationship fetches result in extra database queries.  It is recommended to either use GraphQL or educate clients to use sparse fields in JSON-API whenever possible.
+
+## AggregationDataStore Cache
+
+AggregationDataStore supports caching QueryEngine results. By default, a simple in-memory Caffeine-based cache is
+configured, with a size limit of 1024 entries, but you can provide your own implementation.
+
+For the cache to apply to a query, there are three requirements:
+ 1. The `AggregationDataStore` must be supplied with a cache implementation.
+ 2. The `QueryEngine` must support caching the table used in the query.
+    For example, with `SQLQueryEngine`, the table must be annotated with `@VersionQuery`.
+ 3. The query being executed doesn't have `bypassingCache` set.
+
+### With Spring Configuration
+
+Configuration property `elide.queryCacheMaximumEntries` controls the size of the default cache implementation.
+Setting the value to be zero or negative disables the cache.
+
+To provide your own cache implementation, inject it as a `com.yahoo.elide.datastores.aggregation.cache.Cache` bean.
+
+### With Standalone Configuration
+
+To control the size of the default cache implementation override `ElideStandaloneSettings.getQueryCacheMaximumEntries`.
+When the value is zero or negative the cache is disabled.
+
+To provide your own cache implementation, override `ElideStandaloneSettings.getQueryCache`.
