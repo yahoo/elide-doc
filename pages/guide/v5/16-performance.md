@@ -136,3 +136,17 @@ To control the size of the default cache implementation override `ElideStandalon
 When the value is zero or negative the cache is disabled.
 
 To provide your own cache implementation, override `ElideStandaloneSettings.getQueryCache`.
+
+### SQLQueryEngine @VersionQuery Example
+
+```java
+@Include(rootLevel = true)
+@FromTable(name = "stats")
+@VersionQuery(sql = "SELECT COUNT(*) FROM stats")
+public class Stats {
+    // fields
+}
+```
+
+Returning a row count should work for tables that are insert-only. In most cases, a more sophisticated query will be
+needed, such as one that returns a table modification timestamp.
