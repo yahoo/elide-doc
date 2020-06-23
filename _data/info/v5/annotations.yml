@@ -225,7 +225,7 @@
         type: String
         default: <em>Empty String</em>
         required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.  
+        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
 
 - name: OnUpdatePreCommit
   description: A lifecycle hook that executes on a update action after security has run, but before the transaction has committed.
@@ -236,7 +236,7 @@
         type: String
         default: <em>Empty String</em>
         required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.  
+        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
 
 - name: OnUpdatePreSecurity
   description: A lifecycle hook that executes on a update action before the security checks have run.
@@ -247,7 +247,7 @@
         type: String
         default: <em>Empty String</em>
         required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.  
+        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
 
 - name: OnDeletePostCommit
   description: A lifecycle hook that executes on a delete action after the transaction has committed successfully.
@@ -267,7 +267,7 @@
       - Method
   parameters: []
 
-- name: ElideTypeConverter 
+- name: ElideTypeConverter
   description: Automatically registers the decorated Serde class with Elide.
   applicationLevel:
       - Class
@@ -340,7 +340,7 @@
   parameters: []
 
 - name: FromTable
-  description: Aggregation store annotation which binds an Elide model to a phsyical database table.
+  description: Aggregation store annotation which binds an Elide model to a physical database table.
   applicationLevel:
       - Class
   parameters:
@@ -349,3 +349,14 @@
         type: String
         required: True
         description: The name of the physical table which backs the Elide model.
+
+- name: VersionQuery
+  description: Specifies a SQL query for SQLQueryEngine to use for detecting data changes. This must be present for SQLQueryEngine to support caching an entity.
+  applicationLevel:
+    - Class
+  parameters:
+    - name: sql
+      default: <em>None</em>
+      type: String
+      required: True
+      description: SQL SELECT query that returns a string or integer value. The value must change whenever the corresponding database table changes.
