@@ -351,7 +351,7 @@
         description: The name of the physical table which backs the Elide model.
 
 - name: VersionQuery
-  description: Specifies an SQL query for SQLQueryEngine to use for detecting data changes. This must be present for SQLQueryEngine to support caching an entity.
+  description: Specifies a SQL query for SQLQueryEngine to use for detecting data changes. This must be present for SQLQueryEngine to support caching an entity.
   applicationLevel:
     - Class
   parameters:
