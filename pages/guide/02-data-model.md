@@ -96,7 +96,67 @@ Every model in Elide must have an ID.  This is a requirement of both the JSON-AP
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
 
-Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
+Identifier fields in Elide are typically integers, longs, strings, or UUIDs.   It is also possible to have composite/compound ID fields composed of multiple fields.  For example, the following identifier type includes three fields that together create a primary key:
+
+```java
+@Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Address implements Serializable {
+    private long number;
+    private String street;
+    private long zipCode;
+}
+```
+
+This new compound ID type can then be referenced in an Elide model identifier like this:
+
+```java
+@Include(rootLevel = true)
+@Data
+@Entity
+public class Building {
+    @Id
+    @Embedded
+    private Address address;
+}
+```
+
+Because JSON-API requires all ID fields to be Strings, composite/compound IDs require the developer to register an Elide `Serde` to serialize and deserialize the ID type to a String.  For example, the following `Serde` will encode/decode an `Address` as a base64 encoded string:
+
+```java
+@ElideTypeConverter(type = Address.class, name = "Address")
+public class AddressSerde implements Serde<String, Address> {
+    private static final Pattern ADDRESS_PATTERN =
+            Pattern.compile("Address\\(number=(\\d+), street=([a-zA-Z0-9 ]+), zipCode=(\\d+)\\)");
+
+    @Override
+    public Address deserialize(String val) {
+        byte[] decodedBytes = Base64.getDecoder().decode(val);
+        String decodedString = new String(decodedBytes);
+
+        Matcher matcher = ADDRESS_PATTERN.matcher(decodedString);
+        if (! matcher.matches()) {
+            throw new InvalidValueException(decodedString);
+        }
+        long number = Long.valueOf(matcher.group(1));
+        String street = matcher.group(2);
+        long zipCode = Long.valueOf(matcher.group(3));
+
+        Address address = new Address(number, street, zipCode);
+
+        return address;
+    }
+
+    @Override
+    public String serialize(Address val) {
+        return Base64.getEncoder().encodeToString(val.toString().getBytes());
+    }
+}
+```
+
+More information about `Serde` and user defined types can be found [here](/pages/guide/09-clientapis.html#type-coercion).
 
 ## Attributes vs Relationships
 
@@ -338,7 +398,7 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 
 ## Type Coercion
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/09-clientapis.html#type-coercion).
 
 ## Inheritance
 
