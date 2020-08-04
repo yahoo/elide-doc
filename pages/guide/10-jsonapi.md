@@ -263,6 +263,77 @@ Important Caveats:
 1. Patch extension requires a different content-type: `application/vnd.api+json; ext=jsonpatch`
 2. Elide's patch extension support requires that all resources have assigned IDs when fixing up relationships.  For newly created objects, the IDs can simply be placeholders.
 
+## Links
+------------
+
+JSON-API links are disabled by default.  To turn them on for spring boot, Override the default Elide configuration bean:
+
+```java
+    @Bean
+    public Elide initializeElide(EntityDictionary dictionary, DataStore dataStore, ElideConfigProperties settings) {
+        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
+		... // Removed other settings for clarity
+                .withJSONApiLinks(new DefaultJSONApiLinks());
+        return new Elide(builder.build());
+    }
+
+```
+
+Similarly, for Elide standalone, you can turn them on by overriding ElideStandaloneSettings:
+
+```java
+    ElideSettings getElideSettings(final ServiceLocator injector) {
+        ... //Removed other initialization for clarity
+
+        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
+		... // Removed other settings for clarity
+                .withJSONApiLinks(new DefaultJSONApiLinks());
+       
+        return builder.build();
+    }
+```
+
+This will result in payload responses that look like:
+
+```json
+{
+    "data": [
+        {
+            "type": "group",
+            "id": "com.example.repository",
+            "attributes": {
+                "commonName": "Example Repository",
+                "description": "The code for this project"
+            },
+            "relationships": {
+                "products": {
+                    "links": {
+                        "self": "http://localhost:55302/api/v1/group/com.example.repository/relationships/products",
+                        "related": "http://localhost:55302/api/v1/group/com.example.repository/products"
+                    },
+                    "data": [
+                        
+                    ]
+                }
+            },
+            "links": {
+                "self": "http://localhost:55302/api/v1/group/com.example.repository"
+            }
+        }
+    ]
+}
+```
+
+You can customize the links that are returned by registering your own implementation of `JsonApiLinks`:
+
+```java
+public interface JSONApiLinks {
+    Map<String, String> getResourceLevelLinks(PersistentResource var1);
+
+    Map<String, String> getRelationshipLinks(PersistentResource var1, String var2);
+}
+```
+
 ## Type Serialization/Deserialization
 -------------------------------------
 
