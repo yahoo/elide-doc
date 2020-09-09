@@ -159,6 +159,7 @@ All subsequent query examples are based on the following data model including `B
 Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in 
 the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
 of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
+RSQL makes all FIQL operator as Case Sensitive. New operator for Case Insensitive Equality comparisons are introduced. 
 
 RSQL predicates can filter attributes in:
 * The relationship model
@@ -170,11 +171,16 @@ To join across relationships, the attribute name is prefixed by one or more rela
 
 The following RSQL operators are supported:
 
-* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list.
-* `=out=` : Evaluates to true if the attribute does not match any of the values in the list.
-* `==ABC*` : Similar to SQL `like 'ABC%`.
-* `==*ABC` : Similar to SQL `like '%ABC`.
-* `==*ABC*` : Similar to SQL `like '%ABC%`.
+* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list. (Case Sensitive)
+* `=ini=`: Evaluates to true if the attribute exactly matches any of the values in the list. (Case Insensitive)
+* `=out=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Sensitive)
+* `=outi=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Insensitive)
+* `==ABC*` : Similar to SQL `like 'ABC%`. (Case Sensitive)
+* `==*ABC` : Similar to SQL `like '%ABC`. (Case Sensitive)
+* `==*ABC*` : Similar to SQL `like '%ABC%`. (Case Sensitive)
+* `=in=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
+* `=in=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
+* `=in=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
 * `=isnull=true` : Evaluates to true if the attribute is null
 * `=isnull=false` : Evaluates to true if the attribute is not null
 * `=lt=` : Evaluates to true if the attribute is less than the value.
@@ -190,6 +196,28 @@ or 'Science Fiction':
   `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
 * Filter books by the publisher name contains XYZ:
   `publisher.name==*XYZ*`
+
+###### FIQL Default Behaviour
+Not that from the above listed RSQL operators, the behavior of FIQL operators `=in=,=out=,==` are changed to Case Sensitive.  
+To change it back to Case Insensitive Behavior, initialize RSQLFilterDialect with FIQL Case sensitive strategy.
+```java
+    @Bean
+    @ConditionalOnMissingBean
+    public Elide initializeElide(EntityDictionary dictionary,
+            DataStore dataStore, ElideConfigProperties settings) {
+
+        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+                .withEntityDictionary(dictionary)
+                .withDefaultMaxPageSize(settings.getMaxPageSize())
+                .withDefaultPageSize(settings.getPageSize())
+                .withJoinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+                .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+                .withAuditLogger(new Slf4jLogger())
+                .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
+
+        return new Elide(builder.build());
+    }
+```
 
 ## Pagination
 --------------------------
