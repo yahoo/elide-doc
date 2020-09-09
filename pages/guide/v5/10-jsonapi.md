@@ -96,8 +96,7 @@ of Boolean expressions.  It is a superset of the [FIQL language](https://tools.i
 Because RSQL is a superset of FIQL, FIQL queries should be properly parsed.
 RSQL primarily adds more friendly lexer tokens to FIQL for conjunction and disjunction: 'and' instead of ';' and 'or' instead of ','.
 RSQL also adds a richer set of operators.
-RSQL makes all FIQL operator as Case Sensitive. New operator for Case Insensitive Equality comparisons are introduced. 
-
+FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
 #### Filter Syntax
 
 Filter query parameters either look like: 
@@ -148,9 +147,9 @@ The following RSQL operators are supported:
 * `==ABC*` : Similar to SQL `like 'ABC%`. (Case Sensitive)
 * `==*ABC` : Similar to SQL `like '%ABC`. (Case Sensitive)
 * `==*ABC*` : Similar to SQL `like '%ABC%`. (Case Sensitive)
-* `=in=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
-* `=in=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
-* `=in=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
+* `=ini=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
+* `=ini=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
+* `=ini=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
 * `=isnull=true` : Evaluates to true if the attribute is null
 * `=isnull=false` : Evaluates to true if the attribute is not null
 * `=lt=` : Evaluates to true if the attribute is less than the value.

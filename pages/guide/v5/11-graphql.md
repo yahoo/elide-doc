@@ -159,8 +159,7 @@ All subsequent query examples are based on the following data model including `B
 Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in 
 the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
 of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
-RSQL makes all FIQL operator as Case Sensitive. New operator for Case Insensitive Equality comparisons are introduced. 
-
+FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
 RSQL predicates can filter attributes in:
 * The relationship model
 * Another model joined to the relationship model through to-one relationships
@@ -178,9 +177,9 @@ The following RSQL operators are supported:
 * `==ABC*` : Similar to SQL `like 'ABC%`. (Case Sensitive)
 * `==*ABC` : Similar to SQL `like '%ABC`. (Case Sensitive)
 * `==*ABC*` : Similar to SQL `like '%ABC%`. (Case Sensitive)
-* `=in=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
-* `=in=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
-* `=in=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
+* `=ini=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
+* `=ini=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
+* `=ini=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
 * `=isnull=true` : Evaluates to true if the attribute is null
 * `=isnull=false` : Evaluates to true if the attribute is not null
 * `=lt=` : Evaluates to true if the attribute is less than the value.
