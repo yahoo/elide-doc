@@ -1,0 +1,70 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+    {
+      "data": [
+          {
+              "type": "playerStats",
+              "id": "0",
+              "attributes": {
+                  "countryIsoCode": "HKG",
+                  "highScore": 1000,
+                  "overallRating": "Good"
+              }
+          },
+          {
+              "type": "playerStats",
+              "id": "1",
+              "attributes": {
+                  "countryIsoCode": "USA",
+                  "highScore": 1234,
+                  "overallRating": "Good"
+              }
+          },
+          {
+              "type": "playerStats",
+              "id": "2",
+              "attributes": {
+                  "countryIsoCode": "USA",
+                  "highScore": 2412,
+                  "overallRating": "Great"
+              }
+          }
+      ]
+  }
+  ```
+
+GraphQL: |+2
+  ```
+    {
+      "data": {
+          "playerStats": {
+              "edges": [
+                  {
+                      "node": {
+                          "highScore": 1000,
+                          "overallRating": "Good",
+                          "countryIsoCode": "HKG"
+                      }
+                  },
+                  {
+                      "node": {
+                          "highScore": 1234,
+                          "overallRating": "Good",
+                          "countryIsoCode": "USA"
+                      }
+                  },
+                  {
+                      "node": {
+                          "highScore": 2412,
+                          "overallRating": "Great",
+                          "countryIsoCode": "USA"
+                      }
+                  }
+              ]
+          }
+      }
+  }
+  ```

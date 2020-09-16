@@ -1,0 +1,22 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```
+  /playerStats?fields[playerStats]=highScore,overallRating,countryIsoCode&sort=highScore
+  ```
+
+GraphQL: |+2
+  ```
+  {
+    playerStats(sort: "highScore") {
+      edges {
+        node {
+          highScore 
+          overallRating 
+          countryIsoCode
+        }
+      }
+    }
+  }
