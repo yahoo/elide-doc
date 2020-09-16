@@ -1,7 +1,7 @@
 {% if page.version == 4 %}
-{% assign example = site.data.snippets.v4[include.example] %}
+{% assign example = site.data.snippets.v4.[include.example] %}
 {% else %}
-{% assign example = site.data.snippets.v5[include.example] %}
+{% assign example = site.data.snippets.v5.[include.example] %}
 {% endif %}
 
 {% assign files = example.files %}
