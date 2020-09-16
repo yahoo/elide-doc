@@ -1,3 +1,10 @@
+---
+layout: guide
+group: guide
+title: Analytic Query Support
+version: 5
+---
+
 # Overview
 
 Elide's `AggregationDataStore` exposes read-only models that support data analytic queries.  Model attributes represent either metrics (for aggregating, filtering, and sorting) and dimensions (for grouping, filtering, and sorting).  Models exposed through the Aggregation store are flat and do not contain relationships to other models.
