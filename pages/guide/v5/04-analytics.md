@@ -36,3 +36,11 @@ Here are the respective responses:
 {% include code_example example="04-analytic-response" %}
 
 ## Metadata Queries
+
+A full list of available table and column metadata is covered in the configuration section.  Metadata can be queried through the _table_ model and its associated relationships:
+
+{% include code_example example="04-metadata-query" %}
+
+Here are the respective responses:
+
+{% include code_example example="04-metadata-response" %}

@@ -3,7 +3,8 @@ files:
   - GraphQL
 
 JSON-API: |+2
-    {
+  ```
+  {
       "data": [
           {
               "type": "playerStats",
