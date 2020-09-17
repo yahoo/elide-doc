@@ -5,6 +5,8 @@ title: Analytic Query Support
 version: 5
 ---
 
+{:toc}
+
 # Overview
 
 Elide's `AggregationDataStore` exposes read-only models that support data analytic queries.  Model attributes represent either metrics (for aggregating, filtering, and sorting) and dimensions (for grouping, filtering, and sorting).  Models exposed through the Aggregation store are flat and do not contain relationships to other models.
@@ -54,24 +56,27 @@ Here are the respective responses:
 
 # Configuration
 
-Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ HJSON configuration files.  HJSON configuration files can either sit locally in the filesystem or be sourced from the classpath.  Either way, they must conform to the following directory structure:
+Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ HJSON configuration files.  HJSON configuration files can be sourced either from the local filesystem or the classpath.  Either way, they must conform to the following directory structure:
 
 ```
-	CONFIG_ROOT/
-	  ├── models/
-	  |  ├── tables/
-	  |  |  ├── model1.hjson
-	  |  |  ├── model2.hjson
-	  |  ├── security.hjson
-	  |  └── variables.hjson
-	  ├── db/
-	  |  ├── sql/
-	  |  |  ├── db1.hjson
-	  |  ├── variables.hjson
-	
+CONFIG_ROOT/
+  ├── models/
+  |  ├── tables/
+  |  |  ├── model1.hjson
+  |  |  ├── model2.hjson
+  |  ├── security.hjson
+  |  └── variables.hjson
+  ├── db/
+  |  ├── sql/
+  |  |  ├── db1.hjson
+  |  ├── variables.hjson
 ```
 
-## Root Directory
+1. Analytic model files are stored in `/models/tables`.  Multiple models can be grouped together into a single file.
+2. Security rules are stored in `/models/security.hjson`.
+3. Model and security HJSON files support variable substitution with variables defined in `/models/variables.hjson`.
+4. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
+5. Data source HJSON files support variable substitution with variables defined in `/db/variables.hjson`.
 
 CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be configured in spring by setting elide.dynamic-config.path:
 
@@ -93,7 +98,7 @@ Alternatively, in elide standalone, it can be configured by overriding the follo
 
 ## Data Source Configuration
 
-The Aggregation Data Store does not leverage JPA, but rather uses JDBC directly.  With zero additional configuration, Elide will leverage the default JPA configuration for establishing connections through the Aggregation Data Store.  However, more complex configurations are possible including:
+The Aggregation Data Store does not leverage JPA, but rather uses JDBC directly.  By default, Elide will leverage the default JPA configuration for establishing connections through the Aggregation Data Store.  However, more complex configurations are possible including:
 
 1.  Using a different JDBC data source other than what is configured for JPA.
 2.  Leveraging multiple JDBC data sources for different Elide models.
@@ -133,8 +138,97 @@ For these complex configurations, you must configure Elide using the Aggregation
 }
 ```
 
+### Data Source Passwords
+
+Data source passwords are provided out of band by implementing a `DBPasswordExtractor`:
+
 ```java
 public interface DBPasswordExtractor {
     String getDBPassword(DBConfig config);
 }
 ```
+
+This can be configured in Spring by overriding the DBPasswordExtractor bean:
+
+```java
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "elide.aggregation-store.enabled", havingValue = "true")
+    public DBPasswordExtractor getDBPasswordExtractor() {
+
+        return new DBPasswordExtractor() {
+            @Override
+            public String getDBPassword(DBConfig config) {
+                return StringUtils.EMPTY;
+            }
+        };
+    }
+```
+
+In Elide Standalone, the same can be configured by overriding the default standalone setting:
+
+```java
+    default DBPasswordExtractor getDBPasswordExtractor() {
+        return new DBPasswordExtractor() {
+            @Override
+            public String getDBPassword(DBConfig config) {
+                return StringUtils.EMPTY;
+            }
+        };
+    }
+```
+
+## Model Configuration
+
+### Concepts
+
+Elide exposes a virtual semantic model of tables and columns that represents a data warehouse.   The virtual semantic model can be mapped to one or more physical databases, tables, and columns through configuration by a data analyst.   The analyst maps virtual tables and columns to fragments of native SQL queries that are later assembled into complete SQL statements at query time.
+
+Analytic models are called **Tables** in Elide.  They are made up of:
+1. **Metrics** - Numeric columns that can be aggregated, filtered on, and sorted on.
+2. **Dimensions** - Columns that can be grouped on, filtered on, and sorted on.
+3. **TimeDimension** - A type of **Dimension** that represents time.  Time dimensions are tied to grain (a period) and a timezone.
+4. **Columns** - The supertype of **Metrics**, **Dimensions**, and **TimeDimensions**.  All columns share a set of common metadata.
+5. **Joins** - Even though Elide analytic models are flat (there are no relationships to other models), individual model columns can be sourced from multiple physical tables.  **Joins** provide Elide the information it needs to join other database tables at query time to compute a given column.
+
+Some metrics have **FunctionArguments**.  They represent parameters that are supplied by the client to change how the metric is computed.
+
+TODO - Insert UML Model.
+
+### Tables
+
+In addition to columns and joins, Tables define the following metadata properties:
+
+| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
+| name                  | The name of the elide model.  It will be expoed through the API with this name. | tableName | `@Include(type="tableName")` |
+| version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
+| description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
+| category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
+| tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
+| cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
+| dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a name for a data source configuration. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
+| schema                | The database name where the physical data resides | databaseName | `@FromTable(name=databaseName.tableName)` |
+| table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
+| sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
+| extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
+| readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
+| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | 'countryIsoCode=={{code}}' | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
+{:.table}
+
+### Column Expressions
+
+### Time Grains
+
+## Security Configuration
+
+## Variable Substitution
+
+## Configuration Validation
+
+All HJSON configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
+1. [Table Config]()
+1. [Data Source Config]()
+1. [Security Config]()
+1. [Variable File]()
+
