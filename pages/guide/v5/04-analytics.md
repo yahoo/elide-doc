@@ -221,9 +221,58 @@ In addition to columns and joins, Tables define the following metadata propertie
 
 ### Table Joins
 
+Table joins allow column expessions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
+
+```json
+joins: [
+    {
+       name: playerCountry
+       to: country
+       type: toOne
+       definition: '%from.country_id = %join.id'
+    },
+    {
+       name: playerTeam
+       to: team
+       type: toMany
+       definition: '%from.team_id = %join.id'
+    }
+]
+```
+
+```java
+    private Country country;
+    private Team team;
+
+    @Join("%from.country_id = %join.id")
+    public Country getCountry() {
+        return country;
+    }
+
+    @Join("%from.team_id = %join.id")
+    public Team getTeam() {
+        return team;
+    }
+```
+
+Each join definition includes the following properties:
+
+
+| Property              | Explanation                                                      | 
+| --------------------- | ---------------------------------------------------------------- | 
+| name                  | A unique name for the join.                                      | 
+| to                    | The name of the Elide model being joined against.                | 
+| type                  | 'toMany' or 'toOne'                                              |
+| definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
+{:.table}
+
 ### Columns
 
 ### Column Expressions
+
+Column expressions are templated SQL fragments.  Strings encloded in double curly braces ({{foo}}) are references to:
+- logical field names in the current model.  
+- Dot ('.') separated paths that navigate joins to a particular field in a different model ({{player.team.name}}).
 
 ### Time Grains
 
