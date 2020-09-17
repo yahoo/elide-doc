@@ -5,6 +5,7 @@ title: Analytic Query Support
 version: 5
 ---
 
+* TOC
 {:toc}
 
 # Overview
@@ -195,6 +196,8 @@ Some metrics have **FunctionArguments**.  They represent parameters that are sup
 
 TODO - Insert UML Model.
 
+### Example
+
 ### Tables
 
 In addition to columns and joins, Tables define the following metadata properties:
@@ -215,6 +218,10 @@ In addition to columns and joins, Tables define the following metadata propertie
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | 'countryIsoCode=={{code}}' | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
 {:.table}
+
+### Table Joins
+
+### Columns
 
 ### Column Expressions
 
