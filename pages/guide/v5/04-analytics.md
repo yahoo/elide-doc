@@ -51,3 +51,90 @@ A full list of available table and column metadata is covered in the configurati
 Here are the respective responses:
 
 {% include code_example example="04-metadata-response" %}
+
+# Configuration
+
+Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ HJSON configuration files.  HJSON configuration files can either sit locally in the filesystem or be sourced from the classpath.  Either way, they must conform to the following directory structure:
+
+```
+	CONFIG_ROOT/
+	  ├── models/
+	  |  ├── tables/
+	  |  |  ├── model1.hjson
+	  |  |  ├── model2.hjson
+	  |  ├── security.hjson
+	  |  └── variables.hjson
+	  ├── db/
+	  |  ├── sql/
+	  |  |  ├── db1.hjson
+	  |  ├── variables.hjson
+	
+```
+
+## Root Directory
+
+CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be configured in spring by setting elide.dynamic-config.path:
+
+```yaml
+elide:
+  dynamic-config:
+    path: src/resources/configs
+    enabled: true
+
+```
+
+Alternatively, in elide standalone, it can be configured by overriding the following setting in `ElideStandaloneSettings`:
+
+```java
+    default String getDynamicConfigPath() {
+        return File.separator + "models" + File.separator;
+    }
+```
+
+## Data Source Configuration
+
+The Aggregation Data Store does not leverage JPA, but rather uses JDBC directly.  With zero additional configuration, Elide will leverage the default JPA configuration for establishing connections through the Aggregation Data Store.  However, more complex configurations are possible including:
+
+1.  Using a different JDBC data source other than what is configured for JPA.
+2.  Leveraging multiple JDBC data sources for different Elide models.
+
+For these complex configurations, you must configure Elide using the Aggregation Store's HJSON configuration language.  The following configuration file illustrates two configurations.  Each configuration includes:
+1. A name that will be referenced in your Analytic models (effectively binding them to a data source).
+2. A JDBC URL
+3. A JDBC driver
+4. A user name
+5. An Elide SQL Dialect.  This can either be the name of an Elide support dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
+6. A map of driver specific properties.
+
+```json
+{
+  dbconfigs:
+  [
+    {
+      name: Presto Data Source
+      url: jdbc:db2:localhost:50000/testdb
+      driver: COM.ibm.db2.jdbc.net.DB2Driver
+      user: guestdb2
+      dialect: PrestoDB
+      propertyMap:
+      {
+        hibernate.show_sql: true
+        hibernate.default_batch_fetch_size: 100.1
+      }
+    }
+    {
+      name: MySQLConnection
+      url: jdbc:mysql://localhost/testdb?serverTimezone=UTC
+      driver: com.mysql.jdbc.Driver
+      user: guestmysql
+      dialect: com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect
+    }
+  ]
+}
+```
+
+```java
+public interface DBPasswordExtractor {
+    String getDBPassword(DBConfig config);
+}
+```
