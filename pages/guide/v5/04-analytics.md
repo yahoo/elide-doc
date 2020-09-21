@@ -61,29 +61,7 @@ Here are the respective responses:
 
 There are two feature flags that enable analytic queries and HJSON configuration respectively:
 
-If using spring, configure the following settings in application.yaml:
-
-```yaml
-elide:
-  dynamic-config:
-    enabled: true
-  aggregation-store:
-    enabled: true
-```
-
-If using elide-standalone, configure the following settings in `ElideStandaloneSettings`:
-
-```java
-    @Override
-    public boolean enableDynamicModelConfig() {
-        return true;
-    }
-
-    @Override
-    public boolean enableAggregationDataStore() {
-        return true;
-    }
-```
+{% include code_example example="04-analytic-feature-flags" %}
 
 ## File Layout
 
