@@ -141,7 +141,7 @@ For these complex configurations, you must configure Elide using the Aggregation
 5. An Elide SQL Dialect.  This can either be the name of an Elide supported dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
 6. A map of driver specific properties.
 
-```json
+```
 {
   dbconfigs:
   [
@@ -299,25 +299,27 @@ Column definitions are templated, native SQL fragments.  Columns definitions can
 Column expressions can be defined in HJSON:
 
 ```
-measures : [
+{
+  measures : [
     {
-    name : highScore
-    type : INTEGER
-    definition: 'MAX(highScore)'
+      name : highScore
+      type : INTEGER
+      definition: 'MAX(highScore)'
     }
-]
-dimensions : [
+  ]
+  dimensions : [
     {
-        name : name
-        type : TEXT
-        definition : name
+      name : name
+      type : TEXT
+      definition : name
     },
     {
-        name : countryCode
-        type : TEXT
-        definition : '{{playerCountry.isoCode}}'
+      name : countryCode
+      type : TEXT
+      definition : '{{playerCountry.isoCode}}'
     }
-]
+  ]
+}
 ```
 
 Column expressions can also be defined by annotating Elide models:
