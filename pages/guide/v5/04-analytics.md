@@ -47,7 +47,7 @@ Here are the respective responses:
 
 ## Metadata Queries
 
-A full list of available table and column metadata is covered in the configuration section.  Metadata can be queried through the _table_ model and its associated relationships:
+A full list of available table and column metadata is covered in the [configuration section](#tables).  Metadata can be queried through the _table_ model and its associated relationships:
 
 {% include code_example example="04-metadata-query" %}
 
@@ -138,7 +138,7 @@ For these complex configurations, you must configure Elide using the Aggregation
 2. A JDBC URL
 3. A JDBC driver
 4. A user name
-5. An Elide SQL Dialect.  This can either be the name of an Elide support dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
+5. An Elide SQL Dialect.  This can either be the name of an Elide supported dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
 6. A map of driver specific properties.
 
 ```json
@@ -250,32 +250,157 @@ Analytic models are called **Tables** in Elide.  They are made up of:
 
 Some metrics have **FunctionArguments**.  They represent parameters that are supplied by the client to change how the metric is computed.
 
-### Example
+### Example Configuration
 
 {% include code_example example="04-analytic-config" %}
 
 ### Tables
 
-In addition to columns and joins, Tables define the following metadata properties:
+Tables must source their columns from somewhere.  There are three, mutually exclusive options:
+1.  Tables can source their columns from a physical table.  
+2.  Tables can source their columns from a SQL subquery.
+3.  Tables can extend (override or add columns) an existing Table.
+
+These options are configured via the 'table', 'sql', and 'extend' [properties](#table-properties).
+
+#### Table Properties
+
+Tables include the following properties:
 
 | Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
-| name                  | The name of the elide model.  It will be expoed through the API with this name. | tableName | `@Include(type="tableName")` |
+| name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
 | cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
-| dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a name for a data source configuration. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
+| dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a data source configuration name. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
 | schema                | The database name where the physical data resides | databaseName | `@FromTable(name=databaseName.tableName)` |
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | 'countryIsoCode=={{code}}' | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
+| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | `countryIsoCode=={{code}}` | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
+| hidden                | The table is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
-#### Table Joins
+### Columns
+
+Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are: 
+1. The name of the column.
+2. The data type of the column.
+3. The definition of the column.
+
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (``{{foo}}``) is interpretted either as:
+- A column name in the current table.  
+- A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (``{{player.team.name}}``).  
+
+Column expressions can be defined in HJSON:
+
+```
+measures : [
+    {
+    name : highScore
+    type : INTEGER
+    definition: 'MAX(highScore)'
+    }
+]
+dimensions : [
+    {
+        name : name
+        type : TEXT
+        definition : name
+    },
+    {
+        name : countryCode
+        type : TEXT
+        definition : '{{playerCountry.isoCode}}'
+    }
+]
+```
+
+Column expressions can also be defined by annotating Elide models:
+
+```java
+@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")
+boolean inUsa;
+```
+
+```java
+@MetricFormula("{{wins}} / {{totalGames}} * 100")
+float winRatio;
+```
+
+#### Column Properties
+
+Columns include the following properties:
+
+| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
+| name                  | The name of the column.  It will be exposed through the API with this name. | columnName | String columnName; |
+| description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
+| category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
+| tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
+| readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
+| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | `@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")` |
+| type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
+| hidden                | The column is not exposed through the API. | true | `@Exclude` |
+{:.table}
+
+Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead or other uses) :
+| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
+| values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
+| tableSource           | The table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
+
+#### Time Dimensions & Time Grains
+
+Time dimensions are normal dimensions with a specified time grain.  The time grain determines how time is represented as text in query filters and query results.
+
+Supported time grains include:
+
+| Grain        | Text Format     |
+| ------------ | --------------- |
+| SIMPLEDATE   | "yyyy-MM-dd"    |
+| DATETIME     | "yyyy-MM-dd HH:mm:ss" |
+| MONTHYEAR    | "MMM yyyy"      |
+| YEARMONTH    | "yyyy-MM"       |
+| YEAR         | "yyyy"          |
+| WEEKDATE     | "yyyy-MM-dd"    |
+{:.table}
+
+When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as `{{}}`) to its text representation:
+
+```
+{
+    name : createdOn
+    type : TIME
+    definition : createdOn
+    grain:
+    {
+        type :  SIMPLEDATE
+        sql :  '''
+        PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+        '''
+    }
+}
+```
+
+The equivalent configuration in Java is:
+
+
+```java
+public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+
+
+@Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
+private Date createdOn;
+```
+
+
+
+### Joins
 
 Table joins allow column expessions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
 
@@ -323,94 +448,6 @@ Each join definition includes the following properties:
 | type                  | 'toMany' or 'toOne'                                              |
 | definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
 {:.table}
-
-#### Columns
-
-#### Column Expressions
-
-Column expressions are templated SQL fragments.  Strings encoded in double curly braces ({{foo}}) are references to:
-- logical field names in the current model.  
-- Dot ('.') separated paths that navigate joins (by their join name) to a particular field in a different model ({{player.team.name}}).  
-
-Column expressions can be defined in HJSON:
-
-```
-measures : [
-    {
-    name : highScore
-    type : INTEGER
-    definition: 'MAX(highScore)'
-    }
-]
-dimensions : [
-    {
-        name : name
-        type : TEXT
-        definition : name
-    },
-    {
-        name : countryCode
-        type : TEXT
-        definition : '{{playerCountry.isoCode}}'
-    }
-]
-```
-
-Column expressions can also be defined by annotating Elide models:
-
-```java
-@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")
-boolean inUsa;
-```
-
-```java
-@MetricFormula("{{wins}} / {{totalGames}} * 100")
-float winRatio;
-```
-
-#### Time Dimensions & Time Grains
-
-Time dimensions are normal dimensions with a specified time grain.  The time grain determines how time is represented as text in query filters and query results.
-
-Supported time grains include:
-
-| Grain        | Text Format     |
-| ------------ | --------------- |
-| SIMPLEDATE   | "yyyy-MM-dd"    |
-| DATETIME     | "yyyy-MM-dd HH:mm:ss" |
-| MONTHYEAR    | "MMM yyyy"      |
-| YEARMONTH    | "yyyy-MM"       |
-| YEAR         | "yyyy"          |
-| WEEKDATE     | "yyyy-MM-dd"    |
-{:.table}
-
-When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as '{{}}') to its text representation:
-
-```
-{
-    name : createdOn
-    type : TIME
-    definition : createdOn
-    grain:
-    {
-        type :  SIMPLEDATE
-        sql :  '''
-        PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
-        '''
-    }
-}
-```
-
-The equivalent configuration in Java is:
-
-
-```java
-public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
-
-
-@Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
-private Date createdOn;
-```
 
 ## Security Configuration
 
