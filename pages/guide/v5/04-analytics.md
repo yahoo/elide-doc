@@ -149,7 +149,7 @@ public interface DBPasswordExtractor {
 }
 ```
 
-This can be configured in Spring by overriding the DBPasswordExtractor bean:
+This can be configured in Spring by overriding the `DBPasswordExtractor` bean:
 
 ```java
     @Bean
@@ -240,6 +240,8 @@ joins: [
 ]
 ```
 
+The equivalent configuration can be defined on models in Java:
+
 ```java
     private Country country;
     private Team team;
@@ -270,15 +272,124 @@ Each join definition includes the following properties:
 
 ### Column Expressions
 
-Column expressions are templated SQL fragments.  Strings encloded in double curly braces ({{foo}}) are references to:
+Column expressions are templated SQL fragments.  Strings encoded in double curly braces ({{foo}}) are references to:
 - logical field names in the current model.  
-- Dot ('.') separated paths that navigate joins to a particular field in a different model ({{player.team.name}}).
+- Dot ('.') separated paths that navigate joins (by their join name) to a particular field in a different model ({{player.team.name}}).  
 
-### Time Grains
+Column expressions can be defined in HJSON:
+
+```
+measures : [
+    {
+    name : highScore
+    type : INTEGER
+    definition: 'MAX(highScore)'
+    }
+]
+dimensions : [
+    {
+        name : name
+        type : TEXT
+        definition : name
+    },
+    {
+        name : countryCode
+        type : TEXT
+        definition : '{{playerCountry.isoCode}}'
+    }
+]
+```
+
+Column expressions can also be defined by annotating Elide models:
+
+```java
+@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")
+boolean inUsa;
+```
+
+```java
+@MetricFormula("{{wins}} / {{totalGames}} * 100")
+float winRatio;
+```
+
+### Time Dimensions & Time Grains
+
+Time dimensions are normal dimensions with a specified time grain.  The time grain determines how time is represented as text in query filters and query results.
+
+Supported time grains include:
+
+| Grain        | Text Format     |
+| ------------ | --------------- |
+| SIMPLEDATE   | "yyyy-MM-dd"    |
+| DATETIME     | "yyyy-MM-dd HH:mm:ss" |
+| MONTHYEAR    | "MMM yyyy"      |
+| YEARMONTH    | "yyyy-MM"       |
+| YEAR         | "yyyy"          |
+| WEEKDATE     | "yyyy-MM-dd"    |
+{:.table}
+
+When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as '{{}}') to its text representation:
+
+```
+{
+    name : createdOn
+    type : TIME
+    definition : createdOn
+    grain:
+    {
+        type :  SIMPLEDATE
+        sql :  '''
+        PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+        '''
+    }
+}
+```
+
+The equivalent configuration in Java is:
+
+
+```java
+public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+
+
+@Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
+private Date createdOn;
+```
 
 ## Security Configuration
 
+The list of available security roles can be defined in the security.hjson file:
+
+```
+{
+    roles : [
+        admin
+        guest
+        member
+    ]
+}
+```
+
+These roles can then be referenced in security rules applied to entire tables or individual columns in their respective HJSON configuration:
+
+`readAccess = 'Principal is admin'`
+
 ## Variable Substitution
+
+To avoid repeated configuration blocks, all HJSON files (table, security, and data source) support variable substitution.  Variables are defined in the variables.hjson file:
+
+```
+{
+   foo: [1, 2, 3]
+   bar: blah
+   hour: hour_replace
+   measure_type: MAX
+   name: PlayerStats
+   table: player_stats
+}
+```
+
+The file format is a simple mapping from the variable name to a JSON structure.  At server startup, Elide will replace any variable name surrounded by '<%' and '%>' tags with the corresponding JSON structure.
 
 ## Configuration Validation
 
