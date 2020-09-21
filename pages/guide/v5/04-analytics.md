@@ -281,7 +281,7 @@ Tables include the following properties:
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | `countryIsoCode=={{code}}` | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
+| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | `@TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}")` |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
@@ -292,9 +292,9 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (``{{foo}}``) is interpretted either as:
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpretted either as:
 - A column name in the current table.  
-- A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (``{{player.team.name}}``).  
+- A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (\{\{player.team.name\}\}).  
 
 Column expressions can be defined in HJSON:
 
@@ -343,16 +343,18 @@ Columns include the following properties:
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | `@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")` |
+| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | `@DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END")` |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
 Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead or other uses) :
+
 | Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
 | tableSource           | The table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
+{:.table}
 
 #### Time Dimensions & Time Grains
 
@@ -370,7 +372,7 @@ Supported time grains include:
 | WEEKDATE     | "yyyy-MM-dd"    |
 {:.table}
 
-When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as `{{}}`) to its text representation:
+When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as \{\{\}\}) to its text representation:
 
 ```
 {
