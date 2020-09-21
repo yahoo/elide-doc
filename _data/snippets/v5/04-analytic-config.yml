@@ -1,0 +1,112 @@
+files:
+  - HJSON
+  - Java
+
+HJSON: |+2
+  ```
+  {
+    tables: [{
+        name: PlayerStats
+        table: playerStats
+        description:
+        '''
+        A long description
+        '''
+        category: Sports
+        cardinality : large
+        readAccess : 'Principal is admin'
+        filterTemplate : createdOn>={{start}};createdOn<{{end}}
+        tags: ['Game', 'Player']
+        joins: [
+            {
+                name: playerCountry
+                to: PlayerCountry
+                type: toOne
+                definition: '%join.id = %from.countryId'
+            }
+        ]
+        measures : [
+            {
+            name : highScore
+            type : INTEGER
+            definition: 'MAX(highScore)'
+            }
+        ]
+        dimensions : [
+            {
+                name : name
+                type : TEXT
+                definition : name
+            },
+            {
+                name : countryCode
+                type : TEXT
+                definition : '{{playerCountry.isoCode}}'
+            },
+            {
+                name : createdOn
+                type : TIME
+                definition : created_on
+                grain:
+                {
+                    type :  SIMPLEDATE
+                    sql :  '''
+                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                    '''
+                }
+            },
+            {
+                name : updatedOn
+                type : TIME
+                definition : updated_on
+                grain:
+                {
+                    type :  YEARMONTH
+                    sql :  '''
+                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                    '''
+                }
+            }
+        ]
+    }]
+  }
+  ```
+
+Java: |+2
+  ```java
+  @Include(rootLevel = true)
+  @Cardinality(size = CardinalitySize.LARGE)
+  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
+  @EqualsAndHashCode
+  @ToString
+  @FromTable(name = "playerStats")
+  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}")
+  @ReadPermission(expression = "Principal is admin")
+  public class PlayerStats {
+
+      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')";
+
+      @Id
+      private String id;
+
+      @MetricFormula(value = "MAX(highScore)")
+      private long highScore;
+
+      private String name;
+
+      @Join("%from.country_id = %join.id")
+      private Country playerCountry;
+
+      @DimensionFormula("{{playerCountry.isoCode}}")
+      private String countryCode;
+
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
+      @DimensionFormula("created_on")
+      private SimpleDate createdOn;
+
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR_MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
+      @DimensionFormula("updated_on")
+      private YearMonth updatedOn;
+  }
+  ```

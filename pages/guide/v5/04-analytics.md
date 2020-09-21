@@ -250,9 +250,9 @@ Analytic models are called **Tables** in Elide.  They are made up of:
 
 Some metrics have **FunctionArguments**.  They represent parameters that are supplied by the client to change how the metric is computed.
 
-TODO - Insert UML Model.
-
 ### Example
+
+{% include code_example example="04-analytic-config" %}
 
 ### Tables
 
