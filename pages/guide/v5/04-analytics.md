@@ -57,6 +57,36 @@ Here are the respective responses:
 
 # Configuration
 
+## Feature Flags
+
+There are two feature flags that enable analytic queries and HJSON configuration respectively:
+
+If using spring, configure the following settings in application.yaml:
+
+```yaml
+elide:
+  dynamic-config:
+    enabled: true
+  aggregation-store:
+    enabled: true
+```
+
+If using elide-standalone, configure the following settings in `ElideStandaloneSettings`:
+
+```java
+    @Override
+    public boolean enableDynamicModelConfig() {
+        return true;
+    }
+
+    @Override
+    public boolean enableAggregationDataStore() {
+        return true;
+    }
+```
+
+## File Layout
+
 Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ HJSON configuration files.  HJSON configuration files can be sourced either from the local filesystem or the classpath.  Either way, they must conform to the following directory structure:
 
 ```
@@ -85,7 +115,6 @@ CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be conf
 elide:
   dynamic-config:
     path: src/resources/configs
-    enabled: true
 
 ```
 
