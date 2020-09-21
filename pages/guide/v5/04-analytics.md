@@ -208,6 +208,33 @@ In Elide Standalone, the same can be configured by overriding the default standa
     }
 ```
 
+### Dialects
+
+A dialect must be configured for Elide to correctly generate analytic SQL queries.  Elide supports the following dialects out of the box:
+
+| Friendly Name | Class                                                                             |
+| ------------- | --------------------------------------------------------------------------------- |
+| H2            | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.H2Dialect   |
+| Hive          | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect |
+| PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect |
+{:.table}
+
+If not leveraging HJSON configuration, a default dialect can be configured for analytic queries.  In spring, the following setting in application.yaml sets the default dialect:
+
+```yaml
+elide:
+  aggregation-store:
+    default-dialect: H2
+```
+
+In elide-standalone, the following setting in `ElideStandaloneSettings` sets the default dialect:
+
+```java
+default String getDefaultDialect() {
+    return "Hive";
+}
+```
+
 ## Model Configuration
 
 ### Concepts
@@ -248,7 +275,7 @@ In addition to columns and joins, Tables define the following metadata propertie
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | 'countryIsoCode=={{code}}' | `@TableMeta(filterTemplate="countryIsoCode=={{code}}")` |
 {:.table}
 
-### Table Joins
+#### Table Joins
 
 Table joins allow column expessions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
 
@@ -297,9 +324,9 @@ Each join definition includes the following properties:
 | definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
 {:.table}
 
-### Columns
+#### Columns
 
-### Column Expressions
+#### Column Expressions
 
 Column expressions are templated SQL fragments.  Strings encoded in double curly braces ({{foo}}) are references to:
 - logical field names in the current model.  
@@ -341,7 +368,7 @@ boolean inUsa;
 float winRatio;
 ```
 
-### Time Dimensions & Time Grains
+#### Time Dimensions & Time Grains
 
 Time dimensions are normal dimensions with a specified time grain.  The time grain determines how time is represented as text in query filters and query results.
 
