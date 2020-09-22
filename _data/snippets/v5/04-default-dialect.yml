@@ -7,14 +7,15 @@ Spring: |+2
   # application.yaml
 
   elide:
-    dynamic-config:
-      path: src/resources/configs
+    aggregation-store:
+      default-dialect: H2
   ```
 
 Elide Standalone: |+2
   ```java
   //Override ElideStandaloneSettings
-  default String getDynamicConfigPath() {
-      return File.separator + "models" + File.separator;
+  @Override
+  public String getDefaultDialect() {
+      return "Hive";
   }
   ```

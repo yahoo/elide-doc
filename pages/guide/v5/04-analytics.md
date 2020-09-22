@@ -144,35 +144,9 @@ public interface DBPasswordExtractor {
 }
 ```
 
-This can be configured in Spring by overriding the `DBPasswordExtractor` bean:
+A custom `DBPasswordExtractor` can be configured by the following override:
 
-```java
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "elide.aggregation-store.enabled", havingValue = "true")
-    public DBPasswordExtractor getDBPasswordExtractor() {
-
-        return new DBPasswordExtractor() {
-            @Override
-            public String getDBPassword(DBConfig config) {
-                return StringUtils.EMPTY;
-            }
-        };
-    }
-```
-
-In Elide Standalone, the same can be configured by overriding the default standalone setting:
-
-```java
-    default DBPasswordExtractor getDBPasswordExtractor() {
-        return new DBPasswordExtractor() {
-            @Override
-            public String getDBPassword(DBConfig config) {
-                return StringUtils.EMPTY;
-            }
-        };
-    }
-```
+{% include code_example example="04-db-password" %}
 
 ### Dialects
 
@@ -185,21 +159,9 @@ A dialect must be configured for Elide to correctly generate analytic SQL querie
 | PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect |
 {:.table}
 
-If not leveraging HJSON configuration, a default dialect can be configured for analytic queries.  In spring, the following setting in application.yaml sets the default dialect:
+If not leveraging HJSON configuration, a default dialect can be configured for analytic queries:
 
-```yaml
-elide:
-  aggregation-store:
-    default-dialect: H2
-```
-
-In elide-standalone, the following setting in `ElideStandaloneSettings` sets the default dialect:
-
-```java
-default String getDefaultDialect() {
-    return "Hive";
-}
-```
+{% include code_example example="04-default-dialect" %}
 
 ## Model Configuration
 
