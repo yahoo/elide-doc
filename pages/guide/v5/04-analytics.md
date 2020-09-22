@@ -276,39 +276,7 @@ When defining a time dimension, a native SQL expression must be provided with th
 
 Table joins allow column expessions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
 
-```json
-joins: [
-    {
-       name: playerCountry
-       to: country
-       type: toOne
-       definition: '%from.country_id = %join.id'
-    },
-    {
-       name: playerTeam
-       to: team
-       type: toMany
-       definition: '%from.team_id = %join.id'
-    }
-]
-```
-
-The equivalent configuration can be defined on models in Java:
-
-```java
-    private Country country;
-    private Team team;
-
-    @Join("%from.country_id = %join.id")
-    public Country getCountry() {
-        return country;
-    }
-
-    @Join("%from.team_id = %join.id")
-    public Team getTeam() {
-        return team;
-    }
-```
+{% include code_example example="04-joins" %}
 
 Each join definition includes the following properties:
 
