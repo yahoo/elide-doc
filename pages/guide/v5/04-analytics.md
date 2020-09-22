@@ -14,8 +14,8 @@ Elide's `AggregationDataStore` exposes read-only models that support data analyt
 
 The Aggregation store includes a companion store, the `MetaDataStore`, which exposes metadata about the Aggregation store models including their metrics and dimensions.  The metadata store models are predefined, read-only, and served from server memory.
 
-There are two mechanisms for how to create models in the Aggregation store:
-1. Through a [HJSON](https://hjson.github.io/) configuration file that can be maintained without writing code or rebuilding the application.
+There are two mechanisms to create models in the Aggregation store:
+1. Through [HJSON](https://hjson.github.io/) configuration files that can be maintained without writing code or rebuilding the application.
 2. Through JVM language classes annotated with Elide annotations.
 
 The former is preferred for most use cases because of better ergonomics for non-developers.  The latter is useful to add custom Elide security rules or life cycle hooks.
@@ -87,7 +87,7 @@ CONFIG_ROOT/
 4. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
 5. Data source HJSON files support variable substitution with variables defined in `/db/variables.hjson`.
 
-CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be configured:
+CONFIG_ROOT can be any directory in the filesystem or classpath.  The root configuration location can be set as follows:
 
 
 {% include code_example example="04-dynamic-config-path" %}
@@ -99,12 +99,12 @@ The Aggregation Data Store does not leverage JPA, but rather uses JDBC directly.
 1.  Using a different JDBC data source other than what is configured for JPA.
 2.  Leveraging multiple JDBC data sources for different Elide models.
 
-For these complex configurations, you must configure Elide using the Aggregation Store's HJSON configuration language.  The following configuration file illustrates two configurations.  Each configuration includes:
+For these complex configurations, you must configure Elide using the Aggregation Store's HJSON configuration language.  The following configuration file illustrates two data sources.  Each data source configuration includes:
 1. A name that will be referenced in your Analytic models (effectively binding them to a data source).
 2. A JDBC URL
 3. A JDBC driver
 4. A user name
-5. An Elide SQL Dialect.  This can either be the name of an Elide supported dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
+5. An [Elide SQL Dialect](#dialects).  This can either be the name of an Elide supported dialect _or_ it can be the fully qualified class name of an implementation of an Elide dialect.
 6. A map of driver specific properties.
 
 ```
@@ -195,7 +195,7 @@ These options are configured via the 'table', 'sql', and 'extend' [properties](#
 
 Tables include the following properties:
 
-| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
@@ -209,7 +209,7 @@ Tables include the following properties:
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | `@TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}")` |
+| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
@@ -220,7 +220,7 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpretted either as:
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
 - A column name in the current table.  
 - A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (\{\{player.team.name\}\}).  
 
@@ -232,21 +232,21 @@ Column expressions can be defined in HJSON or Java:
 
 Columns include the following properties:
 
-| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the column.  It will be exposed through the API with this name. | columnName | String columnName; |
 | description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | `@DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END")` |
+| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
 Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead or other uses) :
 
-| Property              | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
 | tableSource           | The table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
@@ -254,9 +254,7 @@ Non-time dimensions include the following properties that describe where a discr
 
 #### Time Dimensions & Time Grains
 
-Time dimensions are normal dimensions with a specified time grain.  The time grain determines how time is represented as text in query filters and query results.
-
-Supported time grains include:
+Time dimensions represent time and include a time grain.  The time grain determines how time is represented as text in query filters and query results.  Supported time grains include:
 
 | Grain        | Text Format     |
 | ------------ | --------------- |
@@ -274,16 +272,16 @@ When defining a time dimension, a native SQL expression must be provided with th
 
 ### Joins
 
-Table joins allow column expessions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
+Table joins allow column expressions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
 
 {% include code_example example="04-joins" %}
 
 Each join definition includes the following properties:
 
 
-| Property              | Explanation                                                      | 
+| HJSON Property        | Explanation                                                      | 
 | --------------------- | ---------------------------------------------------------------- | 
-| name                  | A unique name for the join.                                      | 
+| name                  | A unique name for the join.  The name can be referenced in column definitions. | 
 | to                    | The name of the Elide model being joined against.                | 
 | type                  | 'toMany' or 'toOne'                                              |
 | definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
