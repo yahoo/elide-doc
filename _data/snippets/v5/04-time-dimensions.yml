@@ -1,0 +1,28 @@
+files:
+  - HJSON
+  - Java
+
+HJSON: |+2
+  ```  
+  {
+      name : createdOn
+      type : TIME
+      definition : createdOn
+      grain:
+      {
+          type :  SIMPLEDATE
+          sql :  '''
+          PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+          '''
+      }
+  }
+  ```
+
+Java: |+2
+  ```java
+  public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+
+
+  @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
+  private Date createdOn;
+  ```

@@ -224,43 +224,9 @@ Column definitions are templated, native SQL fragments.  Columns definitions can
 - A column name in the current table.  
 - A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (\{\{player.team.name\}\}).  
 
-Column expressions can be defined in HJSON:
+Column expressions can be defined in HJSON or Java:
 
-```
-{
-  measures : [
-    {
-      name : highScore
-      type : INTEGER
-      definition: 'MAX(highScore)'
-    }
-  ]
-  dimensions : [
-    {
-      name : name
-      type : TEXT
-      definition : name
-    },
-    {
-      name : countryCode
-      type : TEXT
-      definition : '{{playerCountry.isoCode}}'
-    }
-  ]
-}
-```
-
-Column expressions can also be defined by annotating Elide models:
-
-```java
-@DimensionFormula("CASE WHEN {{name}} = 'United States' THEN true ELSE false END")
-boolean inUsa;
-```
-
-```java
-@MetricFormula("{{wins}} / {{totalGames}} * 100")
-float winRatio;
-```
+{% include code_example example="04-columns" %}
 
 #### Column Properties
 
@@ -302,35 +268,9 @@ Supported time grains include:
 | WEEKDATE     | "yyyy-MM-dd"    |
 {:.table}
 
-When defining a time dimension, a native SQL expression must be provided to convert the underlying column (represented as \{\{\}\}) to its text representation:
+When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its text representation:
 
-```
-{
-    name : createdOn
-    type : TIME
-    definition : createdOn
-    grain:
-    {
-        type :  SIMPLEDATE
-        sql :  '''
-        PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
-        '''
-    }
-}
-```
-
-The equivalent configuration in Java is:
-
-
-```java
-public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
-
-
-@Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
-private Date createdOn;
-```
-
-
+{% include code_example example="04-time-dimensions" %}
 
 ### Joins
 
