@@ -87,22 +87,10 @@ CONFIG_ROOT/
 4. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
 5. Data source HJSON files support variable substitution with variables defined in `/db/variables.hjson`.
 
-CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be configured in spring by setting elide.dynamic-config.path:
+CONFIG_ROOT can be any directory in the filesystem or classpath.  It can be configured:
 
-```yaml
-elide:
-  dynamic-config:
-    path: src/resources/configs
 
-```
-
-Alternatively, in elide standalone, it can be configured by overriding the following setting in `ElideStandaloneSettings`:
-
-```java
-    default String getDynamicConfigPath() {
-        return File.separator + "models" + File.separator;
-    }
-```
+{% include code_example example="04-dynamic-config-path" %}
 
 ## Data Source Configuration
 
