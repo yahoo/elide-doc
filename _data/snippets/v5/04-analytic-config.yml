@@ -74,7 +74,7 @@ HJSON: |+2
 
 Java: |+2
   ```java
-  @Include(rootLevel = true)
+  @Include
   @Cardinality(size = CardinalitySize.LARGE)
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode

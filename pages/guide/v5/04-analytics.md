@@ -151,11 +151,11 @@ A custom `DBPasswordExtractor` can be configured by the following override:
 
 A dialect must be configured for Elide to correctly generate analytic SQL queries.  Elide supports the following dialects out of the box:
 
-| Friendly Name | Class                                                                             |
-| ------------- | --------------------------------------------------------------------------------- |
-| H2            | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.H2Dialect   |
-| Hive          | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect |
-| PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect |
+| Friendly Name | Class                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------- |
+| H2            | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.H2Dialect       |
+| Hive          | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect     |
+| PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PrestoDBDialect |
 {:.table}
 
 If not leveraging HJSON configuration, a default dialect can be configured for analytic queries:
@@ -203,7 +203,7 @@ Tables include the following properties:
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
 | cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
 | dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a data source configuration name. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
-| schema                | The database name where the physical data resides | databaseName | `@FromTable(name=databaseName.tableName)` |
+| schema                | The database schema where the physical data resides | schemaName | `@FromTable(name=schemaName.tableName)` |
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
