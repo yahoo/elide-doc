@@ -113,22 +113,21 @@ For these complex configurations, you must configure Elide using the Aggregation
   [
     {
       name: Presto Data Source
-      url: jdbc:db2:localhost:50000/testdb
-      driver: COM.ibm.db2.jdbc.net.DB2Driver
+      url: jdbc:presto://localhost:4443/testdb
+      driver: com.facebook.presto.jdbc.PrestoDriver
       user: guestdb2
       dialect: PrestoDB
-      propertyMap:
-      {
-        hibernate.show_sql: true
-        hibernate.default_batch_fetch_size: 100.1
-      }
     }
     {
-      name: MySQLConnection
-      url: jdbc:mysql://localhost/testdb?serverTimezone=UTC
-      driver: com.mysql.jdbc.Driver
+      name: Hive Data Source
+      url: jdbc:hive2://localhost:4444/dbName
+      driver: org.apache.hive.jdbc.HiveDriver
       user: guestmysql
       dialect: com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect
+      propertyMap:
+      {
+        sslEnabled : true
+      }
     }
   ]
 }
