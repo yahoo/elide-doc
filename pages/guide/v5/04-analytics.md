@@ -201,7 +201,7 @@ Tables include the following properties:
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
-| cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
+| cardinality           | SMALL, MEDIUM, LARGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
 | dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a data source configuration name. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
 | schema                | The database schema where the physical data resides | schemaName | `@FromTable(name=schemaName.tableName)` |
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
@@ -265,7 +265,7 @@ Time dimensions represent time and include a time grain.  The time grain determi
 | WEEKDATE     | "yyyy-MM-dd"    |
 {:.table}
 
-When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its text representation:
+When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
 
 {% include code_example example="04-time-dimensions" %}
 

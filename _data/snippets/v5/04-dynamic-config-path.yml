@@ -15,6 +15,6 @@ Elide Standalone: |+2
   ```java
   //Override ElideStandaloneSettings
   default String getDynamicConfigPath() {
-      return File.separator + "models" + File.separator;
+      return File.separator + "configs" + File.separator;
   }
   ```
