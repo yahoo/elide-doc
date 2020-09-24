@@ -269,6 +269,8 @@ When defining a time dimension, a native SQL expression must be provided with th
 
 {% include code_example example="04-time-dimensions" %}
 
+Elide would expand the above example to this SQL fragment: `PARSEDATETIME(FORMATDATETIME(createdOn, 'yyyy-MM'), 'yyyy-MM')`.
+
 ### Joins
 
 Table joins allow column expressions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
