@@ -1,0 +1,39 @@
+files:
+  - HJSON
+  - Java
+
+HJSON: |+2
+  ```  
+  {
+    measures : [
+      {
+        name : highScore
+        type : INTEGER
+        definition: 'MAX(highScore)'
+      }
+    ]
+    dimensions : [
+      {
+        name : name
+        type : TEXT
+        definition : name
+      },
+      {
+        name : countryCode
+        type : TEXT
+        definition : '{{playerCountry.isoCode}}'
+      }
+    ]
+  }
+  ```
+
+Java: |+2
+  ```java
+  //A Dimension
+  @DimensionFormula("CASE WHEN {{name}}  = 'United States' THEN true ELSE false END")
+  private boolean inUsa;
+
+  //A metric
+  @MetricFormula("{{wins}} / {{totalGames}}  * 100")
+  private float winRatio;
+  ```

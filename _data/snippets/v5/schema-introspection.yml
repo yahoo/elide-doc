@@ -1,0 +1,141 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ``` 
+  {
+    __schema {
+      types {
+        name
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "__schema": {
+      "types": [
+        {
+          "name": "root"
+        },
+        {
+          "name": "noshare"
+        },
+        {
+          "name": "__edges__noshare"
+        },
+        {
+          "name": "__node__noshare"
+        },
+        {
+          "name": "id"
+        },
+        {
+          "name": "__pageInfoObject"
+        },
+        {
+          "name": "Boolean"
+        },
+        {
+          "name": "String"
+        },
+        {
+          "name": "Long"
+        },
+        {
+          "name": "com.yahoo.elide.graphql.RelationshipOp"
+        },
+        {
+          "name": "noshareInput"
+        },
+        {
+          "name": "ID"
+        },
+        {
+          "name": "book"
+        },
+        {
+          "name": "__edges__book"
+        },
+        {
+          "name": "__node__book"
+        },
+        {
+          "name": "authorInput"
+        },
+        {
+          "name": "example.AddressInputInput"
+        },
+        {
+          "name": "example.Author$AuthorType"
+        },
+        {
+          "name": "bookInput"
+        },
+        {
+          "name": "publisherInput"
+        },
+        {
+          "name": "pseudonymInput"
+        },
+        {
+          "name": "author"
+        },
+        {
+          "name": "__edges__author"
+        },
+        {
+          "name": "__node__author"
+        },
+        {
+          "name": "example.Address"
+        },
+        {
+          "name": "publisher"
+        },
+        {
+          "name": "__edges__publisher"
+        },
+        {
+          "name": "__node__publisher"
+        },
+        {
+          "name": "pseudonym"
+        },
+        {
+          "name": "__edges__pseudonym"
+        },
+        {
+          "name": "__node__pseudonym"
+        },
+        {
+          "name": "__Schema"
+        },
+        {
+          "name": "__Type"
+        },
+        {
+          "name": "__TypeKind"
+        },
+        {
+          "name": "__Field"
+        },
+        {
+          "name": "__InputValue"
+        },
+        {
+          "name": "__EnumValue"
+        },
+        {
+          "name": "__Directive"
+        },
+        {
+          "name": "__DirectiveLocation"
+        }
+      ]
+    }
+  }
+  ```

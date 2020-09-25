@@ -122,7 +122,7 @@ You can now run the following curl commands to see some of the sample data that 
 
 {% include code_example example="01-data-fetch" %}
 
-Here are the respective repsonses:
+Here are the respective responses:
 
 {% include code_example example="01-data-fetch-rsp" %}
 

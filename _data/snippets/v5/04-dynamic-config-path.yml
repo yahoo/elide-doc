@@ -1,0 +1,20 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```yaml
+  # application.yaml
+
+  elide:
+    dynamic-config:
+      path: src/resources/configs
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+  default String getDynamicConfigPath() {
+      return File.separator + "configs" + File.separator;
+  }
+  ```
