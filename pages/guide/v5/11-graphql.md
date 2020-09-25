@@ -187,18 +187,9 @@ The following RSQL operators are supported:
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
 
-### Examples
-* Filter books by title equal to 'abc' _and_ genre starting with 'Science':
-  `"title=='abc';genre=='Science*'` 
-* Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
-or 'Science Fiction':
-  `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
-* Filter books by the publisher name contains XYZ:
-  `publisher.name==*XYZ*`
 
-###### FIQL Default Behaviour
-Not that from the above listed RSQL operators, the behavior of FIQL operators `=in=,=out=,==` are changed to Case Sensitive.  
-To change it back to Case Insensitive Behavior, initialize RSQLFilterDialect with FIQL Case sensitive strategy.
+##### FIQL Default Behaviour
+By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
 ```java
     @Bean
     @ConditionalOnMissingBean
@@ -217,6 +208,15 @@ To change it back to Case Insensitive Behavior, initialize RSQLFilterDialect wit
         return new Elide(builder.build());
     }
 ```
+
+### Examples
+* Filter books by title equal to 'abc' _and_ genre starting with 'Science':
+  `"title=='abc';genre=='Science*'` 
+* Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
+or 'Science Fiction':
+  `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
+* Filter books by the publisher name contains XYZ:
+  `publisher.name==*XYZ*`
 
 ## Pagination
 --------------------------
