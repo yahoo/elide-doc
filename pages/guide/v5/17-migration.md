@@ -11,12 +11,16 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 
 Elide 5 introduces two primary new features:
  - An asynchronous API for read requests.
- - An analytics `DataStore` that:
-   - Allows the definition of curated Elide models with native SQL.
+ - An [analytics DataStore](/pages/guide/v{{ page.version }}/04-analytics.html) that:
+   - Allows the definition of curated Elide models with native SQL fragments.
    - Allows the computation of groupable measures (similar to SQL group by).
    - Exposes metadata about the curated model as a separate set of Elide models.
 
 These capabilities were developed in conjunction with a powerful Analytics UI called [Navi](https://yahoo.github.io/navi/).
+
+## API Changes
+
+The only notable API change is that FIQL operators are now case sensitive by default.  New case insensitive operators have been introduced allowing greater flexibility.  It is possible to revert to elide 4 semantics through configuration.
 
 ## Interface Changes
 
@@ -24,11 +28,14 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - A simpler `Check` class hierarchy.
  - A new `NonTransferable` permission (which replaces `SharePermission`).
  - Changes to Elide's `User` abstraction for authentication.
+ - Lifecycle hooks have been restructured to better decouple their logic from Elide models.
+ - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
  - API Error reporting has a number of fixes and improvements.
  - The elide-annotation and elide-core artifacts are consolidated into a single artifact.
  - All public classes and interfaces have been migrated to a new package structure.
  - Check classes can now be injected.
+ - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
 
 ### Security
