@@ -276,6 +276,15 @@ package example.models;
 
 import com.yahoo.elide.annotation.ApiVersion;
 ```
+
+API versioning is optional configuration.  By default, all models have no implicit version.  The API client is also not required to provide a version in its request.  By adding a version to one or more packages however, the versioned models will only be visible when the client provides the corresponding version in its request.
+
+There is an important caveat when using API versioning with JPA models.  JPA does not allow two `Entity` classes to share the same name - even if they belong to different packages.  To work around this, you can either:
+- Rename the class (class BookV2) but preserve the elide model (`@Include(type = "book")`) and database table (`@Table(name = "book")`) names.
+- Rename the entity name (`@Entity(name = "BookV2")`) but preserve the elide model (`@Include(type = "book")`) and class (class Book) names.
+
+Details of how to construct client queries for a specific version can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#api-versioning).
+
 ## Philosophy
 
 Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the data store, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping data store requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying data store schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesirable.
