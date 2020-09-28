@@ -192,13 +192,13 @@ Lifecycle hooks can be registered in Elide directly without an explicit annotati
 
 ```java
 //Register a lifecycle hook for deletes on the model Book.  Call exactly once.
-dictionary.bindTrigger(Book.class, DELETE, PRESECURITY, callback, false);
+dictionary.bindTrigger(Book.class, DELETE, PRESECURITY, hook, false);
 
 //Register a lifecycle hook for updates on the Book model's title attribute
-dictionary.bindTrigger(Book.class, "title", UPDATE, POSTCOMMIT, callback);
+dictionary.bindTrigger(Book.class, "title", UPDATE, POSTCOMMIT, hook);
 
 //Register a lifecycle hook for updates on _any_ of the Book model's attributes
-dictionary.bindTrigger(Book.class, UPDATE, POSTCOMMIT, callback, true);
+dictionary.bindTrigger(Book.class, UPDATE, POSTCOMMIT, hook, true);
 ```
 
 ## Dependency Injection
