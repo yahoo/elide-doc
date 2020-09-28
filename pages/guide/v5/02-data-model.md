@@ -266,6 +266,16 @@ Entity inheritance has a few caveats:
    1. JSON-API will return the type and attributes of the subclass (as well as the super class).
    2. GraphQL will return the type and attributes of the superclass only.
 
+## API Versions
+
+Elide models can be bound to a specific API version.  Once bound, the models will only be visible to API requests that ask for the specific version.  API versions are bound by creating a package-info.java file with the `ApiVersion` annotation:
+
+```java
+@ApiVersion(version = "1.0")
+package example.models;
+
+import com.yahoo.elide.annotation.ApiVersion;
+```
 ## Philosophy
 
 Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the data store, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping data store requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying data store schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesirable.

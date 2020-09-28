@@ -55,6 +55,17 @@
       - Method
   parameters: []
 
+- name: ApiVersion
+  description: Binds a set of Elide models to a specific API Version. 
+  applicationLevel:
+    - Package
+  parameters:
+    - name: version
+      required: True
+      default: <em>None</em>
+      type: String
+      description: The API Version name.
+
 - name: CreatePermission
   description: Define security rules for creating an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
   applicationLevel:
