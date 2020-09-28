@@ -29,7 +29,7 @@ version: 5
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **Data Models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **Data Models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
 All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
 
@@ -56,10 +56,10 @@ Much of the Elide per-model configuration is done via annotations. For a full de
 
 ## Exposing a Model as an Elide Endpoint
 
-After creating a proper data model, you can expose it through Elide by marking with with `@Include`.  Elide generates its API as a _graph_.  This graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
+After creating a proper data model, you can expose it through Elide by marking with with `@Include`.  Elide generates its API as a _graph_.  This graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include` to the top-level of the class with the rootLevel property unset or set to true. Non-rootable entities can be accessed only as relationships through the graph.
 
 ```java
-@Include(rootLevel=true)
+@Include
 @Entity
 public class Author {
     @Id
@@ -74,7 +74,7 @@ public class Author {
 ```
 
 ```java
-@Include
+@Include(rootLevel = false)
 @Entity
 public class Book {
     @Id
@@ -173,7 +173,7 @@ Model fields can be decorated with a `LifeCycleHookBinding` annotation.  The ann
 1. The hook function to invoke.
 2. The model operation (CREATE, READ, UPDATE, or DELETE) that triggers the hook.
 3. The transaction phase of when to trigger the hook (PRESECURITY, PRECOMMIT, or POSTCOMMIT).
-4. Whether or not the hook should be called exactly once or multiple times per request.
+4. For class level triggers, whether or not the hook should be called for each impacted field or exactly once for the class.
 
 ```java
 class Publisher {
