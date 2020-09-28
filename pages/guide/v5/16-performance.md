@@ -140,7 +140,7 @@ To provide your own cache implementation, override `ElideStandaloneSettings.getQ
 ### SQLQueryEngine @VersionQuery Example
 
 ```java
-@Include(rootLevel = true)
+@Include
 @FromTable(name = "stats")
 @VersionQuery(sql = "SELECT COUNT(*) FROM stats")
 public class Stats {

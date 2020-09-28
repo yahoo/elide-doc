@@ -142,7 +142,7 @@
       - name: rootLevel
         type: Boolean
         required: False
-        default: False
+        default: True
         description: Whether or not the entity is accessible as a "rootable" entity. Namely, if this collection of objects can be queried directly or whether or not it must be queried through a relationship.
       - name: type
         type: String
@@ -150,122 +150,33 @@
         required: False
         description: The API-exposed name for a particular entity type.
 
-- name: OnCreatePostCommit
-  description: A lifecycle hook that executes on a create action after the transaction has committed successfully.
+- name: LifeCycleHookBinding
+  description: Registers a function that will be invoked when a model is read or manipulated by Elide.
   applicationLevel:
+      - Field
       - Method
+      - Class
   parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
+      - name: hook
+        default: <em>None</em>
+        required: True
+        type: Class<? extends LifeCycleHook>
+        description: The life cycle function to invoke.
+      - name: operation
+        default: <em>None</em>
+        required: True
+        type: Operation
+        description: The operation that triggers the hook - CREATE, READ, UPDATE, or DELETE.
+      - name: phase
+        default: TransactionPhase.PRECOMMIT
+        required: True
+        type: TransactionPhase
+        description: When to invoke the hook (PRESECURITY, PRECOMMIT, or POSTCOMMIT).
+      - name: oncePerRequest
+        default: True
         required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is created.  If value is "*", then this method will be triggered once for each field that the user sent in the creation request.
-
-- name: OnCreatePreCommit
-  description: A lifecycle hook that executes on a create action after security has run, but before the transaction has committed.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is created.  If value is "*", then this method will be triggered once for each field that the user sent in the creation request.
-
-- name: OnCreatePreSecurity
-  description: A lifecycle hook that executes on a create action before the security checks have run.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is created.  If value is "*", then this method will be triggered once for each field that the user sent in the creation request.
-
-- name: OnReadPostCommit
-  description: A lifecycle hook that executes on a read action after the transaction has committed successfully.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is read.  If value is empty string, then trigger once when the object is read.  If value is "*", then trigger for all field reads.
-
-- name: OnReadPreCommit
-  description: A lifecycle hook that executes on a read action after security has run, but before the transaction has committed.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is read.  If value is empty string, then trigger once when the object is read.  If value is "*", then trigger for all field reads.
-
-- name: OnReadPreSecurity
-  description: A lifecycle hook that executes on a read action before the security checks have run.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is read.  If value is empty string, then trigger once when the object is read.  If value is "*", then trigger for all field reads.
-
-- name: OnUpdatePostCommit
-  description: A lifecycle hook that executes on a update action after the transaction has committed successfully.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
-
-- name: OnUpdatePreCommit
-  description: A lifecycle hook that executes on a update action after security has run, but before the transaction has committed.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
-
-- name: OnUpdatePreSecurity
-  description: A lifecycle hook that executes on a update action before the security checks have run.
-  applicationLevel:
-      - Method
-  parameters:
-      - name: value
-        type: String
-        default: <em>Empty String</em>
-        required: False
-        description: Field name on which the annotated method is only triggered if that field is modified.  If value is empty string, then trigger once when the object is updated.  If value is "*", then trigger for all field modifications.
-
-- name: OnDeletePostCommit
-  description: A lifecycle hook that executes on a delete action after the transaction has committed successfully.
-  applicationLevel:
-      - Method
-  parameters: []
-
-- name: OnDeletePreCommit
-  description: A lifecycle hook that executes on a delete action after security has run, but before the transaction has committed.
-  applicationLevel:
-      - Method
-  parameters: []
-
-- name: OnDeletePreSecurity
-  description: A lifecycle hook that executes on a delete action before the security checks have run.
-  applicationLevel:
-      - Method
-  parameters: []
+        type: Boolean
+        description: For class level triggers, whether or not the hook should be called for each impacted field or exactly once for the class.
 
 - name: ElideTypeConverter
   description: Automatically registers the decorated Serde class with Elide.

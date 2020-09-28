@@ -29,7 +29,7 @@ version: 5
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **Data Models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **Data Models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
 All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
 
@@ -56,10 +56,10 @@ Much of the Elide per-model configuration is done via annotations. For a full de
 
 ## Exposing a Model as an Elide Endpoint
 
-After creating a proper data model, you can expose it through Elide by marking with with `@Include`.  Elide generates its API as a _graph_.  This graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include(rootLevel=true)` to the top-level of the class. Non-rootable entities can be accessed only as relationships through the graph.
+After creating a proper data model, you can expose it through Elide by marking with with `@Include`.  Elide generates its API as a _graph_.  This graph can only be traversed starting at a _root_ node. Rootable entities are denoted by applying `@Include` to the top-level of the class with the rootLevel property unset or set to true. Non-rootable entities can be accessed only as relationships through the graph.
 
 ```java
-@Include(rootLevel=true)
+@Include
 @Entity
 public class Author {
     @Id
@@ -74,7 +74,7 @@ public class Author {
 ```
 
 ```java
-@Include
+@Include(rootLevel = false)
 @Entity
 public class Book {
     @Id
@@ -135,103 +135,17 @@ The same principles are analogous to `@ComputedRelationship`s.
 
 ## Lifecycle Hooks
 
-Lifecycle event triggers allow custom business logic (defined in functions) to be invoked during CRUD operations at three distinct phases:
+Lifecycle hooks allow custom business logic (defined in functions) to be invoked during CRUD operations at three distinct phases of the client request:
 
 1. *Pre Security* - Executed prior to Elide _commit_ security check evaluation.
 1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
 1. *Post Commit* - Executed immediately after transaction commit.
 
-There are two mechanisms to enable lifecycle hooks:
-1. The simplest mechanism embeds the lifecycle hook as methods within the entity bean itself.   The methods are marked with `@On...` annotations (see below).
+There are two mechanisms to enable lifecycle hooks on a particular model:
+1. The simplest mechanism decorates the elide model or model fields with the life cycle hook function class and the conditions of when to invoke it.  
 1. Lifecycle hook functions can also be registered with the `EntityDictionary` when initializing Elide.  
 
-### Annotation Based Hooks
-
-There are separate annotations for each CRUD operation (_read_, _update_, _create_, and _delete_) and also each life cycle phase of the current transaction:
-
-```java
-@Entity
-class Book {
-   @Column
-   public String title;
-
-   @OnReadPreSecurity("title")
-   public void onReadTitle() {
-      // title attribute about to be read but 'commit' security checks not yet executed.
-   }
-
-   @OnUpdatePreSecurity("title")
-   public void onUpdateTitle() {
-      // title attribute updated but 'commit' security checks not yet executed.
-   }
-
-   @OnUpdatePostCommit("title")
-   public void onCommitTitle() {
-      // title attribute updated & committed
-   }
-
-   @OnCreatePostCommit
-   public void onCommitBook() {
-      // book entity created & committed
-   }
-
-   /**
-    * Trigger functions can optionally accept a RequestScope to access the user principal.
-    */
-   @OnDeletePreCommit
-   public void onDeleteBook(RequestScope scope) {
-      // book entity deleted but not yet committed
-   }
-}
-```
-
-All trigger functions can either take zero parameters or a single `RequestScope` parameter.  
-
-The `RequestScope` can be used to access the user principal object that initiated the request:
-
-```java
-   @OnReadPostCommit("title")
-   public void onReadTitle(RequestScope scope) {
-      User principal = scope.getUser();
- 
-      //Do something with the principal object...
-   }
-
-```
-
-Update and Create trigger functions on fields can also take both a `RequestScope` parameter and a `ChangeSpec` parameter.  The `ChangeSpec` can be used to access the before & after values for a given field change:
-
-```java
-   @OnUpdatePreSecurity("title")
-   public void onUpdateTitle(RequestScope scope, ChangeSpec changeSpec) {
-      //Do something with changeSpec.getModified or changeSpec.getOriginal
-   }
-
-```
-
-Lifecycle triggers can evaluate for actions on a specific field in a class, for any field in a class, or for the entire class.  The behavior is determined by the _value_ passed in the annotation:
-1. An empty value denotes that the trigger should be called exactly once per action on that given entity.
-1. A value matching an entity field/property name denotes that the trigger should be called once per action on that given field/property.
-1. A value set to `*` denotes that the trigger should be called once per action on _all_ fields or properties in the class that were referenced in the request. 
-
-Below is a description of each of these annotations and their function:
-
-1. `@OnCreatePreSecurity(value)` This annotation executes immediately when the object is created, with fields populated, on the server-side after User checks but before _commit_ security checks execute and before it is committed/persisted in the backend.  Any non-user _inline_ and _operation_ CreatePermission checks are effectively _commit_ security checks.
-1. `@OnCreatePreCommit(value)` This annotation executes after the object is created and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
-1. `@OnCreatePostCommit(value)` This annotation executes after the object is created and committed/persisted on the backend.
-1. `@OnDeletePreSecurity` This annotation executes immediately when the object is deleted on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
-1. `@OnDeletePreCommit` This annotation executes after the object is deleted and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
-1. `@OnDeletePostCommit` This annotation executes after the object is deleted and committed/persisted on the backend.
-1. `@OnUpdatePreSecurity(value)` This annotation executes immediately when the field is updated on the server-side but before _commit_ security checks execute and before it is committed/persisted in the backend.
-1. `@OnUpdatePreCommit(value)` This annotation executes after the object is updated and all security checks are evaluated on the server-side but before it is committed/persisted in the backend.
-1. `@OnUpdatePostCommit(value)` This annotation executes after the object is updated and committed/persisted on the backend.
-1. `@OnReadPreSecurity(value)` This annotation executes immediately when the object is read on the server-side but before _commit_ security checks execute and before the transaction commits.
-1. `@OnReadPreCommit(value)` This annotation executes after the object is read and all security checks are evaluated on the server-side but before the transaction commits.
-1. `@OnReadPostCommit(value)` This annotation executes after the object is read and the transaction commits.
-
-### Registered Function Hooks
-
-To keep complex business logic separated from the data model, it is also possible to register `LifeCycleHook` functions during Elide initialization (since Elide 4.1.0):
+Life cycle hooks are simply functions that conform to the following interface:
 
 ```java
 /**
@@ -241,84 +155,83 @@ To keep complex business logic separated from the data model, it is also possibl
 @FunctionalInterface
 public interface LifeCycleHook<T> {
     /**
-     * Run for a lifecycle event
+     * Run for a lifecycle event.
+     * @param operation CREATE, READ, UPDATE, or DELETE
      * @param elideEntity The entity that triggered the event
      * @param requestScope The request scope
      * @param changes Optionally, the changes that were made to the entity
      */
-    public abstract void execute(T elideEntity,
+    public abstract void execute(LifeCycleHookBinding.Operation operation,
+                                 T elideEntity,
                                  RequestScope requestScope,
                                  Optional<ChangeSpec> changes);
 ```
 
-The hook functions are registered with the `EntityDictionary` by specifying the corresponding life cycle annotation (which defines when the hook triggers) along
-with the entity model class and callback function:
+### Annotation Based Hooks
+
+Model fields can be decorated with a `LifeCycleHookBinding` annotation.  The annotation provides the following information:
+1. The hook function to invoke.
+2. The model operation (CREATE, READ, UPDATE, or DELETE) that triggers the hook.
+3. The transaction phase of when to trigger the hook (PRESECURITY, PRECOMMIT, or POSTCOMMIT).
+4. For class level triggers, whether or not the hook should be called for each impacted field or exactly once for the class.
 
 ```java
-//Register a lifecycle hook for deletes on the model Book
-dictionary.bindTrigger(Book.class, OnDeletePreSecurity.class, callback);
+class Publisher {
+    @Id
+    private long id;
 
-//Register a lifecycle hook for updates on the Book model's title attribute
-dictionary.bindTrigger(Book.class, OnUpdatePostCommit.class, "title", callback);
-
-//Register a lifecycle hook for updates on _any_ of the Book model's attributes
-dictionary.bindTrigger(Book.class, OnUpdatePostCommit.class, callback, true);
-```
-
-## Initializers
-
-Sometimes models require additional information from the surrounding system to be useful. Since all model objects in Elide are ultimately constructed by the `DataStore`, and because Elide does not directly depend on any specific dependency injection framework (though you can still use your own [dependency injection frameworks](#dependency-injection)), Elide provides an alternate way to initialize a model.
-
-Elide can be configured with an `Initializer` implementation for a particular model class.  An `Initializer` is any class which implements the following interface:
-
-```java
-@FunctionalInterface
-public interface Initializer<T> {
-    /**
-     * Initialize an entity bean
-     *
-     * @param entity Entity bean to initialize
-     */
-    public void initialize(T entity);
+    @OneToMany(mappedBy = "publisher")
+    @LifeCycleHookBinding(operation = UPDATE, phase = PRECOMMIT, hook = PublisherUpdateHook.class)
+    private Set<Book> books;
 }
 ```
 
-Initializers can be configured in the `EntityDictionary` using the following bind method:
+### Registered Function Hooks
+
+Lifecycle hooks can be registered in Elide directly without an explicit annotation: 
 
 ```java
-    /**
-     * Bind a particular initializer to a class.
-     *
-     * @param <T>         the type parameter
-     * @param initializer Initializer to use for class
-     * @param cls         Class to bind initialization
-     */
-    public <T> void bindInitializer(Initializer<T> initializer, Class<T> cls) {
-        bindIfUnbound(cls);
-        getEntityBinding(cls).setInitializer(initializer);
-    }
+//Register a lifecycle hook for deletes on the model Book.  Call exactly once.
+dictionary.bindTrigger(Book.class, DELETE, PRESECURITY, hook, false);
+
+//Register a lifecycle hook for updates on the Book model's title attribute
+dictionary.bindTrigger(Book.class, "title", UPDATE, POSTCOMMIT, hook);
+
+//Register a lifecycle hook for updates on _any_ of the Book model's attributes
+dictionary.bindTrigger(Book.class, UPDATE, POSTCOMMIT, hook, true);
 ```
 
 ## Dependency Injection
 
-Elide does not depend on a specific dependency injection framework.  However, Elide can inject entity models during
-their construction (to implement life cycle hooks or other functionality).
-
-Elide provides a framework agnostic, functional interface to inject entity models:
+Elide does not depend on a specific dependency injection framework.  However, Elide can inject entity models, security checks, lifecycle hooks, and serdes during their construction.  Elide provides a framework agnostic, functional interface to inject entity models:
 
 ```java
 /**
- * Used to inject all beans at time of construction.
+ * Abstraction around dependency injection.
  */
 @FunctionalInterface
 public interface Injector {
 
     /**
-     * Inject an entity bean.
+     * Inject an elide object.
      *
-     * @param entity Entity bean to inject
+     * @param entity object to inject
      */
     void inject(Object entity);
+
+    /**
+     * Instantiates a new instance of a class using the DI framework.
+     *
+     * @param cls The class to instantiate.
+     * @return An instance of the class.
+     */
+    default <T> T instantiate(Class<T> cls) {
+        try {
+            return cls.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
 ```
 
