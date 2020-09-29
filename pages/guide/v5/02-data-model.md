@@ -29,7 +29,7 @@ version: 5
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **Data Models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **data models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
 All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
 
@@ -97,7 +97,68 @@ Every model in Elide must have an ID.  This is a requirement of both the JSON-AP
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
 
-Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
+Identifier fields in Elide are typically integers, longs, strings, or UUIDs.  It is also possible to have composite/compound ID fields composed of multiple fields.  For example, the following identifier type includes three fields that together create a primary key:
+
+```java
+@Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Address implements Serializable {
+    private long number;
+    private String street;
+    private long zipCode;
+}
+```
+
+This new compound ID type can then be referenced in an Elide model identifier like this:
+
+```java
+@Include(rootLevel = true)
+@Data
+@Entity
+public class Building {
+    @Id
+    @Embedded
+    private Address address;
+}
+```
+
+Because JSON-API requires all ID fields to be Strings, composite/compound IDs require the developer to register an Elide `Serde` to serialize and deserialize the ID type to a String.  For example, the following `Serde` will encode/decode an `Address` as a base64 encoded string:
+
+```java
+@ElideTypeConverter(type = Address.class, name = "Address")
+public class AddressSerde implements Serde<String, Address> {
+    private static final Pattern ADDRESS_PATTERN =
+            Pattern.compile("Address\\(number=(\\d+), street=([a-zA-Z0-9 ]+), zipCode=(\\d+)\\)");
+
+    @Override
+    public Address deserialize(String val) {
+        byte[] decodedBytes = Base64.getDecoder().decode(val);
+        String decodedString = new String(decodedBytes);
+
+        Matcher matcher = ADDRESS_PATTERN.matcher(decodedString);
+        if (! matcher.matches()) {
+            throw new InvalidValueException(decodedString);
+        }
+        long number = Long.valueOf(matcher.group(1));
+        String street = matcher.group(2);
+        long zipCode = Long.valueOf(matcher.group(3));
+
+        Address address = new Address(number, street, zipCode);
+
+        return address;
+    }
+
+    @Override
+    public String serialize(Address val) {
+        return Base64.getEncoder().encodeToString(val.toString().getBytes());
+    }
+}
+```
+
+More information about `Serde` and user defined types can be found [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+
 
 ## Attributes vs Relationships
 
@@ -137,7 +198,7 @@ The same principles are analogous to `@ComputedRelationship`s.
 
 Lifecycle hooks allow custom business logic (defined in functions) to be invoked during CRUD operations at three distinct phases of the client request:
 
-1. *Pre Security* - Executed prior to Elide _commit_ security check evaluation.
+1. *Pre Security* - Executed immediate prior to Elide security check evaluation.
 1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
 1. *Post Commit* - Executed immediately after transaction commit.
 
@@ -252,7 +313,7 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 
 ## Type Coercion
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Inheritance
 
