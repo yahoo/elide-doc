@@ -400,6 +400,7 @@
 - name: TimeGrainDefinition
   description: Defines a time grain.
   applicationLevel:
+      - Temporal Annotation
   parameters:
       - name: grain
         default: SimpleDate
