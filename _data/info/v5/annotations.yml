@@ -122,18 +122,17 @@
         default: <em>None</em>
         description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
 
-- name: SharePermission
-  description: Enable sharing permissions on an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+- name: NonTransferable
+  description: Marks that a model cannot be assigned to another collection after its creation.  
   applicationLevel:
-      - Method
       - Class
       - Package
   parameters:
-      - name: shareable
+      - name: enabled
         required: False
         type: Boolean
         default: True
-        description: Enable or disable shareability for an object. Shareable permissions are evaluated identically to an entity's read permissions. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: Explicitly marks the model as non-transferable or otherwise.
 
 - name: Exclude
   description: Marks that a given field or entity should not be exposed through Elide.
@@ -271,6 +270,164 @@
         type: String
         required: True
         description: The name of the physical table which backs the Elide model.
+      - name: dbConnectionName
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The name of the database connection source where the physical data resides.
+
+- name: FromSubquery
+  description: Aggregation store annotation which binds an Elide model to a native SQL query.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: sql
+        default: <em>None</em>
+        type: String
+        required: True
+        description: The native SQL query that defines this model.
+      - name: dbConnectionName
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The name of the database connection source where the physical data resides.
+
+- name: Cardinality
+  description: Indicates whether a dimension table has SMALL, MEDIUM, or LARGE cardinality.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: size
+        default: LARGE
+        type: CardinalitySize
+        required: True
+        description: SMALL, MEDIUM, or LARGE
+
+- name: ColumnMeta
+  description: Metadata to export about a table column.
+  applicationLevel:
+      - Method
+      - Field
+  parameters:
+      - name: description
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The description of the column.
+      - name: category
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The category of the column.
+      - name: tableSource
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The table and column names where to find the values (tableName.columnName).
+      - name: tags
+        default: <em>None</em>
+        type: String[]
+        required: False
+        description: list of free-form text labels for the column.
+      - name: values
+        default: <em>None</em>
+        type: String[]
+        required: False
+        description: An optional enumerated list of dimension values for small cardinality dimensions.
+
+- name: TableMeta
+  description: Metadata to export about a table.
+  applicationLevel:
+      - Class
+  parameters:
+      - name: description
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The description of the table.
+      - name: category
+        default: <em>None</em>
+        type: String
+        required: False
+        description: The category of the table.
+      - name: tags
+        default: <em>None</em>
+        type: String[]
+        required: False
+        description: list of free-form text labels for the column.
+      - name: filterTemplate
+        default: <em>None</em>
+        type: String[]
+        required: False
+        description: An RSQL filter expression template that must directly match or be included in the client provided filter.
+
+- name: MetricFormula
+  description: Native SQL fragment that defines a metric column.
+  applicationLevel:
+      - Method
+      - Field
+  parameters:
+      - name: value
+        default: <em>None</em>
+        type: String
+        required: True
+        description: A templated (optional) native SQL fragment.  Field references enclosed in `{{ }}` are substituted with the SQL fragments of other model fields.
+
+- name: DimensionFormula
+  description: Native SQL fragment that defines a dimension column.
+  applicationLevel:
+      - Method
+      - Field
+  parameters:
+      - name: value
+        default: <em>None</em>
+        type: String
+        required: True
+        description: A templated (optional) native SQL fragment.  Field references enclosed in `{{ }}` are substituted with the SQL fragments of other model fields.
+
+- name: Join
+  description: A templated SQL 'on' clause to join two tables.  Annotates a model field reference to another table.
+  applicationLevel:
+      - Method
+      - Field
+  parameters:
+      - name: value
+        default: <em>None</em>
+        type: String
+        required: True
+        description: A join constraint like '%from.col1 = %join.col2' where %from is the current model and %join is the model being joined.
+
+- name: TimeGrainDefinition
+  description: Defines a time grain.
+  applicationLevel:
+  parameters:
+      - name: grain
+        default: SimpleDate
+        type: TimeGrain
+        required: True
+        description: The time grain or period (SIMPLEDATE, YEAR, etc).
+      - name: expression
+        default: <em>None</em>
+        type: String
+        required: False
+        description: A templated native SQL fragment.  The template variable '{{}}' in the expression will be replaced with the column formula at query time.
+
+- name: Temporal
+  description: Marks the dimension as a _time_ dimension.
+  applicationLevel:
+      - Method
+      - Field
+  parameters:
+      - name: grain
+        default: <em>None</em>
+        type: TimeGrainDefinition
+        required: True
+        description: The time grain or period associated with the time dimension.
+      - name: timeZone
+        default: UTC
+        type: String
+        required: False
+        description: The timezone associated with the time dimension.
 
 - name: VersionQuery
   description: Specifies a SQL query for SQLQueryEngine to use for detecting data changes. This must be present for SQLQueryEngine to support caching an entity.
