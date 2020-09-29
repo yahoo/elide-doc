@@ -186,6 +186,9 @@ The following RSQL operators are supported:
 * `=gt=` : Evaluates to true if the attribute is greater than the value.
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+* `=isempty=` : Determines if a collection is empty or not.
+* `=hasmember=` : Determines if a collection contains a particular element.
+* `=hasnomember=` : Determines if a collection does not contain a particular element.
 
 
 ##### FIQL Default Behaviour
@@ -311,7 +314,7 @@ Fetches the set of books that start with 'Libro U'.
 Fetches a single page of books (1 book per page), starting at the 2nd page.  
 Also requests the relationship metadata.
 
-{% include code_example example='fetch-books-paginated' offset=8 %}
+{% include code_example example='fetch-book-paginated' offset=8 %}
 
 ### Sort All Books
 
@@ -379,5 +382,5 @@ The response includes the complete set of books (id & title) and their new autho
 ## Type Serialization/Deserialization
 -------------------------------------
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 

@@ -29,9 +29,9 @@ version: 4
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **Data Models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **data models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
-All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}03-security.html). 
+All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
 
 ## Annotations
 
@@ -52,7 +52,7 @@ However, JPA is not required and Elide supports its own set of annotations for d
 | Mark an identifier field | `@Id`                       |                   |
 {:.table}
 
-Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/{{ page.version }}/15-annotations.html).
+Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/15-annotations.html).
 
 ## Exposing a Model as an Elide Endpoint
 
@@ -157,7 +157,7 @@ public class AddressSerde implements Serde<String, Address> {
 }
 ```
 
-More information about `Serde` and user defined types can be found [here](/pages/guide/09-clientapis.html#type-coercion).
+More information about `Serde` and user defined types can be found [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Attributes vs Relationships
 

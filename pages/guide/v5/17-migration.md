@@ -9,18 +9,21 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 
 ## New Features in Elide 5.X
 
-Elide 5 introduces two primary new features:
+Elide 5 introduces three primary new features:
  - An asynchronous API for read requests.
  - An [analytics DataStore](/pages/guide/v{{ page.version }}/04-analytics.html) that:
    - Allows the definition of curated Elide models with native SQL fragments.
    - Allows the computation of groupable measures (similar to SQL group by).
    - Exposes metadata about the curated model as a separate set of Elide models.
+ - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
 
-These capabilities were developed in conjunction with a powerful Analytics UI called [Navi](https://yahoo.github.io/navi/).
+The analytics data store (called the AggregationDataStore) and asynchronous API were developed in conjunction with a powerful Analytics UI called [Navi](https://yahoo.github.io/navi/).
 
 ## API Changes
 
-The only notable API change is that FIQL operators are now case sensitive by default.  New case insensitive operators have been introduced allowing greater flexibility.  It is possible to revert to elide 4 semantics through configuration.
+The only notable API change are:
+- [Improved error responses](https://github.com/yahoo/elide/pull/1200) that are more compatible with the JSON-API specification.
+- [FIQL operators are now case sensitive by default](https://github.com/yahoo/elide/pull/1519).  New case insensitive operators have been introduced allowing greater flexibility.  It is possible to revert to elide 4 semantics through configuration.
 
 ## Interface Changes
 
@@ -31,10 +34,7 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - Lifecycle hooks have been restructured to better decouple their logic from Elide models.
  - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
- - API Error reporting has a number of fixes and improvements.
  - The elide-annotation and elide-core artifacts are consolidated into a single artifact.
- - All public classes and interfaces have been migrated to a new package structure.
- - Check classes can now be injected.
  - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
 
@@ -71,7 +71,7 @@ Elide no longer has separate classes (`InlineCheck` & `CommitCheck`) that determ
   })
 </script>
 
-See Elide's [security documentation](pages/guide/v{{ page.version }}/03-security.html) for details on how to define checks.
+See Elide's [security documentation](/pages/guide/v{{ page.version }}/03-security.html) for details on how to define checks.
 
 #### NonTransferable & SharePermission
 
@@ -120,6 +120,18 @@ The transaction `getAttribute` and `setAttribute` functions now take `Attribute`
 #### Removal of accessUser function
 
 The `DataStoreTransaction` no longer requires a method to access the User object during transaction initialization.
+
+### Lifecycle Hook Refactor
+
+The life cycle hook function now includes an extra parameter to indicate what operation is being performed on the model:
+```java
+public abstract void execute(LifeCycleHookBinding.Operation operation,
+                             T elideEntity,
+                             RequestScope requestScope,
+                             Optional<ChangeSpec> changes);
+```
+
+To register life cycle hooks, all the prior annotations have been replaced with [a single annotation](/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
 
 ### New Public Interfaces
 

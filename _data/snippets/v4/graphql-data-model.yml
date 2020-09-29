@@ -9,14 +9,14 @@ Book.java: |+2
   @Table(name = "book")
   @Include(rootLevel = true)
   public class Book {
-      @Id public long id;
-      public String title;
-      public String genre;
-      public String language;
+      @Id private long id;
+      private String title;
+      private String genre;
+      private String language;
       @ManyToMany
-      public Set<Author> authors;
+      private Set<Author> authors;
       @ManyToOne
-      Publisher publisher;
+      private Publisher publisher;
   }
   ```
 
@@ -26,10 +26,10 @@ Author.java: |+2
   @Table(name = "author")
   @Include(rootLevel = false)
   public class Author {
-      @Id public long id;
-      public String name;
+      @Id private long id;
+      private String name;
       @ManyToMany
-      public Set<Book> books;
+      private Set<Book> books;
   }
   ```
 
@@ -39,9 +39,9 @@ Publisher.java: |+2
   @Table(name = "publisher")
   @Include(rootLevel = false)
   public class Publisher {
-      @Id public long id;
-      public String name;
+      @Id private long id;
+      private String name;
       @OneToMany
-      public Set<Book> books;
+      private Set<Book> books;
   }
   ```

@@ -4,14 +4,12 @@ files:
   - Comment.java
   - IsOwner.java
   - IsSuperuser.java
-  - MyElide.java
 
 User.java: |+2
   ```java
   @ReadPermission(expression = "Prefab.Roll.All")
   @UpdatePermission(expression = "user is a superuser OR user is this user")
   @DeletePermission(expression = "user is a superuser OR user is this user")
-  @SharePermission
   public class User {
       String name;
 
@@ -26,7 +24,6 @@ Post.java: |+2
   @UpdatePermission(expression = "user owns this post")
   @CreatePermission(expression = "user owns this post")
   @DeletePermission(expression = "user owns this post")
-  @SharePermission
   public class Post {
       @ManyToOne
       User author;
@@ -46,7 +43,6 @@ Comment.java: |+2
   @UpdatePermission(expression = "user made this comment")
   @CreatePermission(expression = "post is visible")
   @DeletePermission(expression = "user made this comment")
-  @SharePermission
   public class Comment {
       @ManyToOne
       User author;
@@ -59,7 +55,10 @@ Comment.java: |+2
 
 IsOwner.java: |+2
   ```java
+  @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER)
   public static class IsOwner<Post> extends OperationCheck {
+      public static final String PRINCIPAL_IS_OWNER = "user owns this post";
+      
       @Override
       boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
           return post.author.equals(requestScope.getUser());
@@ -69,20 +68,13 @@ IsOwner.java: |+2
 
 IsSuperuser.java: |+2
   ```java
+  @SecurityCheck(IsSuperUser.PRINCIPAL_IS_SUPERUSER)
   public static class IsSuperuser extends UserCheck {
+      public static final String PRINCIPAL_IS_SUPERUSER = "user is a superuser";
+
       @Override
       boolean ok(User user) {
           return user.isInRole("SUPER_USER");
       }
   }
-  ```
-
-MyElide.java: |+2
-  ```java
-  HashMap checks = new HashMap();
-  checks.put("post is visible", IsPublished.class);
-  checks.put("user owns this post", IsOwner.class);
-  checks.put("user is a superuser", IsSuperuser.class);
-  //...
-  EntityDictionary dictionary = new EntityDictionary(checks);
   ```

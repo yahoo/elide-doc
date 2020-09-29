@@ -8,16 +8,16 @@ version: 4
 
 --------------------------
 
-[JSON-API](http://jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.
+[JSON-API](https://jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.
 Similar to GraphQL: 
 *  It allows the client to control what is returned in the response payload.  
 *  It provided an API extension (the [_patch extension_](#bulk-writes-and-complex-mutations) that allowed multiple mutations to the graph to occur in a single request.
 
 Unlike GraphQL, the JSON-API specification spells out exactly how to perform common CRUD operations including complex graph mutations.  
 JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting 
-an [Open API Initiative](http://www.openapis.org) document (formerly known as [Swagger](http://swagger.io)).
+an [Open API Initiative](htts://www.openapis.org) document (formerly known as [Swagger](https://swagger.io)).
 
-The [json-api specification](http://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
+The [json-api specification](https://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
 commonly used JSON-API features as well as Elide additions for filtering, pagination, sorting, and swagger.
 
 ## Hierarchical URLs
@@ -86,7 +86,7 @@ JSON-API 1.0 is agnostic to filtering strategies.  The only recommendation is th
 prefix filtering query parameters with the word 'filter'.
 
 Elide supports multiple filter dialects and the ability to add new ones to meet the needs of developers or to evolve
-the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL](https://github.com/jirutka/rsql-parser)
+the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL](https://github.com/jirutka/rsql-parser).
 
 ### RSQL
 
@@ -151,6 +151,9 @@ The following RSQL operators are supported:
 * `=gt=` : Evaluates to true if the attribute is greater than the value.
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+* `=isempty=` : Determines if a collection is empty or not.
+* `=hasmember=` : Determines if a collection contains a particular element.
+* `=hasnomember=` : Determines if a collection does not contain a particular element.
 
 #### Values & Type Coercion
 Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
@@ -215,8 +218,7 @@ Include the total size of the collection in the _meta block_:
 Elide supports:
 1.  Sorting a collection by any attribute of the collection's type.
 2.  Sorting a collection by multiple attributes at the same time in either ascending or descending order.
-3.  Sorting a collection by any attribute of a to-one relationship of the collection's type.  Multiple relationships can be traversed provided the path 
-from the collection to the sorting attribute is entirely through to-one relationships.
+3.  Sorting a collection by an attribute of another model connected via one or more to-one relationships.
 
 ### Syntax
 Elide allows sorting of the primary collection being returned in the response via the _sort_ query parameter.
@@ -338,7 +340,7 @@ public interface JSONApiLinks {
 ## Type Serialization/Deserialization
 -------------------------------------
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Swagger
 --------------------------

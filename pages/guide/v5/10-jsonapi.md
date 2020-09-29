@@ -8,16 +8,16 @@ version: 5
 
 --------------------------
 
-[JSON-API](jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
+[JSON-API](https://jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
 Similar to GraphQL: 
 *  It allows the client to control what is returned in the response payload.  
 *  It provided an API extension (the [_patch extension_](#bulk-writes-and-complex-mutations) that allowed multiple mutations to the graph to occur in a single request.
 
 Unlike GraphQL, the JSON-API specification spells out exactly how to perform common CRUD operations including complex graph mutations.  
 JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting 
-an [Open API Initiative](www.openapis.org) document (formerly known as [Swagger](swagger.io)).
+an [Open API Initiative](https://www.openapis.org) document (formerly known as [Swagger](https://swagger.io)).
 
-The [json-api specification](http://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
+The [json-api specification](https://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
 commonly used JSON-API features as well as Elide additions for filtering, pagination, sorting, and swagger.
 
 ## Hierarchical URLs
@@ -86,7 +86,7 @@ JSON-API 1.0 is agnostic to filtering strategies.  The only recommendation is th
 prefix filtering query parameters with the word 'filter'.
 
 Elide supports multiple filter dialects and the ability to add new ones to meet the needs of developers or to evolve
-the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL](https://github.com/jirutka/rsql-parser)
+the platform should JSON-API standardize them.  Elide's primary dialect is [RSQL](https://github.com/jirutka/rsql-parser).
 
 ### RSQL
 
@@ -156,6 +156,9 @@ The following RSQL operators are supported:
 * `=gt=` : Evaluates to true if the attribute is greater than the value.
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+* `=isempty=` : Determines if a collection is empty or not.
+* `=hasmember=` : Determines if a collection contains a particular element.
+* `=hasnomember=` : Determines if a collection does not contain a particular element.
 
 ##### FIQL Default Behaviour
 By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
@@ -240,10 +243,9 @@ Include the total size of the collection in the _meta block_:
 --------------------------
 
 Elide supports:
-1.  Sorting a collection by any attribute of the collection's type.
+1.  Sorting a collection by any model attribute.
 2.  Sorting a collection by multiple attributes at the same time in either ascending or descending order.
-3.  Sorting a collection by any attribute of a to-one relationship of the collection's type.  Multiple relationships can be traversed provided the path 
-from the collection to the sorting attribute is entirely through to-one relationships.
+3.  Sorting a collection by an attribute of another model connected via one or more to-one relationships.
 
 ### Syntax
 Elide allows sorting of the primary collection being returned in the response via the _sort_ query parameter.
@@ -285,6 +287,83 @@ Elide supports the JSON-API patch extension because it allows complex & bulk edi
 For example, the following request creates an author (earnest hemingway), multiple of his books, and his book publisher in a single request:
 
 {% include code_example example='patch-extension' offset=10 %}
+
+Important Caveats:
+
+1. Patch extension requires a different content-type: `application/vnd.api+json; ext=jsonpatch`
+2. Elide's patch extension support requires that all resources have assigned IDs when fixing up relationships.  For newly created objects, the IDs can simply be placeholders.
+
+## Links
+------------
+
+JSON-API links are disabled by default.  To turn them on for spring boot, Override the default Elide configuration bean:
+
+```java
+    @Bean
+    public Elide initializeElide(EntityDictionary dictionary, DataStore dataStore, ElideConfigProperties settings) {
+        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
+		... // Removed other settings for clarity
+                .withJSONApiLinks(new DefaultJSONApiLinks());
+        return new Elide(builder.build());
+    }
+
+```
+
+Similarly, for Elide standalone, you can turn them on by overriding ElideStandaloneSettings:
+
+```java
+    ElideSettings getElideSettings(final ServiceLocator injector) {
+        ... //Removed other initialization for clarity
+
+        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
+		... // Removed other settings for clarity
+                .withJSONApiLinks(new DefaultJSONApiLinks());
+       
+        return builder.build();
+    }
+```
+
+This will result in payload responses that look like:
+
+```json
+{
+    "data": [
+        {
+            "type": "group",
+            "id": "com.example.repository",
+            "attributes": {
+                "commonName": "Example Repository",
+                "description": "The code for this project"
+            },
+            "relationships": {
+                "products": {
+                    "links": {
+                        "self": "http://localhost:55302/api/v1/group/com.example.repository/relationships/products",
+                        "related": "http://localhost:55302/api/v1/group/com.example.repository/products"
+                    },
+                    "data": [
+                        
+                    ]
+                }
+            },
+            "links": {
+                "self": "http://localhost:55302/api/v1/group/com.example.repository"
+            }
+        }
+    ]
+}
+```
+
+You can customize the links that are returned by registering your own implementation of `JsonApiLinks`:
+
+```java
+public interface JSONApiLinks {
+    Map<String, String> getResourceLevelLinks(PersistentResource var1);
+
+    Map<String, String> getRelationshipLinks(PersistentResource var1, String var2);
+}
+```
+
 
 ## Type Serialization/Deserialization
 -------------------------------------

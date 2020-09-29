@@ -122,18 +122,17 @@
         default: <em>None</em>
         description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
 
-- name: SharePermission
-  description: Enable sharing permissions on an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+- name: NonTransferable
+  description: Marks that a model cannot be assigned to another collection after its creation.  
   applicationLevel:
-      - Method
       - Class
       - Package
   parameters:
-      - name: shareable
+      - name: enabled
         required: False
         type: Boolean
         default: True
-        description: Enable or disable shareability for an object. Shareable permissions are evaluated identically to an entity's read permissions. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: Explicitly marks the model as non-transferable or otherwise.
 
 - name: Exclude
   description: Marks that a given field or entity should not be exposed through Elide.
@@ -260,25 +259,3 @@
       - Method
       - Field
   parameters: []
-
-- name: FromTable
-  description: Aggregation store annotation which binds an Elide model to a physical database table.
-  applicationLevel:
-      - Class
-  parameters:
-      - name: name
-        default: <em>None</em>
-        type: String
-        required: True
-        description: The name of the physical table which backs the Elide model.
-
-- name: VersionQuery
-  description: Specifies a SQL query for SQLQueryEngine to use for detecting data changes. This must be present for SQLQueryEngine to support caching an entity.
-  applicationLevel:
-    - Class
-  parameters:
-    - name: sql
-      default: <em>None</em>
-      type: String
-      required: True
-      description: SQL SELECT query that returns a string or integer value. The value must change whenever the corresponding database table changes.

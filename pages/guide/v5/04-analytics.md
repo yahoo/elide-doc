@@ -323,6 +323,10 @@ To avoid repeated configuration blocks, all HJSON files (table, security, and da
 
 The file format is a simple mapping from the variable name to a JSON structure.  At server startup, Elide will replace any variable name surrounded by '<%' and '%>' tags with the corresponding JSON structure.
 
+## Caching
+
+The Aggregation data store supports a configurable caching strategy to cache queries when the source data has not changed.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache). 
+
 ## Configuration Validation
 
 All HJSON configuration files are validated by a JSON schema.  The schemas for each file type can be found here:

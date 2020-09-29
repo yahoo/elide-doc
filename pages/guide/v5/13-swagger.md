@@ -15,7 +15,7 @@ Only JSON-API endpoints are documented.  The GraphQL API schema can be explored 
 
 ## Features Supported
 
-* **JaxRS Endpoint** - Elide ships with a customizable JaxRS endpoint that can publish one or more swagger documents.
+* **JaxRS & Spring Endpoint** - Elide ships with a customizable JaxRS and Spring endpoints that can publish one or more swagger documents.
 * **Path Discovery** - Given a set of entities to explore, Elide will generate the minimum, cycle-free, de-duplicated set of URL paths in the swagger document.
 * **Filter by Primitive Attributes** - All _GET_ requests on entity collections include filter parameters for each primitive attribute.
 * **Prune Fields** - All _GET_ requests support JSON-API sparse fields query parameter.
@@ -24,6 +24,7 @@ Only JSON-API endpoints are documented.  The GraphQL API schema can be explored 
 * **Pagination** - All _GET_ requests support pagination query parameters.
 * **Permission Exposition** - Elide permissions are exported as documentation for entity schemas.
 * **Attribute Properties** - The _required_, _readOnly_, _example_ and _value_ fields are extracted from `ApiModelProperty` annotations.  
+* **API Version Support** - Elide can create separate documents for different API versions.
 
 ## Getting Started
 
@@ -88,40 +89,75 @@ elide:
 
 ### Elide Standalone Configuration
 
-If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone), you can extend `ElideStandaloneSettings` to configure swagger.  The `enableSwagger` function returns a map of Swagger documents keyed by a name for each document that will be exposed in the swagger document URL.
-
+If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone), you can extend `ElideStandaloneSettings` to:
+- Enable Swagger.
+- Configure the URL Path for the swagger document.
+- Configure the Swagger document version. 
+- Configure the service name.  
+- Construct swagger documents for your service.
 
 ```java
+    /**
+     * Enable swagger documentation.
+     * @return whether Swagger is enabled;
+     */
     @Override
-    public Map<String, Swagger> enableSwagger() {
+    public boolean enableSwagger() {
+        return false;
+    }
 
-        //Create a dictionary of the entities that will be exposed in swagger
-        EntityDictionary dictionary = new EntityDictionary(new HashMap());
-        dictionary.bindEntity(ArtifactGroup.class);
-        dictionary.bindEntity(ArtifactProduct.class);
-        dictionary.bindEntity(ArtifactVersion.class);
+    /**
+     * API root path specification for the Swagger endpoint. Namely, this is the root uri for Swagger docs.
+     *
+     * @return Default: /swagger/*
+     */
+    @Override
+    public String getSwaggerPathSpec() {
+        return "/swagger/*";
+    }
 
-        //Title and version your service
-        Info info = new Info().title("Test Service").version("1.0");
+    /**
+     * Swagger documentation requires an API version.
+     * The models with the same version are included.
+     * @return swagger version;
+     */
+    @Override
+    public String getSwaggerVersion() {
+        return NO_VERSION;
+    }
 
-        //Build the swagger document with the base API path
+    /**
+     * Swagger documentation requires an API name.
+     * @return swagger service name;
+     */
+    @Override
+    public String getSwaggerName() {
+        return "Elide Service";
+    }
+
+    /**
+     * Creates a singular swagger document for JSON-API.
+     * @param dictionary Contains the static metadata about Elide models. .
+     * @return list of swagger registration objects.
+     */
+    @Override
+    public List<DocEndpoint.SwaggerRegistration> buildSwagger(EntityDictionary dictionary) {
+        Info info = new Info()
+                .title(getSwaggerName())
+                .version(getSwaggerVersion());
+
         SwaggerBuilder builder = new SwaggerBuilder(dictionary, info);
-        Swagger swagger = builder.build().basePath("/api/v1");
 
-        //Return the map of swagger documents
-        Map<String, Swagger> docs = new HashMap<>();
-        docs.put("test", swagger);
+        String moduleBasePath = getJsonApiPathSpec().replaceAll("/\\*", "");
+
+        Swagger swagger = builder.build().basePath(moduleBasePath);
+
+        List<DocEndpoint.SwaggerRegistration> docs = new ArrayList<>();
+        docs.add(new DocEndpoint.SwaggerRegistration("test", swagger));
+
         return docs;
     }
-```
 
-The code above exposes a single swagger document at the URL `/swagger/doc/test`.  To change the path where swagger will be exposed, override this function in `ElideStandaloneSettings`:
-
-```java
-    @Override
-    public String getSwaggerPathSepc() {
-        return "/mySwaggerPath/*";
-    }
 ```
 
 ### Elide Library Configuration
