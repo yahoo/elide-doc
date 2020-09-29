@@ -95,7 +95,7 @@ Security checks which dereference the `User` object will require changes to acce
 
 #### User Checks for newly created objects
 
-Elide will only run User Checks against a newly created object. If relying on Operation Checks on attributes to restrict object creation, this can allow creation of object if no attribute is being set.
+Elide now only runs User Checks against a newly created object. 
 
 ### DataStoreTransaction Changes
 
