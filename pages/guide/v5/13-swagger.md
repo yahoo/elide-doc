@@ -264,5 +264,15 @@ class Book {
 
 Only the _required_, _value_, _example_, and _readOnly_ properties are extracted.  This is currently only supported for attributes on Elide models.
 
+## API Versions
+
+Swagger documents are tied to an explicit API version.  When constructing a Swagger document, the API version must be set to match the API version of the models it will describe:  
+
+```java
+Info info = new Info().title("Test Service").version("1.0");
+SwaggerBuilder builder = new SwaggerBuilder(dictionary, info);
+Swagger swagger = builder.build();
+```
+
 [elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
 [elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
