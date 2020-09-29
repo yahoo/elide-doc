@@ -96,7 +96,7 @@ of Boolean expressions.  It is a superset of the [FIQL language](https://tools.i
 Because RSQL is a superset of FIQL, FIQL queries should be properly parsed.
 RSQL primarily adds more friendly lexer tokens to FIQL for conjunction and disjunction: 'and' instead of ';' and 'or' instead of ','.
 RSQL also adds a richer set of operators.
-
+FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
 #### Filter Syntax
 
 Filter query parameters either look like: 
@@ -140,17 +140,44 @@ Return all the books with an author whose name is 'Null Ned' and whose title is 
 
 The following RSQL operators are supported:
 
-* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list.
-* `=out=` : Evaluates to true if the attribute does not match any of the values in the list.
-* `==ABC*` : Similar to SQL `like 'ABC%`.
-* `==*ABC` : Similar to SQL `like '%ABC`.
-* `==*ABC*` : Similar to SQL `like '%ABC%`.
+* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list. (Case Sensitive)
+* `=ini=`: Evaluates to true if the attribute exactly matches any of the values in the list. (Case Insensitive)
+* `=out=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Sensitive)
+* `=outi=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Insensitive)
+* `==ABC*` : Similar to SQL `like 'ABC%`. (Case Sensitive)
+* `==*ABC` : Similar to SQL `like '%ABC`. (Case Sensitive)
+* `==*ABC*` : Similar to SQL `like '%ABC%`. (Case Sensitive)
+* `=ini=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
+* `=ini=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
+* `=ini=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
 * `=isnull=true` : Evaluates to true if the attribute is null
 * `=isnull=false` : Evaluates to true if the attribute is not null
 * `=lt=` : Evaluates to true if the attribute is less than the value.
 * `=gt=` : Evaluates to true if the attribute is greater than the value.
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
+
+##### FIQL Default Behaviour
+By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
+```java
+    @Bean
+    @ConditionalOnMissingBean
+    public Elide initializeElide(EntityDictionary dictionary,
+            DataStore dataStore, ElideConfigProperties settings) {
+
+        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
+                .withEntityDictionary(dictionary)
+                .withDefaultMaxPageSize(settings.getMaxPageSize())
+                .withDefaultPageSize(settings.getPageSize())
+                .withJoinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+                .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+                .withAuditLogger(new Slf4jLogger())
+                .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
+
+        return new Elide(builder.build());
+    }
+```
+
 
 #### Values & Type Coercion
 Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
