@@ -24,7 +24,7 @@ Elide comes bundled with a number of data stores:
 4. Multiplex Store - A multiplex store delegates persistence to different underlying stores depending on the data model.
 5. Noop Store - A store which does nothing, allowing business logic in computed attributes and life cycle hooks to entirely implement CRUD operations on the model.
 6. [Search Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) - A store which provides full text search on text fields while delegating other requests to another provided store.
-7. [Aggregation Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-aggregation) - A store which provides computation of groupable measures (similar to SQL group by).  The aggregation store has custom annotations that map an Elide model to native SQL queries against a JDBC database.
+7. [Aggregation Store](/pages/guide/v{{ page.version }}/04-analytics.html) - A store which provides computation of groupable measures (similar to SQL group by).  The aggregation store has custom annotations that map an Elide model to native SQL queries against a JDBC database.
 
 Stores can be included through the following artifact dependencies:
 
@@ -109,10 +109,11 @@ To change the store, override the `DataStore` autoconfigure bean:
 ```java
 @Bean
 public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
+    final Consumer<EntityManager> TXCANCEL = (em) -> { em.unwrap(Session.class).cancelQuery(); };
 
     return new JpaDataStore(
             () -> { return entityManagerFactory.createEntityManager(); },
-                (em -> { return new NonJtaTransaction(em); }));
+                (em -> { return new NonJtaTransaction(em, TXCANCEL); }));
 }
 ```
 
@@ -120,40 +121,39 @@ public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
 
 [Elide Standalone][elide-standalone] is configured by default with the JPA data store.
 
-To change the store, the `ElideStandaloneSettings` interface can be overridden to change the function 
-which builds the `ElideSettings` object:
+To change the store, the `ElideStandaloneSettings` interface can be overridden to change the function which builds the `DataStore` object.  One of two possible functions should be overridden depending on whether the `AggregationDataStore` is enabled:
 
 ```java
-/**
- * Elide settings to be used for bootstrapping the Elide service. By default, this method constructs an
- * ElideSettings object using the application overrides provided in this class. If this method is overridden,
- * the returned settings object is used over any additional Elide setting overrides.
- *
- * That is to say, if you intend to override this method, expect to fully configure the ElideSettings object to
- * your needs.
- *
- * @param injector Service locator for web service for dependency injection.
- * @return Configured ElideSettings object.
- */
-default ElideSettings getElideSettings(ServiceLocator injector) {
-    EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(), new Properties());
-    DataStore dataStore = new JpaDataStore(
-            () -> { return entityManagerFactory.createEntityManager(); },
-            (em -> { return new NonJtaTransaction(em); }));
+    /**
+     * Gets the DataStore for elide when aggregation store is disabled.
+     * @param entityManagerFactory EntityManagerFactory object.
+     * @return DataStore object initialized.
+     */
+    default DataStore getDataStore(EntityManagerFactory entityManagerFactory) {
+        DataStore jpaDataStore = new JpaDataStore(
+                () -> { return entityManagerFactory.createEntityManager(); },
+                (em) -> { return new NonJtaTransaction(em, ElideStandaloneSettings.TXCANCEL); });
 
-    EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
-
-    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-            .withEntityDictionary(dictionary)
-            .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
-            .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary));
-
-    if (enableIS06081Dates()) {
-        builder = builder.withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
+        return jpaDataStore;
     }
 
-    return builder.build();
-}  
+    /**
+     * Gets the DataStore for elide.
+     * @param metaDataStore MetaDataStore object.
+     * @param aggregationDataStore AggregationDataStore object.
+     * @param entityManagerFactory EntityManagerFactory object.
+     * @return DataStore object initialized.
+     */
+    default DataStore getDataStore(MetaDataStore metaDataStore, AggregationDataStore aggregationDataStore,
+            EntityManagerFactory entityManagerFactory) {
+        DataStore jpaDataStore = new JpaDataStore(
+                () -> { return entityManagerFactory.createEntityManager(); },
+                (em) -> { return new NonJtaTransaction(em, ElideStandaloneSettings.TXCANCEL); });
+
+        DataStore dataStore = new MultiplexManager(jpaDataStore, metaDataStore, aggregationDataStore);
+
+        return dataStore;
+    }
 ```
 
 # Custom Stores
@@ -210,10 +210,12 @@ To setup the multiplex store in spring boot, create a `DataStore` bean:
 @Bean
 public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
 
+    final Consumer<EntityManager> TXCANCEL = (em) -> { em.unwrap(Session.class).cancelQuery(); };
+
     //Store 1 manages Book, Author, and Publisher
     DataStore store1 = new JpaDataStore(
-            () -> { return entityManagerFactory.createEntityManager(); },
-            (em -> { return new NonJtaTransaction(em); }),
+            entityManagerFactory::createEntityManager,
+            (em) -> { return new NonJtaTransaction(em, TXCANCEL); },
             Book.class, Author.class, Publisher.class
     );
 
@@ -230,33 +232,25 @@ public DataStore buildDataStore(EntityManagerFactory entityManagerFactory) {
 To setup the multiplex store in Elide standalone, override the getElideSettings function:
 
 ```java
-ElideSettings getElideSettings(ServiceLocator injector) {
-    EntityManagerFactory entityManagerFactory = Util.getEntityManagerFactory(getModelPackageName(),
-            getDatabaseProperties());
-    //Store 1 manages Book, Author, and Publisher
-    DataStore store1 = new JpaDataStore(
-            () -> { return entityManagerFactory.createEntityManager(); },
-            (em -> { return new NonJtaTransaction(em); }),
-            Book.class, Author.class, Publisher.class
-    );
+    /**
+     * Gets the DataStore for elide when aggregation store is disabled.
+     * @param entityManagerFactory EntityManagerFactory object.
+     * @return DataStore object initialized.
+     */
+    default DataStore getDataStore(EntityManagerFactory entityManagerFactory) {
+        //Store 1 manages Book, Author, and Publisher
+        DataStore store1 = new JpaDataStore(
+                () -> { return entityManagerFactory.createEntityManager(); },
+                (em) -> { return new NonJtaTransaction(em, ElideStandaloneSettings.TXCANCEL); },
+                Book.class, Author.class, Publisher.class
+        );
 
-    //Store 2 is a custom store that manages Manufacturer
-    DataStore store2 = new MyCustomDataStore(...);
+        //Store 2 is a custom store that manages Manufacturer
+        DataStore store2 = new MyCustomDataStore(...);
 
-    //Create the new multiplex store...
-    DataStore multiplexStore = new MultiplexManager(store1, store2);
-
-    EntityDictionary dictionary = new EntityDictionary(getCheckMappings(), injector::inject);
-
-    //Construct the ElideSettings with the new multiplex store...
-    ElideSettingsBuilder builder = new ElideSettingsBuilder(multiplexStore)
-            .withEntityDictionary(dictionary)
-            .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
-            .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
-            .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
-            .withAuditLogger(getAuditLogger());
-
-    return builder.build();
+        //Create the new multiplex store...
+        return new MultiplexManager(store1, store2);
+    }
 }
 ```
 
