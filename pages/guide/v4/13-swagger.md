@@ -15,7 +15,7 @@ Only JSON-API endpoints are documented.  The GraphQL API schema can be explored 
 
 ## Features Supported
 
-* **JaxRS Endpoint** - Elide ships with a customizable JaxRS endpoint that can publish one or more swagger documents.
+* **JaxRS & Spring Endpoint** - Elide ships with a customizable JaxRS and Spring endpoints that can publish one or more swagger documents.
 * **Path Discovery** - Given a set of entities to explore, Elide will generate the minimum, cycle-free, de-duplicated set of URL paths in the swagger document.
 * **Filter by Primitive Attributes** - All _GET_ requests on entity collections include filter parameters for each primitive attribute.
 * **Prune Fields** - All _GET_ requests support JSON-API sparse fields query parameter.
