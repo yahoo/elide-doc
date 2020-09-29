@@ -27,5 +27,5 @@ version: 4
 
 Elide exposes data models using a set of annotations. To describe relational modeling, we rely on the well-adopted [JPA annotations](/pages/guide/v{{ page.version }}/02-data-model#annotations). For exposition and security, we rely on custom Elide annotations. A comprehensive list of supported Elide annotations is below.
 
-{% include annotation_link_list %}
-{% include annotation_description %}
+{% include annotation_link_list source='annotations' %}
+{% include annotation_description source='annotations' %}
