@@ -1,0 +1,208 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```
+  {
+      "data": {
+  	"type": "table",
+  	"id": "playerStats",
+  	"attributes": {
+  	    "category": "Sports Category",
+  	    "description": "Player Statistics",
+  	    "name": "playerStats",
+  	    "requiredFilter": "",
+  	    "tags": [
+  		"Game",
+  		"Statistics"
+  	    ]
+  	},
+  	"relationships": {
+  	    "dimensions": {
+  		"data": [
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.id"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.playerName"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.player2Name"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.playerLevel"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.overallRating"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.countryIsInUsa"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.countryIsoCode"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.countryUnSeats"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.countryNickName"
+  		    },
+  		    {
+  			"type": "dimension",
+  			"id": "playerStats.subCountryIsoCode"
+  		    }
+  		]
+  	    },
+  	    "metrics": {
+  		"data": [
+  		    {
+  			"type": "metric",
+  			"id": "playerStats.lowScore"
+  		    },
+  		    {
+  			"type": "metric",
+  			"id": "playerStats.highScore"
+  		    },
+  		    {
+  			"type": "metric",
+  			"id": "playerStats.highScoreNoAgg"
+  		    }
+  		]
+  	    },
+  	    "timeDimensions": {
+  		"data": [
+  		    {
+  			"type": "timeDimension",
+  			"id": "playerStats.updatedDate"
+  		    },
+  		    {
+  			"type": "timeDimension",
+  			"id": "playerStats.recordedDate"
+  		    }
+  		]
+  	    }
+  	}
+     }
+  }
+  ```
+
+GraphQL: |+2
+  ```
+  {
+      "data": {
+  	"table": {
+  	    "edges": [
+  		{
+  		    "node": {
+  			"name": "playerStats",
+  			"category": "Sports Category",
+  			"description": "Player Statistics",
+  			"requiredFilter": "",
+  			"tags": [
+  			    "Game",
+  			    "Statistics"
+  			],
+  			"metrics": {
+  			    "edges": [
+  				{
+  				    "node": {
+  					"id": "playerStats.highScoreNoAgg"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.lowScore"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.highScore"
+  				    }
+  				}
+  			    ]
+  			},
+  			"dimensions": {
+  			    "edges": [
+  				{
+  				    "node": {
+  					"id": "playerStats.countryUnSeats"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.overallRating"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.countryNickName"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.player2Name"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.countryIsoCode"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.playerName"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.playerLevel"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.id"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.countryIsInUsa"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.subCountryIsoCode"
+  				    }
+  				}
+  			    ]
+  			},
+  			"timeDimensions": {
+  			    "edges": [
+  				{
+  				    "node": {
+  					"id": "playerStats.recordedDate"
+  				    }
+  				},
+  				{
+  				    "node": {
+  					"id": "playerStats.updatedDate"
+  				    }
+  				}
+  			    ]
+  			}
+  		    }
+  		}
+  	    ]
+  	}
+     }
+  }
+  ```

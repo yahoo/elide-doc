@@ -1,0 +1,81 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```json 
+    {
+        "data": [
+        {
+            "attributes": {
+            "commonName": "Example Repository",
+            "description": "The code for this project"
+            },
+            "id": "com.example.repository",
+            "relationships": {
+            "products": {
+                "data": [
+                {
+                    "id": "elide-demo",
+                    "type": "product"
+                }
+                ]
+            }
+            },
+            "type": "group"
+        },
+        {
+            "attributes": {
+            "commonName": "Elide",
+            "description": "The magical library powering this project"
+            },
+            "id": "com.yahoo.elide",
+            "relationships": {
+            "products": {
+                "data": [
+                {
+                    "id": "elide-core",
+                    "type": "product"
+                },
+                {
+                    "id": "elide-standalone",
+                    "type": "product"
+                },
+                {
+                    "id": "elide-datastore-hibernate5",
+                    "type": "product"
+                }
+                ]
+            }
+            },
+            "type": "group"
+        }
+        ]
+    }
+  ```
+
+GraphQL: |+2
+  ```json
+    {
+        "data": {
+            "group": {
+                "edges": [
+                {
+                    "node": {
+                    "commonName": "Example Repository",
+                    "description": "The code for this project",
+                    "name": "com.example.repository"
+                    }
+                },
+                {
+                    "node": {
+                    "commonName": "Elide",
+                    "description": "The magical library powering this project",
+                    "name": "com.yahoo.elide"
+                    }
+                }
+                ]
+            }
+        }
+    }
+  ```

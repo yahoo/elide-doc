@@ -1,0 +1,47 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  mutation {
+    author(ids: ["1"]) {
+      edges {
+        node {
+          id
+          books(op: UPSERT, data: {title: "Book Numero Dos"}) {
+          edges {
+              node {
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "author": {
+      "edges": [
+        { 
+          "node": {
+            "id": "1",
+            "books": {
+              "edges": [
+                { 
+                  "node": {
+                    "title": "Book Numero Dos"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+  ```

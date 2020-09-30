@@ -1,0 +1,96 @@
+files:
+  - User.java
+  - Post.java
+  - Comment.java
+  - IsOwner.java
+  - IsSuperuser.java
+
+User.java: |+2
+  ```java
+  @ReadPermission(expression = "Prefab.Roll.All")
+  @UpdatePermission(expression = "user is a superuser OR user is this user")
+  @DeletePermission(expression = "user is a superuser OR user is this user")
+  @SharePermission
+  public class User {
+      String name;
+
+      @OneToMany(mappedBy = "author")
+      Set<Post> posts;
+  }
+  ```
+
+Post.java: |+2
+  ```java
+  @ReadPermission(expression = "Post.isVisible OR User.ownsPost OR user is a superuser")
+  @UpdatePermission(expression = "user owns this post now")
+  @CreatePermission(expression = "user owns this post")
+  @DeletePermission(expression = "user owns this post now")
+  @SharePermission
+  public class Post {
+      @ManyToOne
+      User author;
+
+      @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
+      boolean published;
+
+      @OneToMany(mappedBy = "post")
+      Set<Comment> comments;
+  }
+  ```
+
+Comment.java: |+2
+  ```java
+  // user has to be able to see the post and to see the comment, or else be a super user
+  @ReadPermission(expression = "((Post.isVisible OR User.ownsPost) AND (comment is visible OR user made this comment)) OR user is a superuser")
+  @UpdatePermission(expression = "user made this comment")
+  @CreatePermission(expression = "post is visible now")
+  @DeletePermission(expression = "user made this comment")
+  @SharePermission
+  public class Comment {
+      @ManyToOne
+      User author;
+      @ManyToOne
+      Post post;
+      @UpdatePermission(expression = "user owns this post now OR user is a superuser now")
+      boolean suppressed;
+  }
+  ```
+
+IsOwner.java: |+2
+  ```java
+  public class IsOwner {
+      public static final String PRINCIPAL_IS_OWNER_NOW = "user owns this post now";
+      public static final String PRINCIPAL_IS_OWNER = "user owns this post";
+
+      @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER_NOW)
+      public static class Inline<Post> extends OperationCheck {
+          @Override
+          boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return post.author.equals(requestScope.getUser());
+          }
+      }
+
+      @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER)
+      public static class AtCommit<Post> extends CommitCheck {
+          @Override
+          boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return post.author.equals(requestScope.getUser());
+          }
+      }
+  }
+  ```
+
+IsSuperuser.java: |+2
+  ```java
+  public class IsSuperuser {
+      public static final String PRINCIPAL_IS_SUPERUSER = "user is a superuser";
+
+      @SecurityCheck(IsSuperUser.PRINCIPAL_IS_SUPERUSER)
+      public static class Inline<User> extends OperationCheck {
+          @Override
+          boolean ok(User user, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+              return user.isSuperuser();
+          }
+      }
+  }
+  ```
