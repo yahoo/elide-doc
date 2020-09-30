@@ -325,7 +325,7 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 
 ## Caching
 
-The Aggregation data store supports a configurable caching strategy to cache queries when the source data has not changed.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache). 
+The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache). 
 
 ## Configuration Validation
 
