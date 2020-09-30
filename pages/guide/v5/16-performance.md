@@ -117,27 +117,47 @@ By default JSON-API fetches every relationship in an entity unless a client rest
 AggregationDataStore supports caching QueryEngine results. By default, a simple in-memory Caffeine-based cache is
 configured, with a size limit of 1024 entries, but you can provide your own implementation.
 
-For the cache to apply to a query, there are three requirements:
+For the cache to apply to a query, there are two requirements:
  1. The `AggregationDataStore` must be supplied with a cache implementation.
- 2. The `QueryEngine` must support caching the table used in the query.
-    For example, with `SQLQueryEngine`, the table must be annotated with `@VersionQuery`.
- 3. The query being executed doesn't have `bypassingCache` set.
+ 2. The query being executed doesn't have `bypassingCache` set.
 
 ### With Spring Configuration
 
-Configuration property `elide.queryCacheMaximumEntries` controls the size of the default cache implementation.
-Setting the value to be zero or negative disables the cache.
+The configuration property `elide.aggregation-store.queryCacheMaximumEntries` controls the size of the default cache implementation.  Setting the value to be zero or negative disables the cache.   
+
+The configuration property `elide-aggregation-store.defaultCacheExpirationMinutes` sets the default item expiration.
+
+```yaml
+elide:
+  aggregation-store:
+    enabled: true
+    queryCacheMaximumEntries : 1000
+    defaultCacheExpirationMinutes: 10
+
+```
 
 To provide your own cache implementation, inject it as a `com.yahoo.elide.datastores.aggregation.cache.Cache` bean.
 
 ### With Standalone Configuration
 
-To control the size of the default cache implementation override `ElideStandaloneSettings.getQueryCacheMaximumEntries`.
-When the value is zero or negative the cache is disabled.
+To control the default size of the cache or the item expiration, override the following `ElideStandaloneSettings` methods:
+
+```java
+@Override
+public Integer getQueryCacheMaximumEntries() {
+    return 1000;
+}
+
+public Long getDefaultCacheExpirationMinutes() {
+    return 10L;
+}
+```
 
 To provide your own cache implementation, override `ElideStandaloneSettings.getQueryCache`.
 
-### SQLQueryEngine @VersionQuery Example
+### Query Versions
+
+The `AggregationDataStore` can prepend a table/data version to each cache entry key.  This will prevent the cache from returning stale data.  Elide supports the `VersionQuery` annotation which specifies a SQL query to run that returns the version for a particular table: 
 
 ```java
 @Include
@@ -148,5 +168,4 @@ public class Stats {
 }
 ```
 
-Returning a row count should work for tables that are insert-only. In most cases, a more sophisticated query will be
-needed, such as one that returns a table modification timestamp.
+Returning a row count should work for tables that are insert-only. In most cases, a more sophisticated query will be needed, such as one that returns a table modification timestamp.
