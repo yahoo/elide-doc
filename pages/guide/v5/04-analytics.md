@@ -219,9 +219,10 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
-- A column name in the current table.  
-- A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (\{\{player.team.name\}\}).  
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
+- Another column in the current table (assuming the parameter matches another column name in the table).  
+- A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
+- Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
 
 Column expressions can be defined in HJSON or Java:
 
@@ -238,7 +239,7 @@ Columns include the following properties:
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
+| definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
