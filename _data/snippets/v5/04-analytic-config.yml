@@ -30,14 +30,14 @@ HJSON: |+2
             {
             name : highScore
             type : INTEGER
-            definition: 'MAX(highScore)'
+            definition: 'MAX({{highScore}})'
             }
         ]
         dimensions : [
             {
                 name : name
                 type : TEXT
-                definition : name
+                definition : '{{name}}'
             },
             {
                 name : countryCode
@@ -47,7 +47,7 @@ HJSON: |+2
             {
                 name : createdOn
                 type : TIME
-                definition : created_on
+                definition : '{{created_on}}'
                 grain:
                 {
                     type :  SIMPLEDATE
@@ -59,7 +59,7 @@ HJSON: |+2
             {
                 name : updatedOn
                 type : TIME
-                definition : updated_on
+                definition : '{{updated_on}}'
                 grain:
                 {
                     type :  YEARMONTH
@@ -91,7 +91,7 @@ Java: |+2
       @Id
       private String id;
 
-      @MetricFormula(value = "MAX(highScore)")
+      @MetricFormula("MAX({{highScore}})")
       private long highScore;
 
       private String name;
@@ -103,11 +103,11 @@ Java: |+2
       private String countryCode;
 
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
-      @DimensionFormula("created_on")
+      @DimensionFormula("{{created_on}}")
       private SimpleDate createdOn;
 
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR_MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
-      @DimensionFormula("updated_on")
+      @DimensionFormula("{{updated_on}}")
       private YearMonth updatedOn;
   }
   ```

@@ -9,14 +9,14 @@ HJSON: |+2
       {
         name : highScore
         type : INTEGER
-        definition: 'MAX(highScore)'
+        definition: 'MAX({{highScore}})'
       }
     ]
     dimensions : [
       {
         name : name
         type : TEXT
-        definition : name
+        definition : '{{name}}'
       },
       {
         name : countryCode

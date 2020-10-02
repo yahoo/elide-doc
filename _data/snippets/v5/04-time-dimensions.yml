@@ -7,7 +7,7 @@ HJSON: |+2
   {
       name : createdOn
       type : TIME
-      definition : FORMATDATETIME(createdOn, 'yyyy-MM')
+      definition : "FORMATDATETIME({{createdOn}}, 'yyyy-MM')"
       grain:
       {
           type :  YEARMONTH
@@ -24,6 +24,6 @@ Java: |+2
 
 
   @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEARMONTH, expression = DATE_FORMAT), timeZone = "UTC")
-  @DimensionFormula("FORMATDATETIME(createdOn, 'yyyy-MM')")
+  @DimensionFormula("FORMATDATETIME({{createdOn}}, 'yyyy-MM')")
   private Date createdOn;
   ```
