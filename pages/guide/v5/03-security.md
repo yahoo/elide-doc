@@ -237,6 +237,7 @@ ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
     .withEntityDictionary(dictionary)
     .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
     .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
+    .withGraphQLDialect(new RSQLFilterDialect(dictionary))
     .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
     .withAuditLogger(new Slf4jLogger());
 
