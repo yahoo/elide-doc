@@ -31,7 +31,7 @@
         description: The name of the database connection source where the physical data resides.
 
 - name: Cardinality
-  description: Indicates whether a dimension table has SMALL, MEDIUM, or LARGE cardinality.
+  description: Indicates whether a dimension table has TINY, SMALL, MEDIUM, LARGE or HUGE cardinality.
   applicationLevel:
       - Class
   parameters:
@@ -39,7 +39,7 @@
         default: LARGE
         type: CardinalitySize
         required: True
-        description: SMALL, MEDIUM, or LARGE
+        description: TINY, SMALL, MEDIUM, LARGE or HUGE
 
 - name: ColumnMeta
   description: Metadata to export about a table column.
