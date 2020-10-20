@@ -263,7 +263,7 @@ Time dimensions represent time and include a time grain.  The time grain determi
 | MONTHYEAR    | "MMM yyyy"      |
 | YEARMONTH    | "yyyy-MM"       |
 | YEAR         | "yyyy"          |
-| WEEKDATE     | "yyyy-MM-dd"    |
+| WEEKDATEISO  | "yyyy-MM-dd"    |
 {:.table}
 
 When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
