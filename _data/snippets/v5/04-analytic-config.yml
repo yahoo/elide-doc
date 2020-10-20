@@ -23,7 +23,7 @@ HJSON: |+2
                 name: playerCountry
                 to: PlayerCountry
                 type: toOne
-                definition: '%join.id = %from.countryId'
+                definition: '{{playerCountry.id}} = {{country_id}}'
             }
         ]
         measures : [
@@ -96,7 +96,7 @@ Java: |+2
 
       private String name;
 
-      @Join("%from.country_id = %join.id")
+      @Join("{{country_id}} = {{playerCountry.id}}")
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")
