@@ -286,8 +286,23 @@ Each join definition includes the following properties:
 | name                  | A unique name for the join.  The name can be referenced in column definitions. | 
 | to                    | The name of the Elide model being joined against.                | 
 | type                  | 'toMany' or 'toOne'                                              |
-| definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
+| definition            | A templated SQL join expression.  See below. |
 {:.table}
+
+#### Join Definition
+
+Join definitions are templated SQL expressions that represent the _ON_ clause of a SQL statement:
+
+{% raw %}
+```
+definition: "{{ orderId}} = {{delivery.orderId}} AND {{ delivery.delivered_on }} > '1970-01-01'"
+```
+{% endraw %}
+
+Column references must be wrapped in curly braces and are replaced at query time with the correctly qualified SQL names.  A column reference can either refer to:
+1. A logical column in the current model that should be expanded by its corresponding SQL definition.
+2. A physical column in the current table. 
+3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
 
 ## Security Configuration
 
