@@ -29,9 +29,9 @@ version: 4
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **Data Models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **data models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
-All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}03-security.html). 
+All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
 
 ## Annotations
 
@@ -52,7 +52,7 @@ However, JPA is not required and Elide supports its own set of annotations for d
 | Mark an identifier field | `@Id`                       |                   |
 {:.table}
 
-Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/{{ page.version }}/15-annotations.html).
+Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/15-annotations.html).
 
 ## Exposing a Model as an Elide Endpoint
 
@@ -96,8 +96,6 @@ Every model in Elide must have an ID.  This is a requirement of both the JSON-AP
 
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
-
-Identifier fields in Elide are typically integers, longs, strings, or UUIDs.
 
 ## Attributes vs Relationships
 
@@ -339,7 +337,7 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 
 ## Type Coercion
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](https://elide.io/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Inheritance
 

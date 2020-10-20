@@ -13,8 +13,7 @@ You can deploy and play with this example on Heroku or locally.  The landing pag
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-spring-boot-example)
 
-Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone).
-Don't like Java?  [Here][kotlin-blog] is a different tutorial in Kotlin.
+Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone). Don't like Java?  [Here][navi-example] is an example project using Elide with Kotlin.
 
 ## Contents
 1. Contents
@@ -122,7 +121,7 @@ You can now run the following curl commands to see some of the sample data that 
 
 {% include code_example example="01-data-fetch" %}
 
-Here are the respective repsonses:
+Here are the respective responses:
 
 {% include code_example example="01-data-fetch-rsp" %}
 
@@ -164,6 +163,6 @@ data to help our users is just as easy as it is to add new data. Let’s update 
 It’s just that easy to create and update data using Elide.
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
-[kotlin-blog]: https://github.com/DennisMcWherter/elide-example-blog-kotlin
+[navi-example]: https://github.com/yahoo/navi/tree/master/packages/webservice
 [demo-schema]: https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml
 [swagger-ui]: https://swagger.io/tools/swagger-ui/

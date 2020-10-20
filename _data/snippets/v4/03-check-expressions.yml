@@ -4,7 +4,6 @@ files:
   - Comment.java
   - IsOwner.java
   - IsSuperuser.java
-  - MyElide.java
 
 User.java: |+2
   ```java
@@ -60,12 +59,18 @@ Comment.java: |+2
 IsOwner.java: |+2
   ```java
   public class IsOwner {
+      public static final String PRINCIPAL_IS_OWNER_NOW = "user owns this post now";
+      public static final String PRINCIPAL_IS_OWNER = "user owns this post";
+
+      @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER_NOW)
       public static class Inline<Post> extends OperationCheck {
           @Override
           boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
               return post.author.equals(requestScope.getUser());
           }
       }
+
+      @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER)
       public static class AtCommit<Post> extends CommitCheck {
           @Override
           boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
@@ -78,6 +83,9 @@ IsOwner.java: |+2
 IsSuperuser.java: |+2
   ```java
   public class IsSuperuser {
+      public static final String PRINCIPAL_IS_SUPERUSER = "user is a superuser";
+
+      @SecurityCheck(IsSuperUser.PRINCIPAL_IS_SUPERUSER)
       public static class Inline<User> extends OperationCheck {
           @Override
           boolean ok(User user, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
@@ -85,16 +93,4 @@ IsSuperuser.java: |+2
           }
       }
   }
-  ```
-
-MyElide.java: |+2
-  ```java
-  HashMap checks = new HashMap();
-  checks.put("post is visible now", IsPublished.Inline.class);
-  checks.put("post is visible", IsPublished.AtCommit.class);
-  checks.put("user owns this post now", IsOwner.Inline.class);
-  checks.put("user owns this post", IsOwner.AtCommit.class);
-  checks.put("user is a superuser", IsSuperuser.Inline.class);
-  //...
-  EntityDictionary dictionary = new EntityDictionary(checks);
   ```

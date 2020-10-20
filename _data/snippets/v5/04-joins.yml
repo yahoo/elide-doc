@@ -1,0 +1,37 @@
+files:
+  - HJSON
+  - Java
+
+HJSON: |+2
+  ```  
+  joins: [
+      {
+         name: playerCountry
+         to: country
+         type: toOne
+         definition: '%from.country_id = %join.id'
+      },
+      {
+         name: playerTeam
+         to: team
+         type: toMany
+         definition: '%from.team_id = %join.id'
+      }
+  ]
+  ```
+
+Java: |+2
+  ```java
+  private Country country;
+  private Team team;
+
+  @Join("%from.country_id = %join.id")
+  public Country getCountry() {
+      return country;
+  }
+
+  @Join("%from.team_id = %join.id")
+  public Team getTeam() {
+      return team;
+  }
+  ```

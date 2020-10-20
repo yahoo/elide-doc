@@ -1,0 +1,21 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```yaml
+  # application.yaml
+
+  elide:
+    aggregation-store:
+      default-dialect: H2
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+  @Override
+  public String getDefaultDialect() {
+      return "Hive";
+  }
+  ```

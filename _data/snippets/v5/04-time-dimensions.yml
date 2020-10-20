@@ -1,0 +1,29 @@
+files:
+  - HJSON
+  - Java
+
+HJSON: |+2
+  ```  
+  {
+      name : createdOn
+      type : TIME
+      definition : FORMATDATETIME(createdOn, 'yyyy-MM')
+      grain:
+      {
+          type :  YEARMONTH
+          sql :  '''
+          PARSEDATETIME({{}}, 'yyyy-MM')
+          '''
+      }
+  }
+  ```
+
+Java: |+2
+  ```java
+  public static final String DATE_FORMAT = "PARSEDATETIME({{}}, 'yyyy-MM')";
+
+
+  @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEARMONTH, expression = DATE_FORMAT), timeZone = "UTC")
+  @DimensionFormula("FORMATDATETIME(createdOn, 'yyyy-MM')")
+  private Date createdOn;
+  ```

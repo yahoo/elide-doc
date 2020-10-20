@@ -16,14 +16,10 @@ They have a number of characteristics that make them well suited to this task:
     shrinks payload sizes and simplifies the process of schema evolution.
 3.  There is a **well defined standard** for the API that fosters a community approach to development of supporting tools & best practices.
 
-Elide supports the two most widely adopted standards for graph APIs:
+Elide supports the two most widely adopted standards for graph APIs: 
 
 * [JSON-API]({{site.baseurl}}/pages/guide/v{{ page.version }}/10-jsonapi.html)
 * [GraphQL]({{site.baseurl}}/pages/guide/v{{ page.version }}/11-graphql.html)
-
-Elide also supports fetching the results from calls to JSON-API and GraphQL end points asynchronously:
-
-* [Async-API]({{site.baseurl}}/pages/guide/v{{ page.version }}/12-asyncapi.html)
 
 ## Common Concepts
 
@@ -35,10 +31,21 @@ All Elide APIs share a common set of concepts:
    2. Attributes are properties of the model.  They can be simple or complex (objects or collections).
 4.  Filtering, sorting, and pagination share common languages and expressions.
 5.  Text and numeric representation of complex attributes is common.
+6.  API versioning works in the same manner.
+
+### API Versioning
+
+Elide allows multiple versions of the same models to coexist and for clients to request a particular instance.  Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support an API version header ('ApiVersion') that can be set to match the model annotation (`@ApiVersion`) version.
+
+If no version is specified by the client, Elide only exposes the models that lack an `@ApiVersion` annotation.
+
+Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `ApiVersion` header.  They only return the schema corresponding to the requested API version.  
+
+Details of how to version Elide models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#api-versions).  Details of how to configure versioned Swagger documents can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html#api-versions).
 
 ### Type Coercion
 
-Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide
+Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 
 will serialize the data model fields into the text format defined by the schema of the client payload.
 
 Beyond primitive, numeric, and String types, Elide can serialize and deserialize complex and user defined types.
@@ -132,7 +139,7 @@ If using Elide as a library, the following date serdes can be registered:
 
 #### UUID Coercion
 
-Elide has built in support for converting between String and UUIDs.  The conversion leverages `UUID.fromString`.
+Elide has built in support for converting between String and UUIDs.  The conversion leverages `UUID.fromString`. 
 
 #### Enum Coercion
 

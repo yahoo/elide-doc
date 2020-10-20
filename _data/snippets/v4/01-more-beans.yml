@@ -9,14 +9,14 @@ ArtifactGroup.java: |+2
   @Entity
   public class ArtifactGroup {
       @Id
-      public String name = "";
+      private String name = "";
 
-      public String commonName = "";
+      private String commonName = "";
 
-      public String description = "";
+      private String description = "";
 
       @OneToMany(mappedBy = "group")
-      public List<ArtifactProduct> products = new ArrayList<>();
+      private List<ArtifactProduct> products = new ArrayList<>();
   }
   ```
 
@@ -26,17 +26,17 @@ ArtifactProduct.java: |+2
   @Entity
   public class ArtifactProduct {
       @Id
-      public String name = "";
+      private String name = "";
 
-      public String commonName = "";
+      private String commonName = "";
 
-      public String description = "";
+      private String description = "";
 
       @ManyToOne
-      public ArtifactGroup group = null;
+      private ArtifactGroup group = null;
 
       @OneToMany(mappedBy = "artifact")
-      public List<ArtifactVersion> versions = new ArrayList<>();
+      private List<ArtifactVersion> versions = new ArrayList<>();
   }
   ```
 
@@ -46,11 +46,11 @@ ArtifactVersion.java: |+2
   @Entity
   public class ArtifactVersion {
       @Id
-      public String name = "";
+      private String name = "";
 
-      public Date createdAt = new Date();
+      private Date createdAt = new Date();
 
       @ManyToOne
-      public ArtifactProduct artifact;
+      private ArtifactProduct artifact;
   }
   ```
