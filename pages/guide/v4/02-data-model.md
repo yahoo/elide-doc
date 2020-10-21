@@ -31,7 +31,7 @@ version: 4
 
 Elide generates its API entirely based on the concept of **data models**.   Data models are Java classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
-All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
+All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html).
 
 ## Annotations
 
@@ -44,7 +44,7 @@ If you need more information about JPA, please [review their documentation](http
 
 However, JPA is not required and Elide supports its own set of annotations for describing models:
 
-| Annotation Purpose       | JPA                         | Non-JPA           | 
+| Annotation Purpose       | JPA                         | Non-JPA           |
 |--------------------------|-----------------------------|-------------------|
 | Expose a model in elide  |                             | `@Include`        |
 | To One Relationship      | `@OneToOne`, `@ManyToOne`   | `@ToOne`          |
@@ -96,6 +96,63 @@ Every model in Elide must have an ID.  This is a requirement of both the JSON-AP
 
 1. What field is the ID of the model.  This is determined by the `@Id` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
+
+Identifier fields in Elide are typically integers, longs, strings, or UUIDs.   It is also possible to have composite/compound ID fields composed of multiple fields.  For example, the following identifier type includes three fields that together create a primary key:
+
+```java
+@Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Address implements Serializable {
+    private long number;
+    private String street;
+    private long zipCode;
+}
+```
+
+This new compound ID type can then be referenced in an Elide model identifier like this:
+
+```java
+@Include(rootLevel = true)
+@Data
+@Entity
+public class Building {
+    @Id
+    @Embedded
+    private Address address;
+}
+```
+
+Because JSON-API requires all ID fields to be Strings, composite/compound IDs require the developer to register an Elide `Serde` to serialize and deserialize the ID type to a String.  For example, the following `Serde` will encode/decode an `Address` as a base64 encoded string:
+
+```java
+@ElideTypeConverter(type = Address.class, name = "Address")
+public class AddressSerde implements Serde<String, Address> {
+    private static final Pattern ADDRESS_PATTERN =
+            Pattern.compile("Address\\(number=(\\d+), street=([a-zA-Z0-9 ]+), zipCode=(\\d+)\\)");
+    @Override
+    public Address deserialize(String val) {
+        byte[] decodedBytes = Base64.getDecoder().decode(val);
+        String decodedString = new String(decodedBytes);
+        Matcher matcher = ADDRESS_PATTERN.matcher(decodedString);
+        if (! matcher.matches()) {
+            throw new InvalidValueException(decodedString);
+        }
+        long number = Long.valueOf(matcher.group(1));
+        String street = matcher.group(2);
+        long zipCode = Long.valueOf(matcher.group(3));
+        Address address = new Address(number, street, zipCode);
+        return address;
+    }
+    @Override
+    public String serialize(Address val) {
+        return Base64.getEncoder().encodeToString(val.toString().getBytes());
+    }
+}
+```
+
+More information about `Serde` and user defined types can be found [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Attributes vs Relationships
 
@@ -191,7 +248,7 @@ The `RequestScope` can be used to access the user principal object that initiate
    @OnReadPostCommit("title")
    public void onReadTitle(RequestScope scope) {
       User principal = scope.getUser();
- 
+
       //Do something with the principal object...
    }
 
@@ -210,7 +267,7 @@ Update and Create trigger functions on fields can also take both a `RequestScope
 Lifecycle triggers can evaluate for actions on a specific field in a class, for any field in a class, or for the entire class.  The behavior is determined by the _value_ passed in the annotation:
 1. An empty value denotes that the trigger should be called exactly once per action on that given entity.
 1. A value matching an entity field/property name denotes that the trigger should be called once per action on that given field/property.
-1. A value set to `*` denotes that the trigger should be called once per action on _all_ fields or properties in the class that were referenced in the request. 
+1. A value set to `*` denotes that the trigger should be called once per action on _all_ fields or properties in the class that were referenced in the request.
 
 Below is a description of each of these annotations and their function:
 
@@ -381,7 +438,6 @@ firstName
 lastName
 ```
 
-While you could certainly just use the raw table schema directly (represented as a JPA-annotated data model) and reuse it across services, the point is that you may be over-exposing information in areas where you may not want to. In the case of the _User_ object, it's quite apparent that the application service should never be _capable_ of accidentally exposing a user's private credentials. By creating isolated views per-service on top of common data stores, you sacrifice a small bit of [DRY principles](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) for much better isolation and a more targeted service. Likewise, if the underlying table schema is updated with a new field that neither one of these services needs, neither service requires a rebuild and redeploy since the change is irrelevant to their function. 
+While you could certainly just use the raw table schema directly (represented as a JPA-annotated data model) and reuse it across services, the point is that you may be over-exposing information in areas where you may not want to. In the case of the _User_ object, it's quite apparent that the application service should never be _capable_ of accidentally exposing a user's private credentials. By creating isolated views per-service on top of common data stores, you sacrifice a small bit of [DRY principles](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) for much better isolation and a more targeted service. Likewise, if the underlying table schema is updated with a new field that neither one of these services needs, neither service requires a rebuild and redeploy since the change is irrelevant to their function.
 
 **A note about microservices:** Another common technique to building microservices is for each service to have its own set of data stores entirely independent from other services (i.e. no shared overlap); these data stores are then synced by other services as necessary through a messaging bus. If your system architecture calls for such a model, it's quite likely you will follow the same pattern we have outlined here with _one key difference_: the underlying table schema for your _individual service's data store_ will likely be exactly the same as your service's model representing it. However, overall, the net effect is the same since only the relevant information delivered over the bus is stored in your service's schema. In fact, this model is arguably more robust in the sense that if one data store fails not all services necessarily fail.
-

@@ -9,15 +9,15 @@ version: 5
 --------------------------
 
 [JSON-API](https://jsonapi.org) is a specification for building REST APIs for CRUD (create, read, update, and delete) operations.  
-Similar to GraphQL: 
+Similar to GraphQL:
 *  It allows the client to control what is returned in the response payload.  
 *  It provided an API extension (the [_patch extension_](#bulk-writes-and-complex-mutations) that allowed multiple mutations to the graph to occur in a single request.
 
 Unlike GraphQL, the JSON-API specification spells out exactly how to perform common CRUD operations including complex graph mutations.  
-JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting 
+JSON-API has no standardized schema introspection.  However, Elide adds this capability to any service by exporting
 an [Open API Initiative](https://www.openapis.org) document (formerly known as [Swagger](https://swagger.io)).
 
-The [json-api specification](https://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe 
+The [json-api specification](https://jsonapi.org/format/) is the best reference for understanding JSON-API.  The following sections describe
 commonly used JSON-API features as well as Elide additions for filtering, pagination, sorting, and swagger.
 
 ## Hierarchical URLs
@@ -30,7 +30,7 @@ There are a few caveats given that Elide allows developers control over how enti
 1. Some entities may only be reached through a relationship to another entity.  Not every entity is _rootable_.
 1. The root path segment of URLs are by default the name of the class (lowercase).  This can be overridden.
 1. Elide allows relationships to be nested arbitrarily deep in URLs.
-1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an 
+1. Elide currently requires all individual entities to be addressed by ID within a URL.  For example, consider a model with an
 article and a singular author which has a singular address.   While unambiguous, the following is *not* allowed: `/articles/1/author/address`.  
 Instead, the author must be fully qualified by ID: `/articles/1/author/34/address`
 
@@ -46,13 +46,13 @@ must provide an ID to identify objects which are both created and added to colle
 the server should have ultimate control over the ID that is assigned.  
 
 Elide looks for the JPA `GeneratedValue` annotation to disambiguate whether or not
-the data store generates an ID for a given data model.   If the client also generated 
+the data store generates an ID for a given data model.   If the client also generated
 an ID during the object creation request, the data store ID overrides the client value.
 
 ### Matching newly created objects to IDs
 
-When using the patch extension, Elide returns object entity bodies (containing newly assigned IDs) in 
-the order in which they were created.  The client can use this order to map the object created to its 
+When using the patch extension, Elide returns object entity bodies (containing newly assigned IDs) in
+the order in which they were created.  The client can use this order to map the object created to its
 server assigned ID.
 
 ## Sparse Fields
@@ -66,9 +66,9 @@ For example, to fetch the book collection but only include the book titles:
 
 More information about sparse fields can be found [here](http://jsonapi.org/format/#fetching-sparse-fieldsets).
 
-## Compound Documents 
+## Compound Documents
 --------------------------
-JSON-API allows the client to fetch a primary collection of elements but also include their relationships or their 
+JSON-API allows the client to fetch a primary collection of elements but also include their relationships or their
 relationship's relationships (arbitrarily nested) through compound documents.  The _include_ query parameter specifies
 what relationships should be expanded in the document.
 
@@ -99,7 +99,7 @@ RSQL also adds a richer set of operators.
 FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
 #### Filter Syntax
 
-Filter query parameters either look like: 
+Filter query parameters either look like:
 1. `filter[TYPE]` where 'TYPE' is the name of the data model/entity.   These are type specific filters and only apply to filtering collections of the given type.
 1. `filter` with no type specified.   This is a global filter and can be used to filter across relationships (by performing joins in the persistence layer).
 
@@ -182,7 +182,7 @@ By default, the FIQL operators =in=,=out=,== are case sensitive. This can be rev
 ```
 
 #### Values & Type Coercion
-Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
+Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive
 data type for the attribute filter.
 
 ## Pagination
@@ -193,8 +193,8 @@ Elide supports:
 2. Paginating a collection by page size and number of pages.
 3. Returning the total size of a collection visible to the given user.
 4. Returning a _meta_ block in the JSON-API response body containing metadata about the collection.
-5. A simple way to control: 
-  * the availability of metadata 
+5. A simple way to control:
+  * the availability of metadata
   * the number of records that can be paginated
 
 ### Syntax
@@ -202,7 +202,7 @@ Elide allows pagination of the primary collection being returned in the response
 
 The _rough_ BNF syntax for the _page_ query parameter is:
 ```
-<QUERY> ::= 
+<QUERY> ::=
      "page" "[" "size" "]" "=" <INTEGER>
    | "page" "[" "number" "]" "=" <INTEGER>
    | "page" "[" "limit" "]" "=" <INTEGER>
@@ -228,7 +228,7 @@ JSON-API response that contains:
 3. The total number of pages (_totalPages_) in the collection
 4. The total number of records (_totalRecords_) in the collection.
 
-The values for _totalPages_ and _totalRecords_ are only returned if the _page[totals]_ 
+The values for _totalPages_ and _totalRecords_ are only returned if the _page[totals]_
 parameter was specified in the query.
 
 ### Example
@@ -279,7 +279,7 @@ Sort the collection of author 1's books in descending order by the book's publis
 --------------------------
 
 JSON-API supported a now-deprecated mechanism for [extensions](http://jsonapi.org/extensions/).  
-The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/jsonpatch/index.md) was a 
+The [patch extension](https://github.com/json-api/json-api/blob/9c7a03dbc37f80f6ca81b16d444c960e96dd7a57/extensions/jsonpatch/index.md) was a
 JSON-API extension that allowed muliple mutation operations (create, delete, update) to be bundled together in as single request.
 
 Elide supports the JSON-API patch extension because it allows complex & bulk edits to the data model in the context of a single transaction.
@@ -317,7 +317,7 @@ Similarly, for Elide standalone, you can turn them on by overriding ElideStandal
         ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
 		... // Removed other settings for clarity
                 .withJSONApiLinks(new DefaultJSONApiLinks());
-       
+
         return builder.build();
     }
 ```
@@ -341,7 +341,7 @@ This will result in payload responses that look like:
                         "related": "http://localhost:55302/api/v1/group/com.example.repository/products"
                     },
                     "data": [
-                        
+
                     ]
                 }
             },
@@ -371,5 +371,5 @@ Type coercion between the API and underlying data model has common support acros
 ## Swagger
 --------------------------
 
-Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
+Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be
 initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html).
