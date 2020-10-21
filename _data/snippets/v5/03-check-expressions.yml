@@ -58,7 +58,7 @@ IsOwner.java: |+2
   @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER)
   public static class IsOwner<Post> extends OperationCheck {
       public static final String PRINCIPAL_IS_OWNER = "user owns this post";
-
+      
       @Override
       boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
           return post.author.equals(requestScope.getUser());
