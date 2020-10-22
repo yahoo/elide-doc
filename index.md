@@ -33,7 +33,7 @@ layout: default
       </div>
     </div>
     <div class="col-sm">
-      <img src="assets/images/editor/model-editor.png" class="img-fluid" alt="Editor: Model">
+      <img src="assets/images/editor/crud/model-editor.png" class="img-fluid" alt="Editor: Model">
     </div>
   </div>
   <div class="feature row align-items-center my-4">
@@ -44,7 +44,7 @@ layout: default
       </div>
     </div>
     <div class="col-sm">
-      <img src="assets/images/editor/secure-editor.png" class="img-fluid" alt="Editor: Security">
+      <img src="assets/images/editor/crud/secure-editor.png" class="img-fluid" alt="Editor: Security">
     </div>
   </div>
   <div class="feature row align-items-center my-4">
@@ -55,7 +55,7 @@ layout: default
       </div>
     </div>
     <div class="col-sm">
-      <img src="assets/images/editor/expose-editor.png" class="img-fluid" alt="Editor: Expose">
+      <img src="assets/images/editor/crud/expose-editor.png" class="img-fluid" alt="Editor: Expose">
     </div>
   </div>
   <div class="feature row align-items-center my-4">
