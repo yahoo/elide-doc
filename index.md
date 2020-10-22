@@ -69,6 +69,51 @@ layout: default
       <img src="assets/images/editor/query.png" class="img-fluid" alt="Query">
     </div>
   </div>
+  <div class="feature row align-items-center my-4">
+    <div class="col-sm">
+      <div class="mr-3">
+        <h4>1. Define a model</h4>
+        <p>Define a JPA annotated model including relationships to other models using Java, Kotlin, Groovy, and other JVM languages.</p>
+      </div>
+    </div>
+    <div class="col-sm">
+      <img src="assets/images/editor/analytics/model-editor.png" class="img-fluid" alt="Editor: Model">
+    </div>
+  </div>
+  <div class="feature row align-items-center my-4">
+    <div class="col-sm">
+      <div class="mr-3">
+        <h4>2. Secure It</h4>
+        <p>Control access to fields and entities through a declarative, intuitive permission syntax.</p>
+      </div>
+    </div>
+    <div class="col-sm">
+      <img src="assets/images/editor/analytics/secure-editor.png" class="img-fluid" alt="Editor: Security">
+    </div>
+  </div>
+  <div class="feature row align-items-center my-4">
+    <div class="col-sm">
+      <div class="mr-3">
+        <h4>3. Expose It</h4>
+        <p>Make instances of your new model accessible through a top level collection or restrict access only through relationships to other models</p>
+      </div>
+    </div>
+    <div class="col-sm">
+      <img src="assets/images/editor/analytics/persist-editor.png" class="img-fluid" alt="Editor: Expose">
+    </div>
+  </div>
+  <div class="feature row align-items-center my-4">
+    <div class="col-sm">
+      <div class="mr-3">
+        <h4>4. Deploy & Query</h4>
+        <p>And thats it, you are ready to deploy and query your data with JSON or GraphQL requests.</p>
+      </div>
+    </div>
+    <div class="col-sm">
+      <img src="assets/images/editor/query.png" class="img-fluid" alt="Query">
+    </div>
+  </div>
+
   <div class="text-center mt-5">
     <h2>Wanna learn more?</h2>
     <a href="/pages/guide/v4/01-start.html">
