@@ -115,7 +115,7 @@ layout: default
   </div>
 
   <div class="text-center mt-5">
-    <h2>Wanna learn more?</h2>
+    <h2>Want to learn more?</h2>
     <a href="/pages/guide/v4/01-start.html">
       <button type="button" class="btn btn-primary text-light mb-2">Documentation</button>
     </a>
@@ -188,18 +188,21 @@ layout: default
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
+
     <div class="feature row align-items-center">
       <div class="col-sm text-center text-sm-right d-block d-sm-none">
-        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
+        <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
       </div>
       <div class="col-sm my-3 my-sm-0">
-        <h4>Elide is Agnostic</h4>
-        <p>Elide is agnostic to your particular persistence strategy. Use an ORM or provide your own implementation of a data store.</p>
+        <h4>Analytic Queries</h4>
+        <p>Elide supports analytic queries against models crafted with its powerful semantic layer.  Elide APIs work natively with Navi to visualize, explore, and report on your data.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
-        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Elide is Agnostic">
+        <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
       </div>
     </div>
+
+
     <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
@@ -236,15 +239,36 @@ layout: default
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
+
     <div class="feature row align-items-center">
       <div class="col-sm">
+        <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Storage Agnostic">
+      </div>
+      <div class="col-sm my-3 my-sm-0">
+        <h4>Storage Agnostic</h4>
+        <p>Elide is agnostic to your particular persistence strategy. Use an ORM or provide your own implementation of a data store.</p>
+      </div>
+    </div>
+
+    <div class="feature row align-items-center elbow">
+      <div class="elbow-left"></div>
+      <div class="elbow-center"></div>
+      <div class="elbow-right"></div>
+    </div>
+
+    <div class="feature row align-items-center">
+      <div class="col-sm text-center text-sm-right d-block d-sm-none">
         <img src="assets/images/features/open-source-icon.png" class="img-fluid" alt="Features: Open Source">
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Open Source</h4>
         <p>Elide is 100% open source and available on <a href="https://github.com/yahoo/elide">Github</a>. Released under the commercial-friendly <a href="/pages/license.html">Apache License, Version 2.0</a>.</p>
       </div>
+      <div class="col-sm text-right d-none d-sm-block">
+        <img src="assets/images/features/open-source-icon.png" class="img-fluid" alt="Features: Open Source">
+      </div>
     </div>
+
   </div>
 </div>
 
