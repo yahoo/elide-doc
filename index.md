@@ -5,7 +5,7 @@ layout: default
 <div class="text-light background-dark">
   <div class="jumbotron">
     <div class="container text-center">
-      <h2>Stand up <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services backed by JPA annotated models in 4 simple steps</h2>
+      <h2>Model driven <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services for CRUD and Analytics.</h2>
       <a href="pages/guide/v4/01-start.html">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
@@ -18,7 +18,7 @@ layout: default
 
 <div class="container text-center my-5">
   <img src="assets/images/elide-logo.svg" class="img-fluid mb-3" alt="Elide Logo">
-  <h4 class="mx-2">Elide is a Java library that enables you to stand up a JSON API or GraphQL web service with minimal effort starting from a JPA annotated data model.</h4>
+  <h4 class="mx-2">Elide is a Java library that enables you to stand up JSON API or GraphQL web services in 4 simple steps.</h4>
 </div>
 
 <hr class="mx-5">
@@ -73,7 +73,7 @@ layout: default
     <div class="col-sm">
       <div class="mr-3">
         <h4>1. Define a model</h4>
-        <p>Define a JPA annotated model including relationships to other models using Java, Kotlin, Groovy, and other JVM languages.</p>
+        <p>Define an analytic model including tables, measures, dimensions, and joins with a friendly HJSON configuration language.</p>
       </div>
     </div>
     <div class="col-sm">
@@ -94,8 +94,8 @@ layout: default
   <div class="feature row align-items-center my-4">
     <div class="col-sm">
       <div class="mr-3">
-        <h4>3. Expose It</h4>
-        <p>Make instances of your new model accessible through a top level collection or restrict access only through relationships to other models</p>
+        <h4>3. Connect It</h4>
+        <p>Connect your models to one or more data sources.</p>
       </div>
     </div>
     <div class="col-sm">
@@ -195,7 +195,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Analytic Queries</h4>
-        <p>Elide supports analytic queries against models crafted with its powerful semantic layer.  Elide APIs work natively with Navi to visualize, explore, and report on your data.</p>
+        <p>Elide supports analytic queries against models crafted with its powerful semantic layer.  Elide APIs work natively with <a href="https://github.com/yahoo/navi">Navi</a> to visualize, explore, and report on your data.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
