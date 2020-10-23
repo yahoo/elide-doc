@@ -62,7 +62,7 @@ layout: default
     <div class="col-sm">
       <div class="mr-3">
         <h4>4. Deploy & Query</h4>
-        <p>And thats it, you are ready to deploy and query your data with JSON or GraphQL requests.</p>
+        <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
       </div>
     </div>
     <div class="col-sm">
@@ -106,7 +106,7 @@ layout: default
     <div class="col-sm">
       <div class="mr-3">
         <h4>4. Deploy & Query</h4>
-        <p>And thats it, you are ready to deploy and query your data with JSON or GraphQL requests.</p>
+        <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
       </div>
     </div>
     <div class="col-sm">
