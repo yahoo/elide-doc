@@ -23,97 +23,106 @@ layout: default
 
 <hr class="mx-5">
 
-<div class="usage container my-5">
-  <div class="text-center display-4 mb-5">How to use it</div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>1. Define a model</h4>
-        <p>Define a JPA annotated model including relationships to other models using Java, Kotlin, Groovy, and other JVM languages.</p>
+<div class="usage container my-3">
+  <div class="text-center display-4 mb-2">How to use it</div>
+  <ul class="nav nav-pills justify-content-center" role="tablist">
+    <li class="nav-item" role="presentation"><a role="tab" class="nav-link active" data-toggle="tab" aria-controls="tab-crud" href="#tab-crud">CRUD</a></li>
+    <li class="nav-item" role="presentation"><a role="tab" class="nav-link" data-toggle="tab" aria-controls="tab-analytics" href="#tab-analytics">Analytics</a></li>
+  </ul>
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="tab-crud">
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>1. Define a model</h4>
+            <p>Define a JPA annotated model including relationships to other models using Java, Kotlin, Groovy, and other JVM languages.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/crud/model-editor.png" class="img-fluid" alt="Editor: Model">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>2. Secure It</h4>
+            <p>Control access to fields and entities through a declarative, intuitive permission syntax.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/crud/secure-editor.png" class="img-fluid" alt="Editor: Security">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>3. Expose It</h4>
+            <p>Make instances of your new model accessible through a top level collection or restrict access only through relationships to other models</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/crud/expose-editor.png" class="img-fluid" alt="Editor: Expose">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>4. Deploy & Query</h4>
+            <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/crud/query.png" class="img-fluid" alt="Query">
+        </div>
       </div>
     </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/crud/model-editor.png" class="img-fluid" alt="Editor: Model">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>2. Secure It</h4>
-        <p>Control access to fields and entities through a declarative, intuitive permission syntax.</p>
+    <div role="tabpanel" class="tab-pane" id="tab-analytics">
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>1. Define a model</h4>
+            <p>Define an analytic model including tables, measures, dimensions, and joins with a friendly HJSON configuration language.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/analytics/model-editor.png" class="img-fluid" alt="Editor: Model">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>2. Secure It</h4>
+            <p>Control access to fields and entities through a declarative, intuitive permission syntax.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/analytics/secure-editor.png" class="img-fluid" alt="Editor: Security">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>3. Connect It</h4>
+            <p>Connect your models to one or more data sources.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/analytics/persist-editor.png" class="img-fluid" alt="Editor: Expose">
+        </div>
+      </div>
+      <div class="feature row align-items-center my-4">
+        <div class="col-sm">
+          <div class="mr-3">
+            <h4>4. Deploy & Query</h4>
+            <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <img src="assets/images/editor/analytics/query.png" class="img-fluid" alt="Query">
+        </div>
       </div>
     </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/crud/secure-editor.png" class="img-fluid" alt="Editor: Security">
-    </div>
   </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>3. Expose It</h4>
-        <p>Make instances of your new model accessible through a top level collection or restrict access only through relationships to other models</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/crud/expose-editor.png" class="img-fluid" alt="Editor: Expose">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>4. Deploy & Query</h4>
-        <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/crud/query.png" class="img-fluid" alt="Query">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>1. Define a model</h4>
-        <p>Define an analytic model including tables, measures, dimensions, and joins with a friendly HJSON configuration language.</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/analytics/model-editor.png" class="img-fluid" alt="Editor: Model">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>2. Secure It</h4>
-        <p>Control access to fields and entities through a declarative, intuitive permission syntax.</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/analytics/secure-editor.png" class="img-fluid" alt="Editor: Security">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>3. Connect It</h4>
-        <p>Connect your models to one or more data sources.</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/analytics/persist-editor.png" class="img-fluid" alt="Editor: Expose">
-    </div>
-  </div>
-  <div class="feature row align-items-center my-4">
-    <div class="col-sm">
-      <div class="mr-3">
-        <h4>4. Deploy & Query</h4>
-        <p>And thats it - you are ready to deploy and query your data with JSON or GraphQL requests.</p>
-      </div>
-    </div>
-    <div class="col-sm">
-      <img src="assets/images/editor/analytics/query.png" class="img-fluid" alt="Query">
-    </div>
-  </div>
-
   <div class="text-center mt-5">
     <h2>Want to learn more?</h2>
     <a href="/pages/guide/v4/01-start.html">
