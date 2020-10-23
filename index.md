@@ -66,7 +66,7 @@ layout: default
       </div>
     </div>
     <div class="col-sm">
-      <img src="assets/images/editor/query.png" class="img-fluid" alt="Query">
+      <img src="assets/images/editor/crud/query.png" class="img-fluid" alt="Query">
     </div>
   </div>
   <div class="feature row align-items-center my-4">
@@ -110,7 +110,7 @@ layout: default
       </div>
     </div>
     <div class="col-sm">
-      <img src="assets/images/editor/query.png" class="img-fluid" alt="Query">
+      <img src="assets/images/editor/analytics/query.png" class="img-fluid" alt="Query">
     </div>
   </div>
 
