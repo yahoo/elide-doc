@@ -201,7 +201,7 @@ Tables include the following properties:
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
-| cardinality           | SMALL, MEDIUM, LARGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
+| cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
 | dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a data source configuration name. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
 | schema                | The database schema where the physical data resides | schemaName | `@FromTable(name=schemaName.tableName)` |
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
@@ -219,9 +219,10 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
-- A column name in the current table.  
-- A column name in another table specified by a dot ('.') separated path.  The path consists of one or more named joins followed by the name of the destination column (\{\{player.team.name\}\}).  
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
+- Another column in the current table (assuming the parameter matches another column name in the table).  
+- A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
+- Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
 
 Column expressions can be defined in HJSON or Java:
 
@@ -238,7 +239,7 @@ Columns include the following properties:
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
-| definition            | A SQL fragment that describes how to generate the column. | MAX(sessions) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
+| definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
@@ -288,8 +289,23 @@ Each join definition includes the following properties:
 | name                  | A unique name for the join.  The name can be referenced in column definitions. | 
 | to                    | The name of the Elide model being joined against.                | 
 | type                  | 'toMany' or 'toOne'                                              |
-| definition            | A templated SQL join expression.  %from and %join are keywords that get substituted at query time with the SQL aliases of the current table and the join table respectively. |
+| definition            | A templated SQL join expression.  See below. |
 {:.table}
+
+#### Join Definition
+
+Join definitions are templated SQL expressions that represent the _ON_ clause of a SQL statement:
+
+{% raw %}
+```
+definition: "{{ orderId}} = {{delivery.orderId}} AND {{ delivery.delivered_on }} > '1970-01-01'"
+```
+{% endraw %}
+
+Column references must be wrapped in curly braces and are replaced at query time with the correctly qualified SQL names.  A column reference can either refer to:
+1. A logical column in the current model that should be expanded by its corresponding SQL definition.
+2. A physical column in the current table. 
+3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
 
 ## Security Configuration
 
