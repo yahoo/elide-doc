@@ -255,14 +255,17 @@ Non-time dimensions include the following properties that describe where a discr
 
 Time dimensions represent time and include a time grain.  The time grain determines how time is represented as text in query filters and query results.  Supported time grains include:
 
-| Grain        | Text Format     |
-| ------------ | --------------- |
-| SIMPLEDATE   | "yyyy-MM-dd"    |
-| DATETIME     | "yyyy-MM-dd HH:mm:ss" |
-| MONTHYEAR    | "MMM yyyy"      |
-| YEARMONTH    | "yyyy-MM"       |
-| YEAR         | "yyyy"          |
-| WEEKDATE     | "yyyy-MM-dd"    |
+| Grain        | Text Format           |
+| ------------ | --------------------- |
+| SECOND       | "yyyy-MM-dd HH:mm:ss" |
+| MINUTE       | "yyyy-MM-dd HH:mm"    |
+| HOUR         | "yyyy-MM-dd HH"       |
+| DAY          | "yyyy-MM-dd"          |
+| WEEK         | "yyyy-MM-dd"          |
+| ISOWEEK      | "yyyy-MM-dd"          |
+| MONTH        | "yyyy-MM"             |
+| QUARTER      | "yyyy-MM"             |
+| YEAR         | "yyyy"                |
 {:.table}
 
 When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
