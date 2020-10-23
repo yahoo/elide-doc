@@ -132,7 +132,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Production Quality</h4>
-        <p>Quickly build and deploy production quality web services that expose your data as a service.</p>
+        <p>Quickly build and deploy production quality web services that expose your data as a service.  Elide APIs support complex filtering rules, sorting, pagination, and text search.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/code-icon.png" class="img-fluid" alt="Features: Production Quality">
