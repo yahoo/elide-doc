@@ -41,7 +41,7 @@ If no version is specified by the client, Elide only exposes the models that lac
 
 Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `ApiVersion` header.  They only return the schema corresponding to the requested API version.  
 
-Details of how to version Elide models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#api-versions).  Details of how to configure versioned Swagger documents can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html#api-versions).
+Details of how to version Elide models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#api-versions).  Details of how to configure versioned Swagger documents can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/14-swagger.html#api-versions).
 
 ### Type Coercion
 

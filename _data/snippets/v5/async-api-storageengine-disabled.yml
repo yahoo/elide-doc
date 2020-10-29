@@ -8,12 +8,12 @@ Elide Standalone: |+2
   public ElideStandaloneAsyncSettings getAsyncProperties() {
       ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
           /**
-           * Implementation of AsyncAPIDAO to use.
-           * @return AsyncAPIDAO type object.
+           * Implementation of ResultStorageEngine to use.
+           * @return ResultStorageEngine type object.
            */
           @Override
-          default AsyncAPIDAO getAPIDAO() {
-              return yourDAOImplementationObject;
+          default ResultStorageEngine getResultStorageEngine() {
+              return yourResultStorageEngineImplementationObject;
           }
       }
       return asyncProperties;
@@ -27,16 +27,16 @@ Elide Spring: |+2
   ```yaml
   elide:
     async:
-      defaultAsyncAPIDAO: false
+      defaultResultStorageEngine: false
   ```
 
   ```java
     /**
-     * Configure the AsyncAPIDAO used by async requests.
-     * @return an AsyncAPIDAO object.
+     * Configure the ResultStorageEngine used by TableExport requests.
+     * @return a ResultStorageEngine object.
      */
     @Bean
-    public AsyncAPIDAO buildAsyncAPIDAO() {
-        return YourDAOImplementationObject;
+    public ResultStorageEngine buildResultStorageEngine() {
+        return yourResultStorageEngineImplementationObject;
     }
   ```

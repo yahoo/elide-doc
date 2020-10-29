@@ -4,25 +4,31 @@ files:
 
 Elide Standalone: |+2
   <br/>
-  Update your implementation of [ElideStandaloneSettings](https://github.com/yahoo/elide/blob/master/elide-standalone/src/main/java/com/yahoo/elide/standalone/config/ElideStandaloneSettings.java) interface with the below mentioned additional code. (Only the relevant portions are included.)
+  Update your implementation of [ElideStandaloneSettings](https://github.com/yahoo/elide/blob/elide-5.x/elide-standalone/src/main/java/com/yahoo/elide/standalone/config/ElideStandaloneSettings.java) interface with the below mentioned additional code. (Only the relevant portions are included.)
 
   ```java
-  /**
-   * Enable the support for Async querying feature. If false, the async feature will be disabled.
-   * @return Default: False
-   */
   @Override
-  public boolean enableAsync() {
-      return true;
-  }
+  public ElideStandaloneAsyncSettings getAsyncProperties() {
+      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+          /**
+           * Enable the support for Async querying feature. If false, the async feature will be disabled.
+           * @return Default: False
+           */
+          @Override
+          public boolean enabled() {
+              return true;
+          }
 
-  /**
-   * Enable the support for cleaning up Async query history. If false, the async cleanup feature will be disabled.
-   * @return Default: False
-   */
-  @Override
-  public boolean enableAsyncCleanup() {
-      return true;
+          /**
+           * Enable the support for cleaning up Async query history. If false, the async cleanup feature will be disabled.
+           * @return Default: False
+           */
+          @Override
+          public boolean enableCleanup() {
+              return true;
+          }
+      }
+      return asyncProperties;
   }
   ```
 
