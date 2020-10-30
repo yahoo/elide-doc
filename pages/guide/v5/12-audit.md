@@ -290,6 +290,22 @@ Result log files will look like:
 14-12-2019 15:48:53.329 [qtp1863374262-22] [Elide, d426047505ceef4e] DEBUG c.y.e.d.j.p.EntityManagerWrapper.logQuery - HQL Query: SELECT example_models_ArtifactGroup FROM example.models.ArtifactGroup AS example_models_ArtifactGroup
 ```
 
+## Analytic Query Logging
+
+Analytic queries are logged by the `AggregationDataStore` directly.  To log the generated SQL and other information, enable the following property to DEBUG:
+
+```xml
+<!-- Log Analytic SQL Queries -->
+<logger name="com.yahoo.elide.datastores.aggregation.core.Slf4jQueryLogger" level="DEBUG" />
+```
+
+Result log files will look like:
+```
+30-10-2020 16:23:12.301 [task-1] [Elide, 1f7de407f8554500] DEBUG c.y.e.d.a.core.Slf4jQueryLogger.log - QUERY ACCEPTED: {"id":"5c9a1f64-09fa-451c-87f7-c0bcb2b76135","user":"Unknown","apiVersion":"","path":"/downloads","headers":{}}
+30-10-2020 16:23:12.327 [task-1] [Elide, 1f7de407f8554500] DEBUG c.y.e.d.a.core.Slf4jQueryLogger.log - QUERY RUNNING: {"id":"5c9a1f64-09fa-451c-87f7-c0bcb2b76135","queries":["SELECT SUM(dynamicconfig_models_Downloads.downloads) AS downloads,dynamicconfig_models_Downloads_artifactProduct.name AS product,dynamicconfig_models_Downloads_artifactGroup.name AS groupy,dynamicconfig_models_Downloads.date AS date FROM downloads AS dynamicconfig_models_Downloads LEFT JOIN ArtifactProduct AS dynamicconfig_models_Downloads_artifactProduct ON dynamicconfig_models_Downloads.product_id = dynamicconfig_models_Downloads_artifactProduct.name LEFT JOIN ArtifactGroup AS dynamicconfig_models_Downloads_artifactGroup ON dynamicconfig_models_Downloads.group_id = dynamicconfig_models_Downloads_artifactGroup.name  GROUP BY dynamicconfig_models_Downloads_artifactProduct.name, dynamicconfig_models_Downloads_artifactGroup.name, dynamicconfig_models_Downloads.date   LIMIT 500 OFFSET 0"],"isCached":false}
+30-10-2020 16:23:12.338 [task-1] [Elide, 1f7de407f8554500] DEBUG c.y.e.d.a.core.Slf4jQueryLogger.log - QUERY COMPLETE: {"id":"5c9a1f64-09fa-451c-87f7-c0bcb2b76135","status":200,"error":null}
+```
+
 # Audit
 
 Elide provides an Audit mechanism that assigns semantic meaning to CRUD operations for the purposes of logging and audit.  For example, we may want to log when users change their password or when an account is locked.  Both actions are mutations on a user entity that update different fields. Audit can assign these actions to parameterized, human readable logging statements that can be logged to a file, written to a database, etc.
