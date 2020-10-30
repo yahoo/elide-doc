@@ -10,7 +10,7 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 ## New Features in Elide 5.X
 
 Elide 5 introduces three primary new features:
- - An [asynchronous API]((/pages/guide/v{{ page.version }}/12-asyncapi.html)) for read requests.
+ - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for read requests.
  - An [analytics DataStore](/pages/guide/v{{ page.version }}/04-analytics.html) that:
    - Allows the definition of curated Elide models with native SQL fragments.
    - Allows the computation of groupable measures (similar to SQL group by).
@@ -34,6 +34,7 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - Lifecycle hooks have been restructured to better decouple their logic from Elide models.
  - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
+ - GraphQL has its own `FilterDialect` interface.
  - The elide-annotation and elide-core artifacts are consolidated into a single artifact.
  - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
@@ -95,7 +96,7 @@ Security checks which dereference the `User` object will require changes to acce
 
 #### User Checks for newly created objects
 
-Elide now only runs User Checks against a newly created object.
+Elide now only runs User Checks against a newly created object. 
 
 ### DataStoreTransaction Changes
 

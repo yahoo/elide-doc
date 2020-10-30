@@ -1,7 +1,7 @@
 ---
 layout: guide
 group: guide
-title: Swagger
+title: Swagger 
 version: 5
 ---
 
@@ -73,8 +73,8 @@ If you are using [Elide Spring Autoconfigure](https://github.com/yahoo/elide/tre
     }
 ```
 
-The application yaml file has settings:
- - to enable the swagger document endpoint
+The application yaml file has settings: 
+ - to enable the swagger document endpoint 
  - to set the URL path for the swagger document endpoint
  - to set the API version number
 
@@ -92,7 +92,7 @@ elide:
 If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/elide-standalone), you can extend `ElideStandaloneSettings` to:
 - Enable Swagger.
 - Configure the URL Path for the swagger document.
-- Configure the Swagger document version.
+- Configure the Swagger document version. 
 - Configure the service name.  
 - Construct swagger documents for your service.
 
@@ -258,7 +258,7 @@ SwaggerBuilder crashBuilder = new SwaggerBuilder(dictionary, info)
 
 ### Path Generation
 
-The Swagger UI is very slow when the number of generated URL paths exceeds a few dozen.  For large, complex data models, it is recommended to
+The Swagger UI is very slow when the number of generated URL paths exceeds a few dozen.  For large, complex data models, it is recommended to 
 generate separate swagger documents for subgraphs of the model.  
 
 ```java
@@ -267,14 +267,14 @@ Set<Class<?>> entities = Sets.newHashSet(
     Author.class,
     Publisher.class
 );
-
+ 
 SwaggerBuilder coreBuilder = new SwaggerBuilder(dictionary, info)
     .withExplicitClassList(entities);
 ```
 
 In the above example, swagger will only generate paths that exclusively traverse the provided set of entities.  
 
-### Document Size
+### Document Size 
 
 The size of the swagger document can be reduced significantly by limiting the number of filter operators that are used to generate query parameter
 documentation.

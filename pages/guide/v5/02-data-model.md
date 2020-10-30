@@ -52,7 +52,7 @@ However, JPA is not required and Elide supports its own set of annotations for d
 | Mark an identifier field | `@Id`                       |                   |
 {:.table}
 
-Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/16-annotations.html).
+Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/15-annotations.html).
 
 ## Exposing a Model as an Elide Endpoint
 
