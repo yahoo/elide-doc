@@ -34,6 +34,7 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - Lifecycle hooks have been restructured to better decouple their logic from Elide models.
  - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
+ - GraphQL has its own `FilterDialect` interface.
  - The elide-annotation and elide-core artifacts are consolidated into a single artifact.
  - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
