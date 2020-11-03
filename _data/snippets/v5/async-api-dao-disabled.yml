@@ -1,26 +1,8 @@
 files:
+  - Spring
   - Elide Standalone
-  - Elide Spring
 
-Elide Standalone: |+2
-  ```java
-  @Override
-  public ElideStandaloneAsyncSettings getAsyncProperties() {
-      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
-          /**
-           * Implementation of AsyncAPIDAO to use.
-           * @return AsyncAPIDAO type object.
-           */
-          @Override
-          default AsyncAPIDAO getAPIDAO() {
-              return yourDAOImplementationObject;
-          }
-      }
-      return asyncProperties;
-  }
-  ```
-
-Elide Spring: |+2
+Spring: |+2
   <br/>
   Update your application.yaml with below mentioned additional code (Only the relevant portions are included). You will have to initialize your implementation as a Bean.
 
@@ -39,4 +21,22 @@ Elide Spring: |+2
     public AsyncAPIDAO buildAsyncAPIDAO() {
         return YourDAOImplementationObject;
     }
+  ```
+
+Elide Standalone: |+2
+  ```java
+  @Override
+  public ElideStandaloneAsyncSettings getAsyncProperties() {
+      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+          /**
+           * Implementation of AsyncAPIDAO to use.
+           * @return AsyncAPIDAO type object.
+           */
+          @Override
+          default AsyncAPIDAO getAPIDAO() {
+              return yourDAOImplementationObject;
+          }
+      }
+      return asyncProperties;
+  }
   ```

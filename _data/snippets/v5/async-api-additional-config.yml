@@ -1,43 +1,37 @@
 files:
+  - Spring
   - Elide Standalone
-  - Elide Spring
+
+Spring: |+2
+  ```yaml
+  elide:
+    async:
+      threadPoolSize: 10
+      maxRunTimeMinutes: 120
+      queryCleanupDays: 10
+      queryCancellationIntervalSeconds: 600
+  ```
 
 Elide Standalone: |+2
   ```java
   @Override
   public ElideStandaloneAsyncSettings getAsyncProperties() {
       ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
-          /**
-           * Thread Size for Async queries to run in parallel.
-           * @return Default: 5
-           */
           @Override
           default Integer getThreadSize() {
               return 10;
           }
 
-          /**
-           * Maximum Query Run time for Async Queries to mark as TIMEDOUT.
-           * @return Default: 60
-           */
           @Override
           default Integer getMaxRunTimeSeconds() {
               return 120;
           }
 
-          /**
-           * Number of days history to retain for async query executions and results.
-           * @return Default: 7
-           */
           @Override
           default Integer getQueryCleanupDays() {
               return 10;
           }
 
-         /**
-          * Polling interval to identify async queries that should be canceled.
-          * @return Default: 300
-          */
          @Override
          default Integer getQueryCancelCheckIntervalSeconds() {
              return 600;
@@ -45,14 +39,4 @@ Elide Standalone: |+2
       }
       return asyncProperties;
   }
-  ```
-
-Elide Spring: |+2
-  ```yaml
-  elide:
-    async:
-      threadPoolSize: 10
-      maxRunTimeMinutes: 120 
-      queryCleanupDays: 10
-      queryCancellationIntervalSeconds: 600
   ```
