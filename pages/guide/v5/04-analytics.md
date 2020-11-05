@@ -340,9 +340,9 @@ HJSON configuration files can be validated against schemas using the command-lin
 1. Build the Elide project
    mvn clean install
 1. Using Standalone Jar for validation:
-   a) ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
-      ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
+   ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
+   ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
 1. Using Spring Jar for validation:
-   b) ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
-      ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
+   ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
+   ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
 1. The config directory needs to adhere to [file layout](#file-layout).
