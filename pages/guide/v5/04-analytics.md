@@ -336,3 +336,13 @@ All HJSON configuration files are validated by a JSON schema.  The schemas for e
 1. [Security Config]()
 1. [Variable File]()
 
+HJSON configuration files can be validated against schemas using the command-line utility
+1. Build the Elide project
+   mvn clean install
+2. Using Standalone Jar for validation:
+   a) ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
+      ```java -cp elide-standalone-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
+3. Using Spring Jar for validation:
+   b) ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help```
+      ```java -cp elide-spring-boot-autoconfigure-*.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>```
+4. The config directory needs to adhere to [file layout](#file-layout).
