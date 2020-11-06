@@ -210,11 +210,12 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
+| isFact                | Is the table a fact table. Default is true. | true | `@TableMeta(isFact=true)` |
 {:.table}
 
 ### Columns
 
-Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are: 
+Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are:
 1. The name of the column.
 2. The data type of the column.
 3. The definition of the column.
@@ -284,10 +285,10 @@ Table joins allow column expressions to reference fields from other tables.  At 
 Each join definition includes the following properties:
 
 
-| HJSON Property        | Explanation                                                      | 
-| --------------------- | ---------------------------------------------------------------- | 
-| name                  | A unique name for the join.  The name can be referenced in column definitions. | 
-| to                    | The name of the Elide model being joined against.                | 
+| HJSON Property        | Explanation                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| name                  | A unique name for the join.  The name can be referenced in column definitions. |
+| to                    | The name of the Elide model being joined against.                |
 | type                  | 'toMany' or 'toOne'                                              |
 | definition            | A templated SQL join expression.  See below. |
 {:.table}
@@ -304,7 +305,7 @@ definition: "{{ orderId}} = {{delivery.orderId}} AND {{ delivery.delivered_on }}
 
 Column references must be wrapped in curly braces and are replaced at query time with the correctly qualified SQL names.  A column reference can either refer to:
 1. A logical column in the current model that should be expanded by its corresponding SQL definition.
-2. A physical column in the current table. 
+2. A physical column in the current table.
 3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
 
 ## Security Configuration
@@ -344,7 +345,7 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 
 ## Caching
 
-The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache). 
+The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
 
 ## Configuration Validation
 
@@ -353,4 +354,3 @@ All HJSON configuration files are validated by a JSON schema.  The schemas for e
 1. [Data Source Config]()
 1. [Security Config]()
 1. [Variable File]()
-
