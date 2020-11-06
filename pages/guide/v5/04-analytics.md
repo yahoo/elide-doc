@@ -201,7 +201,7 @@ Tables include the following properties:
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
-| cardinality           | TINY, SMALL, MEDIUM, LARGE, HUGE - A hint about the number of records in the table. | SMALL | `@Cardinality(size=CardinalitySize.SMALL)` |
+| cardinality           | tiny, small, medium, large, huge - A hint about the number of records in the table. | small | `@TableMeta(size=CardinalitySize.SMALL)` |
 | dbConnectionName      | The name of the physical data source where this table can be queried.  This name must match a data source configuration name. | MysqlDB | `@FromTable(dbConnectionName="MysqlDB")` |
 | schema                | The database schema where the physical data resides | schemaName | `@FromTable(name=schemaName.tableName)` |
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
@@ -238,6 +238,7 @@ Columns include the following properties:
 | description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
+| cardinality           | tiny, small, medium, large, huge - A hint about the dimension's cardinality. | small | `@ColumnMeta(size=CardinalitySize.SMALL)` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
 | definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
