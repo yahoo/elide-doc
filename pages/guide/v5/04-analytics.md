@@ -210,7 +210,7 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
-| isFact                | Is the table a fact table. Default is true. | true | `@TableMeta(isFact=true)` |
+| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise explicitly. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
 
 ### Columns
