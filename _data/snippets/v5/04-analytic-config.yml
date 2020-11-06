@@ -17,6 +17,7 @@ HJSON: |+2
         cardinality : large
         readAccess : 'Principal is admin'
         filterTemplate : createdOn>={{start}};createdOn<{{end}}
+        isFact : true
         tags: ['Game', 'Player']
         joins: [
             {

@@ -98,6 +98,11 @@
         type: String[]
         required: False
         description: An RSQL filter expression template that must directly match or be included in the client provided filter.
+      - name: isFact
+        default: True
+        type: Boolean
+        required: False
+        description: Is the table a Fact table.
 
 - name: MetricFormula
   description: Native SQL fragment that defines a metric column.
