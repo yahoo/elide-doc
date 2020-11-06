@@ -355,3 +355,15 @@ All HJSON configuration files are validated by a JSON schema.  The schemas for e
 1. [Security Config]()
 1. [Variable File]()
 
+HJSON configuration files can be validated against schemas using the command-line utility.
+
+1. Build your Elide project to generate a Fat JAR. Make sure to include a Fat JAR build configuration in your POM file.
+
+   `mvn clean install`
+   
+1. Using the generated JAR for validation:
+
+   `java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help`
+   `java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
+  
+1. The config directory needs to adhere to this [file layout](#file-layout).
