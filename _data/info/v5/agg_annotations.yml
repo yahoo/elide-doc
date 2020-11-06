@@ -30,17 +30,6 @@
         required: False
         description: The name of the database connection source where the physical data resides.
 
-- name: Cardinality
-  description: Indicates whether a dimension table has TINY, SMALL, MEDIUM, LARGE or HUGE cardinality.
-  applicationLevel:
-      - Class
-  parameters:
-      - name: size
-        default: LARGE
-        type: CardinalitySize
-        required: True
-        description: TINY, SMALL, MEDIUM, LARGE or HUGE
-
 - name: ColumnMeta
   description: Metadata to export about a table column.
   applicationLevel:
@@ -72,6 +61,11 @@
         type: String[]
         required: False
         description: An optional enumerated list of dimension values for small cardinality dimensions.
+      - name: size
+        default: <em>UNKNOWN</em>
+        type: CardinalitySize
+        required: False
+        description: A hint about the dimension's cardinality (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
 
 - name: TableMeta
   description: Metadata to export about a table.
@@ -103,6 +97,11 @@
         type: Boolean
         required: False
         description: Is the table a Fact table.
+      - name: size
+        default: <em>UNKNOWN</em>
+        type: CardinalitySize
+        required: False
+        description: A hint about the table's size (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
 
 - name: MetricFormula
   description: Native SQL fragment that defines a metric column.
