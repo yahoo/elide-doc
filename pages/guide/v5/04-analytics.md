@@ -15,7 +15,7 @@ Elide's `AggregationDataStore` exposes read-only models that support data analyt
 The Aggregation store includes a companion store, the `MetaDataStore`, which exposes metadata about the Aggregation store models including their metrics and dimensions.  The metadata store models are predefined, read-only, and served from server memory.
 
 There are two mechanisms to create models in the Aggregation store:
-1. Through [HJSON](https://hjson.github.io/) configuration files that can be maintained without writing code or rebuilding the application.
+1. Through [Hjson](https://hjson.github.io/) configuration files that can be maintained without writing code or rebuilding the application.
 2. Through JVM language classes annotated with Elide annotations.
 
 The former is preferred for most use cases because of better ergonomics for non-developers.  The latter is useful to add custom Elide security rules or life cycle hooks.
@@ -59,13 +59,13 @@ Here are the respective responses:
 
 ## Feature Flags
 
-There are two feature flags that enable analytic queries and HJSON configuration respectively:
+There are two feature flags that enable analytic queries and Hjson configuration respectively:
 
 {% include code_example example="04-analytic-feature-flags" %}
 
 ## File Layout
 
-Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ HJSON configuration files.  HJSON configuration files can be sourced either from the local filesystem or the classpath.  Either way, they must conform to the following directory structure:
+Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ Hjson configuration files.  Hjson configuration files can be sourced either from the local filesystem or the classpath.  Either way, they must conform to the following directory structure:
 
 ```
 CONFIG_ROOT/
@@ -83,9 +83,9 @@ CONFIG_ROOT/
 
 1. Analytic model files are stored in `/models/tables`.  Multiple models can be grouped together into a single file.
 2. Security rules are stored in `/models/security.hjson`.
-3. Model and security HJSON files support variable substitution with variables defined in `/models/variables.hjson`.
+3. Model and security Hjson files support variable substitution with variables defined in `/models/variables.hjson`.
 4. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
-5. Data source HJSON files support variable substitution with variables defined in `/db/variables.hjson`.
+5. Data source Hjson files support variable substitution with variables defined in `/db/variables.hjson`.
 
 CONFIG_ROOT can be any directory in the filesystem or classpath.  The root configuration location can be set as follows:
 
@@ -99,7 +99,7 @@ The Aggregation Data Store does not leverage JPA, but rather uses JDBC directly.
 1.  Using a different JDBC data source other than what is configured for JPA.
 2.  Leveraging multiple JDBC data sources for different Elide models.
 
-For these complex configurations, you must configure Elide using the Aggregation Store's HJSON configuration language.  The following configuration file illustrates two data sources.  Each data source configuration includes:
+For these complex configurations, you must configure Elide using the Aggregation Store's Hjson configuration language.  The following configuration file illustrates two data sources.  Each data source configuration includes:
 1. A name that will be referenced in your Analytic models (effectively binding them to a data source).
 2. A JDBC URL
 3. A JDBC driver
@@ -158,7 +158,7 @@ A dialect must be configured for Elide to correctly generate analytic SQL querie
 | PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PrestoDBDialect |
 {:.table}
 
-If not leveraging HJSON configuration, a default dialect can be configured for analytic queries:
+If not leveraging Hjson configuration, a default dialect can be configured for analytic queries:
 
 {% include code_example example="04-default-dialect" %}
 
@@ -194,7 +194,7 @@ These options are configured via the 'table', 'sql', and 'extend' [properties](#
 
 Tables include the following properties:
 
-| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
@@ -210,11 +210,12 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
+| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
 
 ### Columns
 
-Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are: 
+Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are:
 1. The name of the column.
 2. The data type of the column.
 3. The definition of the column.
@@ -224,7 +225,7 @@ Column definitions are templated, native SQL fragments.  Columns definitions can
 - A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
 - Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
 
-Column expressions can be defined in HJSON or Java:
+Column expressions can be defined in Hjson or Java:
 
 {% include code_example example="04-columns" %}
 
@@ -232,7 +233,7 @@ Column expressions can be defined in HJSON or Java:
 
 Columns include the following properties:
 
-| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the column.  It will be exposed through the API with this name. | columnName | String columnName; |
 | description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
@@ -247,7 +248,7 @@ Columns include the following properties:
 
 Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead or other uses) :
 
-| HJSON Property        | Explanation                                                      |  Example HJSON Value | Annotation/Java Equivalent |
+| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
 | tableSource           | The table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
@@ -285,10 +286,10 @@ Table joins allow column expressions to reference fields from other tables.  At 
 Each join definition includes the following properties:
 
 
-| HJSON Property        | Explanation                                                      | 
-| --------------------- | ---------------------------------------------------------------- | 
-| name                  | A unique name for the join.  The name can be referenced in column definitions. | 
-| to                    | The name of the Elide model being joined against.                | 
+| Hjson Property        | Explanation                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| name                  | A unique name for the join.  The name can be referenced in column definitions. |
+| to                    | The name of the Elide model being joined against.                |
 | type                  | 'toMany' or 'toOne'                                              |
 | definition            | A templated SQL join expression.  See below. |
 {:.table}
@@ -305,7 +306,7 @@ definition: "{{ orderId}} = {{delivery.orderId}} AND {{ delivery.delivered_on }}
 
 Column references must be wrapped in curly braces and are replaced at query time with the correctly qualified SQL names.  A column reference can either refer to:
 1. A logical column in the current model that should be expanded by its corresponding SQL definition.
-2. A physical column in the current table. 
+2. A physical column in the current table.
 3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
 
 ## Security Configuration
@@ -322,13 +323,13 @@ The list of available security roles can be defined in the security.hjson file:
 }
 ```
 
-These roles can then be referenced in security rules applied to entire tables or individual columns in their respective HJSON configuration:
+These roles can then be referenced in security rules applied to entire tables or individual columns in their respective Hjson configuration:
 
 `readAccess = 'Principal is admin'`
 
 ## Variable Substitution
 
-To avoid repeated configuration blocks, all HJSON files (table, security, and data source) support variable substitution.  Variables are defined in the variables.hjson file:
+To avoid repeated configuration blocks, all Hjson files (table, security, and data source) support variable substitution.  Variables are defined in the variables.hjson file:
 
 ```
 {
@@ -345,11 +346,11 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 
 ## Caching
 
-The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache). 
+The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
 
 ## Configuration Validation
 
-All HJSON configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
+All Hjson configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
 1. [Table Config]()
 1. [Data Source Config]()
 1. [Security Config]()

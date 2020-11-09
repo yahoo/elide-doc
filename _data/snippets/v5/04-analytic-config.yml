@@ -1,8 +1,8 @@
 files:
-  - HJSON
+  - Hjson
   - Java
 
-HJSON: |+2
+Hjson: |+2
   ```
   {
     tables: [{
@@ -17,6 +17,7 @@ HJSON: |+2
         cardinality : large
         readAccess : 'Principal is admin'
         filterTemplate : createdOn>={{start}};createdOn<{{end}}
+        isFact : true
         tags: ['Game', 'Player']
         joins: [
             {
