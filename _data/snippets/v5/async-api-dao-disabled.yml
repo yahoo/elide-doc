@@ -4,7 +4,7 @@ files:
 
 Spring: |+2
   <br/>
-  Update your application.yaml with below mentioned additional code (Only the relevant portions are included). You will have to initialize your implementation as a Bean.
+  Update your application.yaml with the additional code below. (Only the relevant portions are included.). You will have to initialize your implementation as a Bean.
 
   ```yaml
   elide:
