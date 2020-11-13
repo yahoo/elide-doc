@@ -25,7 +25,7 @@ version: 5
 }
 </style>
 
-**NOTE:** This page is a description on how to _create_ data models in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation](/pages/guide/v{{ page.version }}/09-clientapis.html).
+**NOTE:** This page is a description on how to _create_ CRUD data models (create, read, update, and delete) in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation](/pages/guide/v{{ page.version }}/09-clientapis.html).  More information for creating analytic models can be found [here](/pages/guide/v{{ page.version}}/04-analytics.html).
 
 ---------------------
 
