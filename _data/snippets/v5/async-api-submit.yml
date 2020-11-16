@@ -1,0 +1,29 @@
+files:
+  - AsyncQuery JSON-API
+  - AsyncQuery GraphQL
+
+AsyncQuery JSON-API: |+2
+  ```curl
+  curl -X POST http://localhost:8080/api/v1/asyncQuery/ \
+      -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json" \
+      -d'{
+              "data": {
+                         "type": "asyncQuery",
+                         "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263d",
+                         "attributes": {
+                                         "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
+                                         "queryType": "JSONAPI_V1_0",
+                                         "status": "QUEUED"
+                                       }
+                      }
+          }'
+  ```
+
+AsyncQuery GraphQL: |+2
+  ```curl
+  curl -g -X POST -H"Content-Type: application/json" \
+      -H"Accept: application/json" "http://localhost:8080/graphql/api/v1" \
+      -d'{
+              "query" : "mutation { asyncQuery(op: UPSERT, data: {id: \"bb31ca4e-ed8f-4be0-a0f3-12088fb9263e\", query: \"{\\\"query\\\":\\\"{ group { edges { node { name } } } }\\\",\\\"variables\\\":null}\", queryType: GRAPHQL_V1_0, status: QUEUED}) { edges { node { id query queryType status } } } }"
+         }'
+  ```
