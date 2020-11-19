@@ -10,6 +10,7 @@ Spring: |+2
       maxRunTimeMinutes: 120
       queryCleanupDays: 10
       queryCancellationIntervalSeconds: 600
+      maxAsyncAfterSeconds: 30
   ```
 
 Elide Standalone: |+2
@@ -36,6 +37,11 @@ Elide Standalone: |+2
          default Integer getQueryCancelCheckIntervalSeconds() {
              return 600;
          }
+
+        @Override
+        default Integer getMaxAsyncAfterSeconds() {
+            return 30;
+        }
       }
       return asyncProperties;
   }
