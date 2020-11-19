@@ -144,12 +144,17 @@ To control the default size of the cache or the item expiration, override the fo
 
 ```java
 @Override
-public Integer getQueryCacheMaximumEntries() {
-    return 1000;
-}
-
-public Long getDefaultCacheExpirationMinutes() {
-    return 10L;
+public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+    return new ElideStandaloneAnalyticSettings() {
+        @Override
+        public Integer getQueryCacheMaximumEntries() {
+            return 1000;
+        }
+        @Override
+        public Long getDefaultCacheExpirationMinutes() {
+            return 10L;
+        }
+    };
 }
 ```
 

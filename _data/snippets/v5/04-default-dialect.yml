@@ -14,8 +14,14 @@ Spring: |+2
 Elide Standalone: |+2
   ```java
   //Override ElideStandaloneSettings
+
   @Override
-  public String getDefaultDialect() {
-      return "Hive";
+  public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+      return new ElideStandaloneAnalyticSettings() {
+          @Override
+          public String getDefaultDialect() {
+              return "Hive";
+          }
+      };
   }
   ```
