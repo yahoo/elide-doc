@@ -273,11 +273,13 @@ Time dimensions represent time and include a time grain.  The time grain determi
 | YEAR         | "yyyy"                |
 {:.table}
 
-When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
+When defining a time dimension, a native SQL expression may be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
 
 {% include code_example example="04-time-dimensions" %}
 
 Elide would expand the above example to this SQL fragment: `PARSEDATETIME(FORMATDATETIME(createdOn, 'yyyy-MM'), 'yyyy-MM')`.
+
+Time grain definitions are optional and default to type 'DAY' and an empty SQL expression.
 
 ### Joins
 
