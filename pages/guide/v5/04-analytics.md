@@ -156,6 +156,8 @@ A dialect must be configured for Elide to correctly generate analytic SQL querie
 | H2            | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.H2Dialect       |
 | Hive          | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.HiveDialect     |
 | PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PrestoDBDialect |
+| Postgres      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PostgresDialect |
+| MySQL         | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.MySQLDialect    |
 {:.table}
 
 If not leveraging Hjson configuration, a default dialect can be configured for analytic queries:
@@ -361,10 +363,10 @@ HJSON configuration files can be validated against schemas using the command-lin
 1. Build your Elide project to generate a Fat JAR. Make sure to include a Fat JAR build configuration in your POM file.
 
    `mvn clean install`
-   
+
 1. Using the generated JAR for validation:
 
-   `java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --help`
-   `java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
-  
+   `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --help`
+   `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
+
 1. The config directory needs to adhere to this [file layout](#file-layout).
