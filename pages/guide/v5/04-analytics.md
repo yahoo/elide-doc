@@ -277,7 +277,7 @@ When defining a time dimension, a native SQL expression may be provided with the
 
 Elide would expand the above example to this SQL fragment: `PARSEDATETIME(FORMATDATETIME(createdOn, 'yyyy-MM'), 'yyyy-MM')`.
 
-The time grain definition is optional in hjson configuration and defaults to type 'DAY' and empty SQL expression.
+Time grain definitions are optional and default to type 'DAY' and an empty SQL expression.
 
 ### Joins
 
