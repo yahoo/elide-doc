@@ -34,14 +34,18 @@ To include elide into your spring project, add the single starter dependency:
 ## Create Models
 
 Elide models are some of the most important code in any Elide project. Your models are the view of your data that you wish to expose. In this example we will be modeling a software artifact repository since most developers have a high-level familiarity with artifact repositories such as Maven, Artifactory, npm, and the like.
- 
-The first models we’ll need are `ArtifactGroup`, `ArtifactProduct`, and `ArtifactVersion`.  For brevity we will omit package names and import statements. 
+
+There will two kinds of models:
+ - Models that we intend to both read & write.  These models are created by definining Java classes.  For this example, that includes `ArtifactGroup`, `ArtifactProduct`, and `ArtifactVersion`.  For brevity we will omit package names and import statements. 
+ - Read-only models that we intend to run analytic queries against.  These models can be created with Java classes or with a HJSON configuration language.  For this example, we will use the latter to create a `Downloads` model.
 
 {% include code_example example="01-more-beans" %}
 
 ## Spin up the API
 
 So now we have some models, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our models will use.   Our example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
+
+You may notice the example liquibase migration script adds an extra table, `AsyncQuery`.  This is only required if leveraging Elide's [asynchronous API](/pages/guide/v{{ page.version }}/11.5-asyncapi.html) to manage long running analytic queries.
 
 There may be more tables in your database than models in your project or vice versa.  Similarly, there may be more columns in a table than in a particular model or vice versa.  Not only will our models work just fine, but we expect that models will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
 
@@ -99,6 +103,29 @@ elide:
     path: /doc
     enabled: true
     version: "1.0"
+```
+
+The following configuration enables elide's asynchronous API for analytic queries:
+
+```yaml
+  async:
+    enabled: true
+    threadPoolSize: 7
+    maxRunTime: 65
+    cleanupEnabled: true
+    queryCleanupDays: 7
+    defaultAsyncQueryDAO: true
+```
+
+To enable analytic queries, we have to turn on the the aggregation data store.  This example also enables HJSON configuration for analytic models:
+
+```yaml
+  aggregation-store:
+    enabled: true
+    default-dialect: h2
+  dynamic-config:
+    path: src/main/resources/analytics
+    enabled: true
 ```
 
 ### Running
@@ -161,7 +188,15 @@ data to help our users is just as easy as it is to add new data. Let’s update 
 
 {% include code_example example="01-data-update" %}
 
-It’s just that easy to create and update data using Elide.
+## Running Analytic Queries
+
+Analytic queries leverage the same API as reading any other Elide model.  Note that Elide will aggregate the measures selected by the dimensions requested.  Learn more about analytic queries [here](/pages/guide/v{{ page.version }}/04-analytics.html).
+
+{% include code_example example="01-data-analytics" %}
+
+Here are the respective responses:
+
+{% include code_example example="01-data-analytics-rsp" %}
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
 [navi-example]: https://github.com/yahoo/navi/tree/master/packages/webservice

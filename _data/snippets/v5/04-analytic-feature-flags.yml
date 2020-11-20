@@ -17,12 +17,16 @@ Elide Standalone: |+2
   //Override ElideStandaloneSettings
 
   @Override
-  public boolean enableDynamicModelConfig() {
-      return true;
-  }
-
-  @Override
-  public boolean enableAggregationDataStore() {
-      return true;
+  public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+      return new ElideStandaloneAnalyticSettings() {
+          @Override
+          public boolean enableDynamicModelConfig() {
+              return true;
+          }
+          @Override
+          public boolean enableAggregationDataStore() {
+              return true;
+          }
+      };
   }
   ```

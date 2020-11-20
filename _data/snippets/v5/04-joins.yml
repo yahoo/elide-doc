@@ -1,21 +1,21 @@
 files:
-  - HJSON
+  - Hjson
   - Java
 
-HJSON: |+2
+Hjson: |+2
   ```  
   joins: [
       {
          name: playerCountry
          to: country
          type: toOne
-         definition: '%from.country_id = %join.id'
+         definition: '{{country_id}} = {{playerCountry.id}}'
       },
       {
          name: playerTeam
          to: team
          type: toMany
-         definition: '%from.team_id = %join.id'
+         definition: '{{team_id}} = {{playerTeam.id}}'
       }
   ]
   ```
@@ -25,12 +25,12 @@ Java: |+2
   private Country country;
   private Team team;
 
-  @Join("%from.country_id = %join.id")
+  @Join("{{country_id}} = {{playerCountry.id}}")
   public Country getCountry() {
       return country;
   }
 
-  @Join("%from.team_id = %join.id")
+  @Join("{{team_id}} = {{playerTeam.id}}")
   public Team getTeam() {
       return team;
   }

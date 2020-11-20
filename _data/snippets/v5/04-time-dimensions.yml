@@ -1,8 +1,8 @@
 files:
-  - HJSON
+  - Hjson
   - Java
 
-HJSON: |+2
+Hjson: |+2
   ```  
   {
       name : createdOn

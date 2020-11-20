@@ -1,8 +1,8 @@
 files:
-  - HJSON
+  - Hjson
   - Java
 
-HJSON: |+2
+Hjson: |+2
   ```
   {
     tables: [{
@@ -17,13 +17,14 @@ HJSON: |+2
         cardinality : large
         readAccess : 'Principal is admin'
         filterTemplate : createdOn>={{start}};createdOn<{{end}}
+        isFact : true
         tags: ['Game', 'Player']
         joins: [
             {
                 name: playerCountry
                 to: PlayerCountry
                 type: toOne
-                definition: '%join.id = %from.countryId'
+                definition: '{{playerCountry.id}} = {{country_id}}'
             }
         ]
         measures : [
@@ -38,6 +39,7 @@ HJSON: |+2
                 name : name
                 type : TEXT
                 definition : '{{name}}'
+                cardinality : large
             },
             {
                 name : countryCode
@@ -76,12 +78,11 @@ HJSON: |+2
 Java: |+2
   ```java
   @Include
-  @Cardinality(size = CardinalitySize.LARGE)
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode
   @ToString
   @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
-  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}")
+  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
   @ReadPermission(expression = "Principal is admin")
   public class PlayerStats {
 
@@ -94,9 +95,10 @@ Java: |+2
       @MetricFormula("MAX({{highScore}})")
       private long highScore;
 
+      @ColumnMeta(size = CardinalitySize.LARGE)
       private String name;
 
-      @Join("%from.country_id = %join.id")
+      @Join("{{country_id}} = {{playerCountry.id}}")
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")

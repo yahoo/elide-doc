@@ -1,0 +1,39 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```json 
+  {
+    "data": [
+      {
+        "attributes": {
+          "downloads": 35,
+          "group": "com.example.repository",
+          "product": "elide-core"
+        },
+        "id": "0",
+        "type": "Downloads"
+      }
+    ]
+  }
+  ```
+
+GraphQL: |+2
+  ```json
+  {
+    "data": {
+      "Downloads": {
+        "edges": [
+          {
+            "node": {
+              "downloads": 35,
+              "group": "com.example.repository",
+              "product": "elide-core"
+            }
+          }
+        ]
+      }
+    }
+  }
+  ```

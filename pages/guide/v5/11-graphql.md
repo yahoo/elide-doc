@@ -203,8 +203,7 @@ By default, the FIQL operators =in=,=out=,== are case sensitive. This can be rev
                 .withEntityDictionary(dictionary)
                 .withDefaultMaxPageSize(settings.getMaxPageSize())
                 .withDefaultPageSize(settings.getPageSize())
-                .withJoinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
-                .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+                .withGraphQLDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
                 .withAuditLogger(new Slf4jLogger())
                 .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
 
