@@ -67,7 +67,7 @@
         required: False
         description: A hint about the dimension's cardinality (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
       - name: friendlyName
-        default: <em>Same As Name</em>
+        default: <em>Same As field name</em>
         type: String
         required: False
         description: The friendly name for this column to be displayed in the UI.
@@ -108,7 +108,7 @@
         required: False
         description: A hint about the table's size (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
       - name: friendlyName
-        default: <em>Same As Name</em>
+        default: <em>Same As table name</em>
         type: String
         required: False
         description: The friendly name for this table to be displayed in the UI.
