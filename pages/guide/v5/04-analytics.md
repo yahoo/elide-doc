@@ -294,7 +294,8 @@ Each join definition includes the following properties:
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | A unique name for the join.  The name can be referenced in column definitions. |
 | to                    | The name of the Elide model being joined against.                |
-| type                  | 'toMany' or 'toOne'                                              |
+| kind                  | 'toMany' or 'toOne' (Default: toOne)                  |
+| type                  | 'left', 'right', 'full' or 'cross' (Default: left)                           |
 | definition            | A templated SQL join expression.  See below. |
 {:.table}
 

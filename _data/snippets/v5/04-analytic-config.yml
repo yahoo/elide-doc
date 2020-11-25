@@ -23,7 +23,8 @@ Hjson: |+2
             {
                 name: playerCountry
                 to: PlayerCountry
-                type: toOne
+                kind: toOne
+                type: left
                 definition: '{{playerCountry.id}} = {{country_id}}'
             }
         ]
@@ -98,7 +99,7 @@ Java: |+2
       @ColumnMeta(size = CardinalitySize.LARGE)
       private String name;
 
-      @Join("{{country_id}} = {{playerCountry.id}}")
+      @Join("{{country_id}} = {{playerCountry.id}}", type = JoinType.LEFT)
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")
