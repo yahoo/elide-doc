@@ -200,6 +200,7 @@ Tables include the following properties:
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
+| friendlyName          | The friendly name for this table to be displayed in the UI. | 'Player Stats' | `@TableMeta(friendlyName="Player Stats")` |
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
@@ -238,6 +239,7 @@ Columns include the following properties:
 | Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the column.  It will be exposed through the API with this name. | columnName | String columnName; |
+| friendlyName          | The friendly name for this column to be displayed in the UI. | 'Country Code' | `@ColumnMeta(friendlyName = "Country Code")` |
 | description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
