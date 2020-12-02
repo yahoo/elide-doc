@@ -9,6 +9,7 @@ Hjson: |+2
         name: PlayerStats
         table: playerStats
         dbConnectionName: Presto Data Source
+        friendlyName: Player Stats
         description:
         '''
         A long description
@@ -33,6 +34,7 @@ Hjson: |+2
             name : highScore
             type : INTEGER
             definition: 'MAX({{highScore}})'
+            friendlyName: High Score
             }
         ]
         dimensions : [
@@ -46,6 +48,7 @@ Hjson: |+2
                 name : countryCode
                 type : TEXT
                 definition : '{{playerCountry.isoCode}}'
+                friendlyName: Country Code
             },
             {
                 name : createdOn
@@ -83,7 +86,7 @@ Java: |+2
   @EqualsAndHashCode
   @ToString
   @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
-  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
+  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE, friendlyName = "Player Stats")
   @ReadPermission(expression = "Principal is admin")
   public class PlayerStats {
 
@@ -94,6 +97,7 @@ Java: |+2
       private String id;
 
       @MetricFormula("MAX({{highScore}})")
+      @ColumnMeta(friendlyName = "High Score")
       private long highScore;
 
       @ColumnMeta(size = CardinalitySize.LARGE)
@@ -103,6 +107,7 @@ Java: |+2
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")
+      @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
