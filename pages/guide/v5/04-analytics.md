@@ -200,7 +200,7 @@ These options are configured via the 'table', 'sql', and 'extend' [properties](#
 
 Tables include the following properties:
 
-| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
+| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent | Inherited via Extend |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
@@ -220,6 +220,10 @@ Tables include the following properties:
 | isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
 
+#### Example Extend Configuration
+
+{% include code_example example="04-analytic-extend-config" %}
+
 ### Columns
 
 Columns are either measures, dimensions, or time dimensions.   They all share a number of [common properties](#column-properties).  The most important properties are:
@@ -231,6 +235,8 @@ Column definitions are templated, native SQL fragments.  Columns definitions can
 - Another column in the current table (assuming the parameter matches another column name in the table).  
 - A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
 - Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
+
+Unlike [Table properties](#table-properties), [Column properties](#column-properties) are not inherited. When overriding a Column in an extended Table, the column properties have to be redefined.
 
 Column expressions can be defined in Hjson or Java:
 
@@ -293,8 +299,11 @@ Table joins allow column expressions to reference fields from other tables.  At 
 
 {% include code_example example="04-joins" %}
 
-Each join definition includes the following properties:
+Unlike [Table properties](#table-properties), [join properties](#join-properties) are not inherited. When overriding a join in an extended Table, the join properties have to be redefined.
 
+#### Join Properties
+
+Each join definition includes the following properties:
 
 | Hjson Property        | Explanation                                                      |
 | --------------------- | ---------------------------------------------------------------- |

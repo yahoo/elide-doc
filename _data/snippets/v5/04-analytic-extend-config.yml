@@ -1,0 +1,43 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```
+  {
+    tables: [{
+        name: PlayerStatsView
+        extend: PlayerStats
+        description:
+        '''
+        A long description
+        '''
+        category: Sports
+        cardinality : large
+        filterTemplate : createdOn>={{start}};createdOn<{{end}}
+        isFact : true
+        tags: ['Game', 'Player']
+        measures : [
+            {
+            name : lowScore
+            type : INTEGER
+            definition: 'MIN({{highScore}})'
+            }
+        ]
+    }]
+  }
+  ```
+
+Java: |+2
+  ```java
+  @Include
+  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
+  @EqualsAndHashCode
+  @ToString
+  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
+  public class PlayerStatsView extends PlayerStats {
+
+      @MetricFormula("MIN({{highScore}})")
+      private long lowScore;
+  }
+  ```
