@@ -373,3 +373,25 @@ HJSON configuration files can be validated against schemas using the command-lin
    `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
 
 1. The config directory needs to adhere to this [file layout](#file-layout).
+
+## Signature Verification
+
+Elide supports RSA signature verification of Hjson configuration files
+
+1. Generate a TAR file of the models directory. Refer [file layout](#file-layout) for model directory structure.
+
+   `bash tar -czvf models.tar.gz models/`
+   
+1. Generate an RSA Public and Private Key Pair
+
+1. Create an RSA signature using the content of the TAR file and the RSA Private key
+
+1. Add the public key to the Java Keystore
+
+1. Use the DynamicConfigVerifier to validate the RSA signature using the Public Key
+
+```
+a) java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.verify.DynamicConfigVerifier --tarFile <Path of model config tar file> --signatureFile <Path of Signature file> --publicKeyName <Name of the public key in keystore>
+
+b) java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.verify.DynamicConfigVerifier --help
+```
