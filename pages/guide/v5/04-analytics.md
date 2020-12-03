@@ -382,13 +382,13 @@ Elide supports RSA signature verification of Hjson configuration files
 
    `bash tar -czvf models.tar.gz models/`
    
-1. Generate an RSA Public and Private Key Pair
+1. Generate an RSA Public and Private Key Pair.
 
-1. Create an RSA signature using the content of the TAR file and the RSA Private key
+1. Create an RSA signature using the content of the TAR file and the RSA Private key.
 
-1. Add the public key to the Java Keystore
+1. Add the public key to the Java Keystore.
 
-1. Use the DynamicConfigVerifier to validate the RSA signature using the Public Key
+1. Use the DynamicConfigVerifier to validate the RSA signature using the Public Key.
 
 ```
 a) java -cp elide-*-example.jar com.yahoo.elide.contrib.dynamicconfighelpers.verify.DynamicConfigVerifier --tarFile <Path of model config tar file> --signatureFile <Path of Signature file> --publicKeyName <Name of the public key in keystore>
