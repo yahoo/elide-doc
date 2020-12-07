@@ -232,8 +232,6 @@ Column definitions are templated, native SQL fragments.  Columns definitions can
 - A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
 - Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
 
-Unlike [Table properties](#table-properties), [Column properties](#column-properties) are not inherited. When overriding a Column in an extended Table, the column properties have to be redefined.
-
 Column expressions can be defined in Hjson or Java:
 
 {% include code_example example="04-columns" %}
@@ -294,8 +292,6 @@ Time grain definitions are optional and default to type 'DAY' and an empty SQL e
 Table joins allow column expressions to reference fields from other tables.  At query time, if a column requires a join, the join will be added to the generated SQL query.  Each table configuration can include zero or more join definitions:
 
 {% include code_example example="04-joins" %}
-
-Unlike [Table properties](#table-properties), [join properties](#join-properties) are not inherited. When overriding a join in an extended Table, the join properties have to be redefined.
 
 #### Join Properties
 
