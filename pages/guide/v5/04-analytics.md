@@ -192,7 +192,7 @@ Some metrics have **FunctionArguments**.  They represent parameters that are sup
 Tables must source their columns from somewhere.  There are three, mutually exclusive options:
 1.  Tables can source their columns from a physical table.  
 2.  Tables can source their columns from a SQL subquery.
-3.  Tables can extend (override or add columns) an existing Table.
+3.  Tables can extend (override or add columns) an existing Table. More details [here](#inheritance).
 
 These options are configured via the 'table', 'sql', and 'extend' [properties](#table-properties).
 
@@ -200,7 +200,7 @@ These options are configured via the 'table', 'sql', and 'extend' [properties](#
 
 Tables include the following properties:
 
-| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent | Inherited via Extend |
+| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
@@ -219,10 +219,6 @@ Tables include the following properties:
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 | isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
-
-#### Example Extend Configuration
-
-{% include code_example example="04-analytic-extend-config" %}
 
 ### Columns
 
@@ -328,6 +324,32 @@ Column references must be wrapped in curly braces and are replaced at query time
 1. A logical column in the current model that should be expanded by its corresponding SQL definition.
 2. A physical column in the current table.
 3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
+
+### Inheritance
+
+Tables can extend an existing Table. Following actions can be performed:
+* New columns can be added.
+* Existing columns can be modified.
+* [Table properties](#table-properties) can be modified.
+
+Below listed Table properties can be inherited without re-declaration. Any [Table properties](#table-properties) not listed below, has to be re-declared.
+
+* `dbConnectionName`
+* `schema`
+* `table`
+* `sql`
+
+Unlike [Table properties](#table-properties), [Column properties](#column-properties) are not inherited. When overriding a Column in an extended Table, the column properties have to be redefined.
+
+#### Hjson extend vs Java's extends
+
+When using Java's `extends` keyword to inherit from a class, the compiler can throw errors on modifying data type of attributes. When using Hjson `extend`, Elide overcomes these limitations by recreating the child class by pulling all the attributes of the parent class. It will then add new attributes and apply modifications to existing columns as provided in the Hjson configuration.
+
+#### Example Extend Configuration
+
+Below example uses the [Example Configuration](#example-configuration) as parent class.
+
+{% include code_example example="04-analytic-extend-config" %}
 
 ## Security Configuration
 
