@@ -133,6 +133,10 @@ For these complex configurations, you must configure Elide using the Aggregation
 }
 ```
 
+By default, Elide uses HikariCP's DataSource for JDBC connection pool. A custom `DataSourceConfiguration` can be configured by the following override:
+
+{% include code_example example="04-datasource-configuration" %}
+
 ### Data Source Passwords
 
 Data source passwords are provided out of band by implementing a `DBPasswordExtractor`:
