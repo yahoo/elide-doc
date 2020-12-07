@@ -339,7 +339,7 @@ Unlike [Table properties](#table-properties), [Column properties](#column-proper
 
 #### Hjson extend vs Java's extends
 
-When using Java's `extends` keyword to inherit from a class, the compiler can throw errors on modifying data type of attributes. When using Hjson `extend`, Elide overcomes these limitations by recreating the child class by pulling all the attributes of the parent class. It will then add new attributes and apply modifications to existing columns as provided in the Hjson configuration.
+When using Java's `extends` keyword to inherit from a class, the compiler can throw errors on modifying data type of attributes. When using Hjson `extend`, Elide overcomes these limitations by recreating the child class by adding the properties and/or columns of the parent class, not re-declared or overridden in the child Hjson. The Java classes generated from Hjson do not make use of Java's `extends` keyword.
 
 #### Example Extend Configuration
 
