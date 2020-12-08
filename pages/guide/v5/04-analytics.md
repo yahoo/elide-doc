@@ -59,7 +59,7 @@ Here are the respective responses:
 
 ## Feature Flags
 
-There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#Metadata-Queries) respectively:
+There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#metadata-queries) respectively:
 
 {% include code_example example="04-analytic-feature-flags" %}
 
