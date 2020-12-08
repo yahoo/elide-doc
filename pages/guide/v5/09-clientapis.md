@@ -43,12 +43,6 @@ Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `ApiVers
 
 Details of how to version Elide models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#api-versions).  Details of how to configure versioned Swagger documents can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html#api-versions).
 
-### Bypassing Cache
-
-Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled. If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
-
-Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `bypasscache` header. They disable caching based on the value of `bypasscache` header.
- 
 ### Type Coercion
 
 Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 

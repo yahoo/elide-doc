@@ -353,6 +353,12 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 
 The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
 
+### Bypassing Cache
+
+Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled. If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
+
+Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `bypasscache` header. They disable caching based on the value of `bypasscache` header.
+
 ## Configuration Validation
 
 All Hjson configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
