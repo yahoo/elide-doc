@@ -355,9 +355,7 @@ The Aggregation data store supports a configurable caching strategy to cache que
 
 ### Bypassing Cache
 
-Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled. If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
-
-Swagger endpoints (JSON-API) and GraphQL schemas are also scoped by the `bypasscache` header. They disable caching based on the value of `bypasscache` header.
+Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled "on a per query basis". If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
 
 ## Configuration Validation
 
