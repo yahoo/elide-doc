@@ -6,11 +6,11 @@ Hjson: |+2
   ```
   {
     tables: [{
-        name: PlayerStatsView
+        name: PlayerStatsByYear
         extend: PlayerStats
         description:
         '''
-        A long description
+        Player Stats View By year
         '''
         category: Sports
         cardinality : large
@@ -26,15 +26,15 @@ Hjson: |+2
         ],
         dimensions : [
             {
-                name : createdOn
+                name : gameOn
                 type : TIME
-                definition : '{{created_on}}'
+                definition : '{{game_on}}'
                 grain:
                 {
-                    # Change Type from SIMPLEDATE to WEEK
-                    type :  WEEK
+                    # Change Type from DAY to YEAR
+                    type :  YEAR
                     sql :  '''
-                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')
                     '''
                 }
             }
@@ -45,27 +45,29 @@ Hjson: |+2
 
 Java: |+2
   ```java
+  // Only Adding New Attribue, can use extends.
   @Include
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode
   @ToString
   @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
-  public class PlayerStatsExtends extends PlayerStats {
+  public class PlayerStatsMinScore extends PlayerStats {
 
-      // Only Adding New Attribue, can use extends.
       @MetricFormula("MIN({{highScore}})")
       private long lowScore;
   }
 
+  // Adding New Attribue and changing type of existing column, can not use extends.
   @Include
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode
   @ToString
   @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
-  public class PlayerStatsChangeType {
+  public class PlayerStatsByYear {
 
       public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
       public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')";
+      public static final String YEAR_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')";
 
       @Id
       private String id;
@@ -84,14 +86,18 @@ Java: |+2
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR_MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{updated_on}}")
-      private YearMonth updatedOn;
+      private Month updatedOn;
 
-      // Change Type from SIMPLEDATE to WEEK
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.WEEK, expression = DATE_FORMAT), timeZone = "UTC")
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{created_on}}")
-      private SimpleDate createdOn;
+      private Day createdOn;
+
+      // Change type of gameOn from Day to Year
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT), timeZone = "UTC")
+      @DimensionFormula("{{game_on}}")
+      private Year gameOn;
 
       // New Column Added
       @MetricFormula("MIN({{highScore}})")

@@ -59,7 +59,7 @@ Here are the respective responses:
 
 ## Feature Flags
 
-There are two feature flags that enable analytic queries and Hjson configuration respectively:
+There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#Metadata-Queries) respectively:
 
 {% include code_example example="04-analytic-feature-flags" %}
 
@@ -323,12 +323,12 @@ Column references must be wrapped in curly braces and are replaced at query time
 
 ### Inheritance
 
-Tables can extend an existing Table. Following actions can be performed:
+Tables can extend an existing Table. The following actions can be performed:
 * New columns can be added.
 * Existing columns can be modified.
 * [Table properties](#table-properties) can be modified.
 
-Below listed Table properties can be inherited without re-declaration. Any [Table properties](#table-properties) not listed below, has to be re-declared.
+The Table properties listed below can be inherited without re-declaration. Any [Table property](#table-properties) not listed below, has to be re-declared.
 
 * `dbConnectionName`
 * `schema`
@@ -337,13 +337,13 @@ Below listed Table properties can be inherited without re-declaration. Any [Tabl
 
 Unlike [Table properties](#table-properties), [Column properties](#column-properties) are not inherited. When overriding a Column in an extended Table, the column properties have to be redefined.
 
-#### Hjson extend vs Java's extends
+#### Hjson inheritance vs Java inheritance
 
-When using Java's `extends` keyword to inherit from a class, the compiler can throw errors on modifying data type of attributes. When using Hjson `extend`, Elide overcomes these limitations by recreating the child class by adding the properties and/or columns of the parent class, not re-declared or overridden in the child Hjson. The Java classes generated from Hjson do not make use of Java's `extends` keyword.
+Hjson inheritance and Java inheritance differ in one key way. Hjson inheritance allows the type of a measure or dimension to be changed in the subclassed model. Changing the type of an inherited measure or dimension in Java might generate a compilation error."
 
 #### Example Extend Configuration
 
-Below example uses the [Example Configuration](#example-configuration) as parent class.
+The sample below uses the [Example Configuration](#example-configuration) as its parent model.
 
 {% include code_example example="04-analytic-extend-config" %}
 

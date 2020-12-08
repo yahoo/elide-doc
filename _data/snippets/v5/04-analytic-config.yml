@@ -51,12 +51,24 @@ Hjson: |+2
                 friendlyName: Country Code
             },
             {
+                name : gameOn
+                type : TIME
+                definition : '{{game_on}}'
+                grain:
+                {
+                    type :  DAY
+                    sql :  '''
+                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                    '''
+                }
+            },
+            {
                 name : createdOn
                 type : TIME
                 definition : '{{created_on}}'
                 grain:
                 {
-                    type :  SIMPLEDATE
+                    type :  DAY
                     sql :  '''
                     PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
                     '''
@@ -68,7 +80,7 @@ Hjson: |+2
                 definition : '{{updated_on}}'
                 grain:
                 {
-                    type :  YEARMONTH
+                    type :  MONTH
                     sql :  '''
                     PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
                     '''
@@ -110,12 +122,16 @@ Java: |+2
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.SIMPLEDATE, expression = DATE_FORMAT), timeZone = "UTC")
-      @DimensionFormula("{{created_on}}")
-      private SimpleDate createdOn;
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
+      @DimensionFormula("{{game_on}}")
+      private Day gameOn;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR_MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
+      @DimensionFormula("{{created_on}}")
+      private Day createdOn;
+
+      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{updated_on}}")
-      private YearMonth updatedOn;
+      private Month updatedOn;
   }
   ```

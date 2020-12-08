@@ -10,6 +10,7 @@ Spring: |+2
       enabled: true
     aggregation-store:
       enabled: true
+      enableMetaDataStore: true
   ```
 
 Elide Standalone: |+2
@@ -25,6 +26,10 @@ Elide Standalone: |+2
           }
           @Override
           public boolean enableAggregationDataStore() {
+              return true;
+          }
+          @Override
+          public boolean enableMetaDataStore() {
               return true;
           }
       };
