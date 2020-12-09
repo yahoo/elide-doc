@@ -47,7 +47,7 @@ Here are the respective responses:
 
 ## Metadata Queries
 
-A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. To enable the metadata query APIs, we have to turn on the `MetaDataStore`. The `enableMetaDataStore` flag is described in detail [here](#feature-flags).
+A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. To enable the metadata query APIs, we have to turn on the `MetaDataStore`. The `enableMetaDataStore` flag is described [here](#feature-flags).
 
 {% include code_example example="04-metadata-query" %}
 
@@ -346,17 +346,22 @@ Unlike [Table properties](#table-properties), [Column properties](#column-proper
 
 #### Hjson inheritance vs Java inheritance
 
-Hjson inheritance and Java inheritance differ in one key way. Hjson inheritance allows the type of a measure or dimension to be changed in the subclassed model. Changing the type of an inherited measure or dimension in Java might generate a compilation error."
+Hjson inheritance and Java inheritance differ in one key way. Hjson inheritance allows the type of a measure or dimension to be changed in the subclassed model. Changing the type of an inherited measure or dimension in Java might generate a compilation error.
 
 #### Example Extend Configuration
 
-The sample below uses the [Example Configuration](#example-configuration) as its parent model. Let's assume we are a club that exposes the Player Stats from the intra-squad practice games and the tournament games to coaches using the PlayerStats model. We want to expose the data from the same persistent store to external clubs with below differences:
-* Exclude the intra-squad games from highScore calculation.
-* Show the year of the game date instead of the full date.
+The sample below uses the [Example Configuration](#example-configuration) as its parent model. Let's assume we are a club that exposes the Player Stats from the intra-squad practice games and the tournament games to coaches using the PlayerStats model. We want to expose the data from the same persistent store to the general public with below differences:
+* Exclude the intra-squad games from `highScore` calculation.
+* Modify the Grain of `game_on` column from `DAY` to `YEAR`.
+* Accessible by Admins and Guest users.
 
-To avoid the compilation error highlighted [above](hjson-inheritance-vs-Java-inheritance), we will have to re-write the entire JVM class instead of inheriting from the Parent model. But with the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model as highlighted in the below example.
+To avoid the compilation error highlighted [above](#hjson-inheritance-vs-Java-inheritance), we will have to re-write the entire JVM class instead of inheriting from the Parent model. With the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model as highlighted in the example below.
 
 {% include code_example example="04-analytic-extend-config" %}
+
+We can use Java's inheritance, if the goal does not involve changing the type of columns. Hjson `extend` will still involve a few lines of simple changes.
+
+{% include code_example example="04-analytic-extend-config-simple" %}
 
 ## Security Configuration
 

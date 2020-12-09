@@ -8,6 +8,7 @@ Hjson: |+2
     tables: [{
         name: TournamentPlayerStats
         extend: PlayerStats
+        readAccess : 'admin.user OR guest user'
         measures : [
             {
             name : highScore
@@ -40,6 +41,8 @@ Java: |+2
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode
   @ToString
+  @ReadPermission(expression = "admin.user OR guest user")
+  @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
   public class TournamentPlayerStats {
 
       public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
@@ -49,6 +52,7 @@ Java: |+2
       @Id
       private String id;
 
+      // Change formula to filter on Tournament Games
       @MetricFormula("MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)")
       @ColumnMeta(friendlyName = "High Score")
       private long highScore;
