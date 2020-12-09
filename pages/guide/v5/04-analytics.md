@@ -47,7 +47,7 @@ Here are the respective responses:
 
 ## Metadata Queries
 
-A full list of available table and column metadata is covered in the [configuration section](#tables).  Metadata can be queried through the _table_ model and its associated relationships:
+A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. To enable the metadata query APIs, we have to turn on the `MetaDataStore`. The `enableMetaDataStore` flag is described [here](#feature-flags).
 
 {% include code_example example="04-metadata-query" %}
 
@@ -59,7 +59,14 @@ Here are the respective responses:
 
 ## Feature Flags
 
-There are two feature flags that enable analytic queries and Hjson configuration respectively:
+There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#metadata-queries) respectively:
+
+| Configuration                         | Description                                                       | Default  |
+| --------------------------------------| ----------------------------------------------------------------- | -------  |
+| dynamic-config.enabled                | Enable model creation through the Hjson configuration files.      | false    |
+| aggregation-store.enabled             | Enable support for data analytic queries.                         | false    |
+| aggregation-store.enableMetaDataStore | Enable the metadata query APIs exposing the metadata about the Aggregation store models including their metrics and dimensions. | false    |
+{:.table}
 
 {% include code_example example="04-analytic-feature-flags" %}
 
@@ -192,7 +199,7 @@ Some metrics have **FunctionArguments**.  They represent parameters that are sup
 Tables must source their columns from somewhere.  There are three, mutually exclusive options:
 1.  Tables can source their columns from a physical table.  
 2.  Tables can source their columns from a SQL subquery.
-3.  Tables can extend (override or add columns) an existing Table.
+3.  Tables can extend (override or add columns) an existing Table. More details [here](#inheritance).
 
 These options are configured via the 'table', 'sql', and 'extend' [properties](#table-properties).
 
@@ -293,8 +300,9 @@ Table joins allow column expressions to reference fields from other tables.  At 
 
 {% include code_example example="04-joins" %}
 
-Each join definition includes the following properties:
+#### Join Properties
 
+Each join definition includes the following properties:
 
 | Hjson Property        | Explanation                                                      |
 | --------------------- | ---------------------------------------------------------------- |
@@ -319,6 +327,41 @@ Column references must be wrapped in curly braces and are replaced at query time
 1. A logical column in the current model that should be expanded by its corresponding SQL definition.
 2. A physical column in the current table.
 3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
+
+### Inheritance
+
+Tables can extend an existing Table. The following actions can be performed:
+* New columns can be added.
+* Existing columns can be modified.
+* [Table properties](#table-properties) can be modified.
+
+The Table properties listed below can be inherited without re-declaration. Any [Table property](#table-properties) not listed below, has to be re-declared.
+
+* `dbConnectionName`
+* `schema`
+* `table`
+* `sql`
+
+Unlike [Table properties](#table-properties), [Column properties](#column-properties) are not inherited. When overriding a Column in an extended Table, the column properties have to be redefined.
+
+#### Hjson inheritance vs Java inheritance
+
+Hjson inheritance and Java inheritance differ in one key way. Hjson inheritance allows the type of a measure or dimension to be changed in the subclassed model. Changing the type of an inherited measure or dimension in Java might generate a compilation error.
+
+#### Example Extend Configuration
+
+The sample below uses the [Example Configuration](#example-configuration) as its parent model. Let's assume we are a club that exposes the Player Stats from the intra-squad practice games and the tournament games to coaches using the PlayerStats model. We want to expose the data from the same persistent store to the general public with below differences:
+* Exclude the intra-squad games from `highScore` calculation.
+* Modify the Grain of `game_on` column from `DAY` to `YEAR`.
+* Accessible by Admins and Guest users.
+
+To avoid the compilation error highlighted [above](#hjson-inheritance-vs-Java-inheritance), we will have to write the new JVM class with all the columns and properties instead of inheriting unchanged ones from the Parent model. With the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model without duplication as highlighted in the example below.
+
+{% include code_example example="04-analytic-extend-config" %}
+
+We can use Java's inheritance, if the goal does not involve changing the type of columns. Hjson `extend` will still require a few lines of simple changes.
+
+{% include code_example example="04-analytic-extend-config-simple" %}
 
 ## Security Configuration
 

@@ -155,10 +155,10 @@
       - Temporal Annotation
   parameters:
       - name: grain
-        default: SimpleDate
+        default: Day
         type: TimeGrain
         required: True
-        description: The time grain or period (SIMPLEDATE, YEAR, etc).
+        description: The time grain or period (DAY, YEAR, etc).
       - name: expression
         default: <em>None</em>
         type: String

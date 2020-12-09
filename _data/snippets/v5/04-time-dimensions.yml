@@ -10,7 +10,7 @@ Hjson: |+2
       definition : "FORMATDATETIME({{createdOn}}, 'yyyy-MM')"
       grain:
       {
-          type :  YEARMONTH
+          type :  MONTH
           sql :  '''
           PARSEDATETIME({{}}, 'yyyy-MM')
           '''
@@ -23,7 +23,7 @@ Java: |+2
   public static final String DATE_FORMAT = "PARSEDATETIME({{}}, 'yyyy-MM')";
 
 
-  @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEARMONTH, expression = DATE_FORMAT), timeZone = "UTC")
+  @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = DATE_FORMAT), timeZone = "UTC")
   @DimensionFormula("FORMATDATETIME({{createdOn}}, 'yyyy-MM')")
   private Date createdOn;
   ```
