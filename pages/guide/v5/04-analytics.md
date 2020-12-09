@@ -355,7 +355,7 @@ The sample below uses the [Example Configuration](#example-configuration) as its
 * Modify the Grain of `game_on` column from `DAY` to `YEAR`.
 * Accessible by Admins and Guest users.
 
-To avoid the compilation error highlighted [above](#hjson-inheritance-vs-Java-inheritance), we will have to re-write the entire JVM class instead of inheriting from the Parent model. With the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model as highlighted in the example below.
+To avoid the compilation error highlighted [above](#hjson-inheritance-vs-Java-inheritance), we will have to write the new JVM class with all the columns and properties instead of inheriting unchanged ones from the Parent model. With the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model without duplication as highlighted in the example below.
 
 {% include code_example example="04-analytic-extend-config" %}
 
