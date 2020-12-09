@@ -359,7 +359,7 @@ To avoid the compilation error highlighted [above](#hjson-inheritance-vs-Java-in
 
 {% include code_example example="04-analytic-extend-config" %}
 
-We can use Java's inheritance, if the goal does not involve changing the type of columns. Hjson `extend` will still involve a few lines of simple changes.
+We can use Java's inheritance, if the goal does not involve changing the type of columns. Hjson `extend` will still require a few lines of simple changes.
 
 {% include code_example example="04-analytic-extend-config-simple" %}
 
