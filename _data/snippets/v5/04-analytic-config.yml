@@ -51,6 +51,12 @@ Hjson: |+2
                 friendlyName: Country Code
             },
             {
+                name : gameType
+                type : TEXT
+                definition : '{{game_type}}'
+                friendlyName: Game Type
+            },
+            {
                 name : gameOn
                 type : TIME
                 definition : '{{game_on}}'
@@ -121,6 +127,10 @@ Java: |+2
       @DimensionFormula("{{playerCountry.isoCode}}")
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
+
+      @DimensionFormula("{{game_type}}")
+      @ColumnMeta(friendlyName = "Game Type")
+      private String gameType;
 
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{game_on}}")

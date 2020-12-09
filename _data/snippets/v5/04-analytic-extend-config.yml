@@ -6,22 +6,13 @@ Hjson: |+2
   ```
   {
     tables: [{
-        name: PlayerStatsByYear
+        name: TournamentPlayerStats
         extend: PlayerStats
-        description:
-        '''
-        Player Stats View By year
-        '''
-        category: Sports
-        cardinality : large
-        filterTemplate : createdOn>={{start}};createdOn<{{end}}
-        isFact : true
-        tags: ['Game', 'Player']
         measures : [
             {
-            name : lowScore
+            name : highScore
             type : INTEGER
-            definition: 'MIN({{highScore}})'
+            definition: MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)
             }
         ],
         dimensions : [
@@ -45,25 +36,11 @@ Hjson: |+2
 
 Java: |+2
   ```java
-  // Only Adding New Attribue, can use extends.
   @Include
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
   @EqualsAndHashCode
   @ToString
-  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
-  public class PlayerStatsMinScore extends PlayerStats {
-
-      @MetricFormula("MIN({{highScore}})")
-      private long lowScore;
-  }
-
-  // Adding New Attribue and changing type of existing column, can not use extends.
-  @Include
-  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
-  @EqualsAndHashCode
-  @ToString
-  @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE)
-  public class PlayerStatsByYear {
+  public class TournamentPlayerStats {
 
       public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
       public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')";
@@ -72,7 +49,7 @@ Java: |+2
       @Id
       private String id;
 
-      @MetricFormula("MAX({{highScore}})")
+      @MetricFormula("MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)")
       @ColumnMeta(friendlyName = "High Score")
       private long highScore;
 
@@ -86,6 +63,10 @@ Java: |+2
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
+      @DimensionFormula("{{game_type}}")
+      @ColumnMeta(friendlyName = "Game Type")
+      private String gameType;
+
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{updated_on}}")
       private Month updatedOn;
@@ -98,9 +79,5 @@ Java: |+2
       @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT), timeZone = "UTC")
       @DimensionFormula("{{game_on}}")
       private Year gameOn;
-
-      // New Column Added
-      @MetricFormula("MIN({{highScore}})")
-      private long lowScore;
   }
   ```

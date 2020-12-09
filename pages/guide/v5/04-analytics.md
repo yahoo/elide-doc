@@ -47,7 +47,7 @@ Here are the respective responses:
 
 ## Metadata Queries
 
-A full list of available table and column metadata is covered in the [configuration section](#tables).  Metadata can be queried through the _table_ model and its associated relationships:
+A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. To enable the metadata query APIs, we have to turn on the `MetaDataStore`. The `enableMetaDataStore` flag is described in detail [here](#feature-flags).
 
 {% include code_example example="04-metadata-query" %}
 
@@ -60,6 +60,13 @@ Here are the respective responses:
 ## Feature Flags
 
 There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#metadata-queries) respectively:
+
+| Configuration                         | Description                                                       | Default  |
+| --------------------------------------| ----------------------------------------------------------------- | -------  |
+| dynamic-config.enabled                | Enable model creation through the Hjson configuration files.      | false    |
+| aggregation-store.enabled             | Enable support for data analytic queries.                         | false    |
+| aggregation-store.enableMetaDataStore | Enable the metadata query APIs exposing the metadata about the Aggregation store models including their metrics and dimensions. | false    |
+{:.table}
 
 {% include code_example example="04-analytic-feature-flags" %}
 
@@ -343,7 +350,11 @@ Hjson inheritance and Java inheritance differ in one key way. Hjson inheritance 
 
 #### Example Extend Configuration
 
-The sample below uses the [Example Configuration](#example-configuration) as its parent model.
+The sample below uses the [Example Configuration](#example-configuration) as its parent model. Let's assume we are a club that exposes the Player Stats from the intra-squad practice games and the tournament games to coaches using the PlayerStats model. We want to expose the data from the same persistent store to external clubs with below differences:
+* Exclude the intra-squad games from highScore calculation.
+* Show the year of the game date instead of the full date.
+
+To avoid the compilation error highlighted [above](hjson-inheritance-vs-Java-inheritance), we will have to re-write the entire JVM class instead of inheriting from the Parent model. But with the Hjson `extend`, it will be a few lines of simple changes to inherit from the Parent model as highlighted in the below example.
 
 {% include code_example example="04-analytic-extend-config" %}
 
