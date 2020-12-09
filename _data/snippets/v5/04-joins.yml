@@ -8,13 +8,15 @@ Hjson: |+2
       {
          name: playerCountry
          to: country
-         type: toOne
+         kind: toOne
+         type: left
          definition: '{{country_id}} = {{playerCountry.id}}'
       },
       {
          name: playerTeam
          to: team
-         type: toMany
+         kind: toMany
+         type: full
          definition: '{{team_id}} = {{playerTeam.id}}'
       }
   ]
@@ -25,12 +27,12 @@ Java: |+2
   private Country country;
   private Team team;
 
-  @Join("{{country_id}} = {{playerCountry.id}}")
+  @Join("{{country_id}} = {{playerCountry.id}}", type = JoinType.LEFT)
   public Country getCountry() {
       return country;
   }
 
-  @Join("{{team_id}} = {{playerTeam.id}}")
+  @Join("{{team_id}} = {{playerTeam.id}}", type = JoinType.FULL)
   public Team getTeam() {
       return team;
   }

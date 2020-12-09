@@ -66,6 +66,11 @@
         type: CardinalitySize
         required: False
         description: A hint about the dimension's cardinality (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
+      - name: friendlyName
+        default: <em>Same As field name</em>
+        type: String
+        required: False
+        description: The friendly name for this column to be displayed in the UI.
 
 - name: TableMeta
   description: Metadata to export about a table.
@@ -102,6 +107,11 @@
         type: CardinalitySize
         required: False
         description: A hint about the table's size (TINY, SMALL, MEDIUM, LARGE, HUGE or UNKNOWN).
+      - name: friendlyName
+        default: <em>Same As table name</em>
+        type: String
+        required: False
+        description: The friendly name for this table to be displayed in the UI.
 
 - name: MetricFormula
   description: Native SQL fragment that defines a metric column.

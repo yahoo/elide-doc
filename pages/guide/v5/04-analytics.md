@@ -133,6 +133,10 @@ For these complex configurations, you must configure Elide using the Aggregation
 }
 ```
 
+By default, Elide uses HikariCP's DataSource for JDBC connection pool. A custom `DataSourceConfiguration` can be configured by the following override:
+
+{% include code_example example="04-datasource-configuration" %}
+
 ### Data Source Passwords
 
 Data source passwords are provided out of band by implementing a `DBPasswordExtractor`:
@@ -200,6 +204,7 @@ Tables include the following properties:
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
+| friendlyName          | The friendly name for this table to be displayed in the UI. | 'Player Stats' | `@TableMeta(friendlyName="Player Stats")` |
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
@@ -209,7 +214,7 @@ Tables include the following properties:
 | table                 | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides the name of the physical base table where data will be sourced from. | tableName | `@FromTable(name=tableName)` |
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
-| readAccess            | An elide permission rule that governs read access to the table. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
+| readAccess            | An elide permission rule that governs read access to the table. | 'member and admin.user' | `@ReadPermission(expression="member and admin.user")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 | isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
@@ -238,11 +243,12 @@ Columns include the following properties:
 | Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the column.  It will be exposed through the API with this name. | columnName | String columnName; |
+| friendlyName          | The friendly name for this column to be displayed in the UI. | 'Country Code' | `@ColumnMeta(friendlyName = "Country Code")` |
 | description           | A description of the column. | 'A description for columnA' | `@ColumnMeta(description="A description for columnA")` |
 | category              | A free-form text category for the column. | 'Some Category' | `@ColumnMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the column. | ['label1', 'label2'] | `@ColumnMeta(tags={"label1","label2"})` |
 | cardinality           | tiny, small, medium, large, huge - A hint about the dimension's cardinality. | small | `@ColumnMeta(size=CardinalitySize.SMALL)` |
-| readAccess            | An elide permission rule that governs read access to the column. | 'Principal is ADMIN' | `@ReadPermission(expression="Principal is Admin")` |
+| readAccess            | An elide permission rule that governs read access to the column. | 'admin.user' | `@ReadPermission(expression="admin.user")` |
 | definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
@@ -273,11 +279,13 @@ Time dimensions represent time and include a time grain.  The time grain determi
 | YEAR         | "yyyy"                |
 {:.table}
 
-When defining a time dimension, a native SQL expression must be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
+When defining a time dimension, a native SQL expression may be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
 
 {% include code_example example="04-time-dimensions" %}
 
 Elide would expand the above example to this SQL fragment: `PARSEDATETIME(FORMATDATETIME(createdOn, 'yyyy-MM'), 'yyyy-MM')`.
+
+Time grain definitions are optional and default to type 'DAY' and an empty SQL expression.
 
 ### Joins
 
@@ -292,7 +300,8 @@ Each join definition includes the following properties:
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | A unique name for the join.  The name can be referenced in column definitions. |
 | to                    | The name of the Elide model being joined against.                |
-| type                  | 'toMany' or 'toOne'                                              |
+| kind                  | 'toMany' or 'toOne' (Default: toOne)                  |
+| type                  | 'left', 'inner', 'full' or 'cross' (Default: left)                           |
 | definition            | A templated SQL join expression.  See below. |
 {:.table}
 
@@ -318,16 +327,17 @@ The list of available security roles can be defined in the security.hjson file:
 ```
 {
     roles : [
-        admin
-        guest
+        admin.user
+        guest user
         member
+        user
     ]
 }
 ```
 
 These roles can then be referenced in security rules applied to entire tables or individual columns in their respective Hjson configuration:
 
-`readAccess = 'Principal is admin'`
+`readAccess = 'member OR guest user'`
 
 ## Variable Substitution
 
@@ -349,6 +359,10 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 ## Caching
 
 The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
+
+### Bypassing Cache
+
+Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled on a per query basis. If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
 
 ## Configuration Validation
 
