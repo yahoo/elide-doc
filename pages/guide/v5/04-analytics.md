@@ -410,10 +410,10 @@ Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support
 ## Configuration Validation
 
 All Hjson configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
-1. [Table Config]()
-1. [Data Source Config]()
-1. [Security Config]()
-1. [Variable File]()
+1. [Table Config](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideTableSchema.json)
+1. [Data Source Config](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideDBConfigSchema.json)
+1. [Security Config](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideSecuritySchema.json)
+1. [Variable File](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideVariableSchema.json)
 
 HJSON configuration files can be validated against schemas using the command-line utility.
 
