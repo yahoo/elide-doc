@@ -10,14 +10,11 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 ## New Features in Elide 5.X
 
 Elide 5 introduces three primary new features:
- - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for read requests.
- - An [analytics DataStore](/pages/guide/v{{ page.version }}/04-analytics.html) that:
-   - Allows the definition of curated Elide models with native SQL fragments.
-   - Allows the computation of groupable measures (similar to SQL group by).
-   - Exposes metadata about the curated model as a separate set of Elide models.
+ - A new [semantic modeling layer and analytic query API](/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
+ - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
  - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
 
-The analytics data store (called the AggregationDataStore) and asynchronous API were developed in conjunction with a powerful Analytics UI called [Navi](https://yahoo.github.io/navi/).
+The analytics capabilties and asynchronous API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/).
 
 ## API Changes
 

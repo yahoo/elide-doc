@@ -10,7 +10,17 @@ version: 5
 
 # Overview
 
-Elide's `AggregationDataStore` exposes read-only models that support data analytic queries.  Model attributes represent either metrics (for aggregating, filtering, and sorting) and dimensions (for grouping, filtering, and sorting).  Models exposed through the Aggregation store are flat and do not contain relationships to other models.
+Elide includes a semantic modeling layer and analytic query API for OLAP style queries against your database.
+
+A **semantic model** is the view of the data you want your users to understand. It is typically non-relational (for simplicity) and consists of concepts like tables, measures, and dimensions. End users refer to these concepts by name only (they are not expected to derive formulas or know about the physical storage or serialization of data).
+
+A **virtual semantic layer** maps a semantic model to columns and tables in a physical database. Elide’s virtual semantic layer accomplishes this mapping through a [HJSON](https://hjson.github.io/) configuration language. HJSON is a human friendly adaptation of JSON that allows comments and a relaxed syntax among other features. Elide’s virtual semantic layer includes the following information:
+
+ * The defintions of tables, measures, and dimensions you want to expose to the end user.
+ * Metadata like descriptions, categories, and tags that better describe and label the semantic model.
+ * For every table, measure, and dimension, a SQL fragment that maps it to the physical data. These fragements are used by elide to generate native SQL queries against the target database.
+
+Elide leverages the `AggregationDataStore` store to expose the read-only models defined in the semantic model.  Model attributes represent either metrics (for aggregating, filtering, and sorting) and dimensions (for grouping, filtering, and sorting).  Models exposed through the aggregation store are flat and do not contain relationships to other models.
 
 The Aggregation store includes a companion store, the `MetaDataStore`, which exposes metadata about the Aggregation store models including their metrics and dimensions.  The metadata store models are predefined, read-only, and served from server memory.
 
@@ -20,7 +30,7 @@ There are two mechanisms to create models in the Aggregation store:
 
 The former is preferred for most use cases because of better ergonomics for non-developers.  The latter is useful to add custom Elide security rules or life cycle hooks.
 
-With the introduction of the Aggregation store, Elide now integrates with [Navi](https://github.com/yahoo/navi) - a companion UI framework that provides data visualization and analytics.
+With the introduction of the Aggregation store, Elide now integrates with [Yavin](https://yavin.dev/) - a companion UI framework that provides data visualization and analytics.
 
 # Querying
 
