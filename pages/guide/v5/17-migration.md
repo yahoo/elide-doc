@@ -32,9 +32,17 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
  - GraphQL has its own `FilterDialect` interface.
- - The elide-annotation and elide-core artifacts are consolidated into a single artifact.
  - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
+
+## Module & Package Changes
+
+Because Elide 5 is a major release, we took time to reorganize the module & package structure including:
+ - elide-example has been removed.  The only Elide examples we plan to maintain are the spring boot and standalone examples.
+ - elide-contrib submodules have been promoted to mainline modules elide-swagger and elide-test.
+ - elide-annotations has been absorbed into elide-core.
+ - New modules were created for elide-async (async API), elide-model-config (the semantic layer), and elide-datastore/elide-datastore-aggregation (the analytics module).
+ - Some classes in elide-core were reorganized into new packages.
 
 ### Security
 
@@ -93,7 +101,7 @@ Security checks which dereference the `User` object will require changes to acce
 
 #### User Checks for newly created objects
 
-Elide now only runs User Checks against a newly created object. 
+When a new model instance is created, only user checks are evaluated.
 
 ### DataStoreTransaction Changes
 
@@ -119,11 +127,20 @@ The transaction `getAttribute` and `setAttribute` functions now take `Attribute`
 
 The `DataStoreTransaction` no longer requires a method to access the User object during transaction initialization.
 
+#### RequestScope in every contract
+
+Nearly every method now takes a RequestScope object.
+
+#### Contract changes for support methods
+
+The methods `supportsFiltering`, `supportPagination`, and `supportSorting` include additional information to help data stores make more informed decisions.
+
 ### Lifecycle Hook Refactor
 
-The life cycle hook function now includes an extra parameter to indicate what operation is being performed on the model:
+The life cycle hook function now includes extra parameters to indicate what operation is being performed on the model and when in the transaction lifecycle it occurred:
 ```java
 public abstract void execute(LifeCycleHookBinding.Operation operation,
+                             LifeCycleHookBinding.TransactionPhase phase,
                              T elideEntity,
                              RequestScope requestScope,
                              Optional<ChangeSpec> changes);
