@@ -14,7 +14,7 @@ Elide includes a semantic modeling layer and analytic query API for OLAP style q
 
 A **semantic model** is the view of the data you want your users to understand. It is typically non-relational (for simplicity) and consists of concepts like tables, measures, and dimensions. End users refer to these concepts by name only (they are not expected to derive formulas or know about the physical storage or serialization of data).
 
-A **virtual semantic layer** maps a semantic model to columns and tables in a physical database. Elide’s virtual semantic layer accomplishes this mapping through a [HJSON](https://hjson.github.io/) configuration language. HJSON is a human friendly adaptation of JSON that allows comments and a relaxed syntax among other features. Elide’s virtual semantic layer includes the following information:
+A **virtual semantic layer** maps a semantic model to columns and tables in a physical database. Elide’s virtual semantic layer accomplishes this mapping through a [Hjson](https://hjson.github.io/) configuration language. Hjson is a human friendly adaptation of JSON that allows comments and a relaxed syntax among other features. Elide’s virtual semantic layer includes the following information:
 
  * The defintions of tables, measures, and dimensions you want to expose to the end user.
  * Metadata like descriptions, categories, and tags that better describe and label the semantic model.
@@ -24,13 +24,15 @@ Elide leverages the `AggregationDataStore` store to expose the read-only models 
 
 The Aggregation store includes a companion store, the `MetaDataStore`, which exposes metadata about the Aggregation store models including their metrics and dimensions.  The metadata store models are predefined, read-only, and served from server memory.
 
-There are two mechanisms to create models in the Aggregation store:
+There are two mechanisms to create models in the the Aggregation store's semantic layer:
 1. Through [Hjson](https://hjson.github.io/) configuration files that can be maintained without writing code or rebuilding the application.
 2. Through JVM language classes annotated with Elide annotations.
 
 The former is preferred for most use cases because of better ergonomics for non-developers.  The latter is useful to add custom Elide security rules or life cycle hooks.
 
+<!-- 
 With the introduction of the Aggregation store, Elide now integrates with [Yavin](https://yavin.dev/) - a companion UI framework that provides data visualization and analytics.
+-->
 
 # Querying
 
@@ -82,7 +84,7 @@ There are feature flags that enable Hjson configuration, analytic queries, and [
 
 ## File Layout
 
-Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ Hjson configuration files.  Hjson configuration files can be sourced either from the local filesystem or the classpath.  Either way, they must conform to the following directory structure:
+Analtyic model configuration can either be specified through JVM classes decorated with Elide annotations _or_ Hjson configuration files.  Hjson configuration files can be sourced either from the local filesystem or the classpath.  If Hjson configuration is found in the classpath, the filesystem is ignored.  All Hjson configuration must conform to the following directory structure:
 
 ```
 CONFIG_ROOT/
@@ -105,7 +107,6 @@ CONFIG_ROOT/
 5. Data source Hjson files support variable substitution with variables defined in `/db/variables.hjson`.
 
 CONFIG_ROOT can be any directory in the filesystem or classpath.  The root configuration location can be set as follows:
-
 
 {% include code_example example="04-dynamic-config-path" %}
 
@@ -209,7 +210,7 @@ Some metrics have **FunctionArguments**.  They represent parameters that are sup
 Tables must source their columns from somewhere.  There are three, mutually exclusive options:
 1.  Tables can source their columns from a physical table.  
 2.  Tables can source their columns from a SQL subquery.
-3.  Tables can extend (override or add columns) an existing Table. More details [here](#inheritance).
+3.  Tables can extend (override or add columns to) an existing Table. More details can be found [here](#inheritance).
 
 These options are configured via the 'table', 'sql', and 'extend' [properties](#table-properties).
 
@@ -221,7 +222,7 @@ Tables include the following properties:
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
-| friendlyName          | The friendly name for this table to be displayed in the UI. | 'Player Stats' | `@TableMeta(friendlyName="Player Stats")` |
+| friendlyName          | The friendly name for this table.  Unicode characters are supported.  | 'Player Stats' | `@TableMeta(friendlyName="Player Stats")` |
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
 | category              | A free-form text category for the table. | 'Some Category' | `@TableMeta(category="Some Category")` |
 | tags                  | A list of free-form text labels for the table. | ['label1', 'label2'] | `@TableMeta(tags={"label1","label2"})` |
@@ -234,7 +235,7 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'member and admin.user' | `@ReadPermission(expression="member and admin.user")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
-| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Navi will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
+| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Yavin will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
 
 ### Columns
@@ -271,7 +272,7 @@ Columns include the following properties:
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
-Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead or other uses) :
+Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead search or other uses) :
 
 | Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
@@ -340,7 +341,7 @@ Column references must be wrapped in curly braces and are replaced at query time
 
 ### Inheritance
 
-Tables can extend an existing Table. The following actions can be performed:
+Tables can extend another existing Table. The following actions can be performed:
 * New columns can be added.
 * Existing columns can be modified.
 * [Table properties](#table-properties) can be modified.
@@ -388,9 +389,13 @@ The list of available security roles can be defined in the security.hjson file:
 }
 ```
 
+Each role defined generates an Elide [user check](/pages/guide/v{{ page.version }}/03-security.html#user-checks) that extends [RoleMemberCheck](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/security/checks/prefab/Role.java#L38-L48).  
+
 These roles can then be referenced in security rules applied to entire tables or individual columns in their respective Hjson configuration:
 
 `readAccess = 'member OR guest user'`
+
+The `readAccess` table and column attribute can also reference Elide checks that are compiled with your application to implement row level security or other more complex security rules.
 
 ## Variable Substitution
 
@@ -425,7 +430,7 @@ All Hjson configuration files are validated by a JSON schema.  The schemas for e
 1. [Security Config](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideSecuritySchema.json)
 1. [Variable File](https://github.com/yahoo/elide/blob/master/elide-model-config/src/main/resources/elideVariableSchema.json)
 
-HJSON configuration files can be validated against schemas using the command-line utility.
+Hjson configuration files can be validated against schemas using a command-line utility following these steps:
 
 1. Build your Elide project to generate a Fat JAR. Make sure to include a Fat JAR build configuration in your POM file.
 
