@@ -277,7 +277,7 @@ Non-time dimensions include the following properties that describe where a discr
 | Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
-| tableSource           | The table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
+| tableSource           | The semantic table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
 {:.table}
 
 #### Time Dimensions & Time Grains
@@ -318,7 +318,7 @@ Each join definition includes the following properties:
 | Hjson Property        | Explanation                                                      |
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | A unique name for the join.  The name can be referenced in column definitions. |
-| to                    | The name of the Elide model being joined against.                |
+| to                    | The name of the Elide model being joined against.  This can be a semantic model or a CRUD model. |
 | kind                  | 'toMany' or 'toOne' (Default: toOne)                  |
 | type                  | 'left', 'inner', 'full' or 'cross' (Default: left)                           |
 | definition            | A templated SQL join expression.  See below. |

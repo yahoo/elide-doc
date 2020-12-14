@@ -14,7 +14,7 @@ Elide 5 introduces three primary new features:
  - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
  - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
 
-The analytics capabilities and asynchronous API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/).
+<!-- The analytics capabilities and asynchronous API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). -->
 
 ## API Changes
 
@@ -38,7 +38,7 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
 ## Module & Package Changes
 
 Because Elide 5 is a major release, we took time to reorganize the module & package structure including:
- - elide-example has been removed.  The only Elide examples we plan to maintain are the spring boot and standalone examples.
+ - elide-example has been removed.  The only Elide examples we plan to maintain are the [spring boot](https://github.com/yahoo/elide-spring-boot-example) and [standalone](https://github.com/yahoo/elide-standalone-example) examples.
  - elide-contrib submodules have been promoted to mainline modules elide-swagger and elide-test.
  - elide-annotations has been absorbed into elide-core.
  - New modules were created for elide-async (async API), elide-model-config (the semantic layer), and elide-datastore/elide-datastore-aggregation (the analytics module).
