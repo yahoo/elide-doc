@@ -24,7 +24,7 @@ Elide leverages the `AggregationDataStore` store to expose the read-only models 
 
 The Aggregation store includes a companion store, the `MetaDataStore`, which exposes metadata about the Aggregation store models including their metrics and dimensions.  The metadata store models are predefined, read-only, and served from server memory.
 
-There are two mechanisms to create models in the the Aggregation store's semantic layer:
+There are two mechanisms to create models in the Aggregation store's semantic layer:
 1. Through [Hjson](https://hjson.github.io/) configuration files that can be maintained without writing code or rebuilding the application.
 2. Through JVM language classes annotated with Elide annotations.
 
@@ -235,7 +235,7 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'member and admin.user' | `@ReadPermission(expression="member and admin.user")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
-| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. Yavin will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
+| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. <!-- Yavin will use this flag to determine which tables can be used to build reports. --> | true | `@TableMeta(isFact=false)` |
 {:.table}
 
 ### Columns
