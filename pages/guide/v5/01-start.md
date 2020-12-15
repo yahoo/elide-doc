@@ -14,7 +14,7 @@ You can deploy and play with this example on Heroku or locally.  The landing pag
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-spring-boot-example)
 
 Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone).
-Don't like Java?  [Here][navi-example] is an example project using Elide with Kotlin.
+Don't like Java?  [Here][yavin-example] is an example project using Elide with Kotlin.
 
 ## Contents
 1. Contents
@@ -199,6 +199,6 @@ Here are the respective responses:
 {% include code_example example="01-data-analytics-rsp" %}
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
-[navi-example]: https://github.com/yahoo/navi/tree/master/packages/webservice
+[yavin-example]: https://github.com/yahoo/yavin/tree/master/packages/webservice
 [demo-schema]: https://github.com/yahoo/elide-spring-boot-example/blob/master/src/main/resources/db/changelog/changelog.xml
 [swagger-ui]: https://swagger.io/tools/swagger-ui/
