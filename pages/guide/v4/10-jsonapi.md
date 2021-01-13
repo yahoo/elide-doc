@@ -269,34 +269,45 @@ Important Caveats:
 ## Links
 ------------
 
-JSON-API links are disabled by default.  To turn them on for spring boot, Override the default Elide configuration bean:
+JSON-API links are disabled by default.  They can be enabled in application.yaml:
 
-```java
-    @Bean
-    public Elide initializeElide(EntityDictionary dictionary, DataStore dataStore, ElideConfigProperties settings) {
-        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
-		... // Removed other settings for clarity
-                .withJSONApiLinks(new DefaultJSONApiLinks());
-        return new Elide(builder.build());
-    }
-
+```yaml
+elide:
+  baseUrl: 'https://elide.io'
+  json-api:
+    path: /json
+    enabled: true
+    enableLinks: true
 ```
 
-Similarly, for Elide standalone, you can turn them on by overriding ElideStandaloneSettings:
+The `enableLinks` property switches the feature on.  The `baseUrl` property provides the URL schema, host, and port your clients use to connect to your service.  The `path` property provides the route where the JSON-API controller is rooted.  All link URLs using the above configuration would be prefixed with 'https://elide.io/json'.
+
+If `baseUrl` is not provided, Elide will generate the link URL prefix using the client HTTP request.
+
+For Elide standalone, you can enable links by overriding ElideStandaloneSettings and configure the settings:
 
 ```java
-    ElideSettings getElideSettings(final ServiceLocator injector) {
+
+    @Override
+    public String getBaseUrl() {
+        return "https://elide.io";
+    }
+    
+    @Override
+    public ElideSettings getElideSettings(final ServiceLocator injector) {
         ... //Removed other initialization for clarity
+
+        String jsonApiBaseUrl = getBaseUrl() + getJsonApiPathSpec().replaceAll("/\\*", "") + "/";
 
         ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
 		... // Removed other settings for clarity
-                .withJSONApiLinks(new DefaultJSONApiLinks());
+                .withJSONApiLinks(new DefaultJSONApiLinks(jsonApiBaseUrl));
        
         return builder.build();
     }
 ```
 
-This will result in payload responses that look like:
+Enabling JSON-API links will result in payload responses that look like:
 
 ```json
 {
@@ -311,8 +322,8 @@ This will result in payload responses that look like:
             "relationships": {
                 "products": {
                     "links": {
-                        "self": "http://localhost:55302/api/v1/group/com.example.repository/relationships/products",
-                        "related": "http://localhost:55302/api/v1/group/com.example.repository/products"
+                        "self": "https://elide.io/api/v1/group/com.example.repository/relationships/products",
+                        "related": "https://elide.io/api/v1/group/com.example.repository/products"
                     },
                     "data": [
                         
@@ -320,14 +331,14 @@ This will result in payload responses that look like:
                 }
             },
             "links": {
-                "self": "http://localhost:55302/api/v1/group/com.example.repository"
+                "self": "https://elide.io/api/v1/group/com.example.repository"
             }
         }
     ]
 }
 ```
 
-You can customize the links that are returned by registering your own implementation of `JsonApiLinks`:
+You can customize the links that are returned by registering your own implementation of `JsonApiLinks` with ElideSettings:
 
 ```java
 public interface JSONApiLinks {
