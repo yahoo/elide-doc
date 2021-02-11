@@ -16,9 +16,15 @@ AsyncQuery JSON-API: |+2
             "createdOn": "2020-04-08T23:29Z",
             "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
             "queryType": "JSONAPI_V1_0",
-            "status": "QUEUED",
+            "status": "COMPLETE",
             "updatedOn": "2020-04-08T23:29Z",
-            "result": null
+            "result": {
+                "recordCount": 2,
+                "httpStatus": 200,
+                "completedOn": "2020-04-08T23:29Z",
+                "contentLength": 282,
+                "responseBody": "{\"data\":[{\"type\":\"group\",\"id\":\"com.yahoo.elide\",\"attributes\":{\"commonName\":\"Elide\",\"description\":\"The magical library powering this project\"}},{\"type\":\"group\",\"id\":\"com.example.repository\",\"attributes\":{\"commonName\":\"Example Repository\",\"description\":\"The code for this project\"}}]}"
+            }
         }
     }
   }
@@ -34,7 +40,14 @@ AsyncQuery GraphQL: |+2
                     "id": "bb31ca4e-ed8f-4be0-a0f3-12088fb9263e",
                     "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
                     "queryType": "GRAPHQL_V1_0",
-                    "status": "PROCESSING"
+                    "status": "COMPLETE",
+                    "result" : {
+                        "completedOn": "2020-04-08T21:25Z",
+                        "responseBody": "{\"data\":{\"group\":{\"edges\":[{\"node\":{\"name\":\"com.example.repository\"}},{\"node\":{\"name\":\"com.yahoo.elide\"}},{\"node\":{\"name\":\"elide-demo\"}}]}}}",
+                        "contentLength": 109,
+                        "httpStatus": 200,
+                        "recordCount": 2
+                    }
                 }
             }]
         }
@@ -54,9 +67,16 @@ TableExport JSON-API: |+2
             "createdOn": "2020-04-08T23:29Z",
             "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
             "queryType": "JSONAPI_V1_0",
-            "status": "QUEUED",
+            "resultType": "CSV",
+            "status": "COMPLETE",
             "updatedOn": "2020-04-08T23:29Z",
-            "result": null
+            "result": {
+                "recordCount": 2,
+                "httpStatus": 200,
+                "completedOn": "2020-04-08T23:29Z",
+                "url": "http://localhost:8080/export/ba31ca4e-ed8f-4be0-a0f3-12088fa9263f",
+                "message": null
+            }
         }
     }
   }
@@ -73,7 +93,14 @@ TableExport GraphQL: |+2
                     "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
                     "queryType": "GRAPHQL_V1_0",
                     "resultType": "CSV",
-                    "status": "PROCESSING"
+                    "status": "COMPLETE",
+                    "result": {
+                        "completedOn": "2020-04-08T21:25Z",
+                        "url": "http://localhost:8080/export/bb31ca4e-ed8f-4be0-a0f3-12088fb9263g",
+                        "message": null,
+                        "httpStatus": 200,
+                        "recordCount": 2
+                    }
                 }
             }]
         }

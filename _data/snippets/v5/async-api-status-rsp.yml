@@ -44,8 +44,9 @@ AsyncQuery GraphQL: |+2
                     "result" : {
                         "completedOn": "2020-04-08T21:25Z",
                         "responseBody": "{\"data\":{\"group\":{\"edges\":[{\"node\":{\"name\":\"com.example.repository\"}},{\"node\":{\"name\":\"com.yahoo.elide\"}},{\"node\":{\"name\":\"elide-demo\"}}]}}}",
-                        "contentLength": 140,
-                        "httpStatus": 200
+                        "contentLength": 109,
+                        "httpStatus": 200,
+                        "recordCount": 2
                     }
                 }
             }]
@@ -66,6 +67,7 @@ TableExport JSON-API: |+2
             "createdOn": "2020-04-08T21:25Z",
             "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
             "queryType": "JSONAPI_V1_0",
+            "resultType": "CSV",
             "status": "COMPLETE",
             "updatedOn": "2020-04-08T21:25Z",
             "result": {
@@ -90,6 +92,7 @@ TableExport GraphQL: |+2
                     "id": "bb31ca4e-ed8f-4be0-a0f3-12088fb9263e",
                     "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
                     "queryType": "GRAPHQL_V1_0",
+                    "resultType":"CSV",
                     "status": "COMPLETE",
                     "result" : {
                         "completedOn": "2020-04-08T21:25Z",

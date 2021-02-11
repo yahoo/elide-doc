@@ -15,7 +15,7 @@ AsyncQuery GraphQL: |+2
   curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
       "http://localhost:8080/graphql/api/v1" \
       -d'{
-             "query" : "{ asyncQuery (ids: \"bb31ca4e-ed8f-4be0-a0f3-12088fa9263e\") { edges { node { id query queryType status result {completedOn responseBody contentLength httpStatus}} } } }"
+             "query" : "{ asyncQuery (ids: \"bb31ca4e-ed8f-4be0-a0f3-12088fb9263e\") { edges { node { id query queryType status result {completedOn responseBody contentLength httpStatus recordCount}} } } }"
         }'
   ```
 
