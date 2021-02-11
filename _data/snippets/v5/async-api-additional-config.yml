@@ -11,6 +11,11 @@ Spring: |+2
       queryCleanupDays: 10
       queryCancellationIntervalSeconds: 600
       maxAsyncAfterSeconds: 30
+      export:
+        enabled: true
+        path: /export
+        skipCSVHeader: false
+        storageDestination: /tmp
   ```
 
 Elide Standalone: |+2
@@ -33,15 +38,45 @@ Elide Standalone: |+2
               return 10;
           }
 
-         @Override
-         default Integer getQueryCancelCheckIntervalSeconds() {
-             return 600;
-         }
+          @Override
+          default Integer getQueryCancelCheckIntervalSeconds() {
+              return 600;
+          }
 
-        @Override
-        default Integer getMaxAsyncAfterSeconds() {
-            return 30;
-        }
+          @Override
+          default Integer getMaxAsyncAfterSeconds() {
+              return 30;
+          }
+
+          @Override
+          default String getExportApiPathSpec() {
+              return "/export/*";
+          }
+
+          @Override
+          default boolean enableExport() {
+              return false;
+          }
+
+          @Override
+          default boolean skipCSVHeader() {
+              return false;
+          }
+
+          @Override
+          default String getStorageDestination() {
+              return "/tmp";
+          }
+
+          @Override
+          default Integer getExportAsyncResponseTimeoutSeconds() {
+              return 30;
+          }
+
+          @Override
+          default ExecutorService getExportAsyncResponseExecutor() {
+              return enableExport() ? Executors.newFixedThreadPool(getThreadSize() == null ? 6 : getThreadSize()) : null;
+          }
       }
       return asyncProperties;
   }

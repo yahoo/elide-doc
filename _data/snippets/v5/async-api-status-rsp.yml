@@ -1,6 +1,8 @@
 files:
   - AsyncQuery JSON-API
   - AsyncQuery GraphQL
+  - TableExport JSON-API
+  - TableExport GraphQL
 
 AsyncQuery JSON-API: |+2
   ```json
@@ -35,7 +37,7 @@ AsyncQuery GraphQL: |+2
         "asyncQuery": {
             "edges": [{
                 "node": {
-                    "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263e",
+                    "id": "bb31ca4e-ed8f-4be0-a0f3-12088fb9263e",
                     "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
                     "queryType": "GRAPHQL_V1_0",
                     "status": "COMPLETE",
@@ -44,6 +46,57 @@ AsyncQuery GraphQL: |+2
                         "responseBody": "{\"data\":{\"group\":{\"edges\":[{\"node\":{\"name\":\"com.example.repository\"}},{\"node\":{\"name\":\"com.yahoo.elide\"}},{\"node\":{\"name\":\"elide-demo\"}}]}}}",
                         "contentLength": 140,
                         "httpStatus": 200
+                    }
+                }
+            }]
+        }
+    }
+  }
+  ```
+
+TableExport JSON-API: |+2
+  ```json
+  {
+    "data": {
+        "type": "tableExport",
+        "id": "ba31ca4e-ed8f-4be0-a0f3-12088fa9263f",
+        "attributes": {
+            "asyncAfterSeconds": 10,
+            "principalName": null,
+            "createdOn": "2020-04-08T21:25Z",
+            "query": "/group?sort=commonName&fields%5Bgroup%5D=commonName,description",
+            "queryType": "JSONAPI_V1_0",
+            "status": "COMPLETE",
+            "updatedOn": "2020-04-08T21:25Z",
+            "result": {
+                "recordCount": 2,
+                "httpStatus": 200,
+                "completedOn": "2020-04-08T23:29Z",
+                "url": "http://localhost:8080/export/ba31ca4e-ed8f-4be0-a0f3-12088fa9263f",
+                "message": null
+            }
+        }
+    }
+  }
+  ```
+
+TableExport GraphQL: |+2
+  ```json
+  {
+    "data": {
+        "asyncQuery": {
+            "edges": [{
+                "node": {
+                    "id": "bb31ca4e-ed8f-4be0-a0f3-12088fb9263e",
+                    "query": "{\"query\":\"{ group { edges { node { name } } } }\",\"variables\":null}",
+                    "queryType": "GRAPHQL_V1_0",
+                    "status": "COMPLETE",
+                    "result" : {
+                        "completedOn": "2020-04-08T21:25Z",
+                        "url": "http://localhost:8080/export/bb31ca4e-ed8f-4be0-a0f3-12088fb9263g",
+                        "message": null,
+                        "httpStatus": 200,
+                        "recordCount": 2
                     }
                 }
             }]

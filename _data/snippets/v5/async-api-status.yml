@@ -1,6 +1,8 @@
 files:
   - AsyncQuery JSON-API
   - AsyncQuery GraphQL
+  - TableExport JSON-API
+  - TableExport GraphQL
 
 AsyncQuery JSON-API: |+2
   ```curl
@@ -13,6 +15,21 @@ AsyncQuery GraphQL: |+2
   curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
       "http://localhost:8080/graphql/api/v1" \
       -d'{
-             "query" : "{ asyncQuery (ids: \"ba31ca4e-ed8f-4be0-a0f3-12088fa9263e\") { edges { node { id query queryType status result {completedOn responseBody contentLength httpStatus}} } } }"
+             "query" : "{ asyncQuery (ids: \"bb31ca4e-ed8f-4be0-a0f3-12088fa9263e\") { edges { node { id query queryType status result {completedOn responseBody contentLength httpStatus}} } } }"
+        }'
+  ```
+
+TableExport JSON-API: |+2
+  ```curl
+  curl -X GET http://localhost:8080/api/v1/tableExport/ba31ca4e-ed8f-4be0-a0f3-12088fa9263f \
+      -H"Content-Type: application/vnd.api+json" -H"Accept: application/vnd.api+json"
+  ```
+
+TableExport GraphQL: |+2
+  ```curl
+  curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
+      "http://localhost:8080/graphql/api/v1" \
+      -d'{
+             "query" : "{ tableExport (ids: \"bb31ca4e-ed8f-4be0-a0f3-12088fb9263g\") { edges { node { id query queryType resultType status result {completedOn url message httpStatus recordCount}} } } }"
         }'
   ```
