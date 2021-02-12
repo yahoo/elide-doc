@@ -4,14 +4,15 @@ files:
   - CSV
 
 TableExport Result: |+2
-  ```
-  "result" : {
+  ```json
+  {"result" : {
                       "completedOn": "2020-04-08T21:25Z",
                       "url": "http://localhost:8080/export/bb31ca4e-ed8f-4be0-a0f3-12088fb9263g",
                       "message": null,
                       "httpStatus": 200,
                       "recordCount": 2
               }
+  }
   ```
 JSON: |+2
   ```json
