@@ -67,12 +67,15 @@ The release build is triggered by a github tag or release event.  Screwdriver wi
 `mvn -B -DskipTests deploy --settings ./settings.xml`
 
 To initiate a release, perform the following steps:
-0. Checkout the Elide source code into a clean directory: `git clone git@github.com:yahoo/elide.git`
-1. Run the following command to build a list of changelog entries since the prior release: `git log $CURRENT_VERSION... --pretty=format:'   * [view commit](https://github.com/yahoo/elide/commit/%H) %s ' --reverse`.  The environment variable $CURRENT_VERSION must be set to the current elide version.
+0. Checkout the Elide source code into a clean directory: 
+   - `git clone git@github.com:yahoo/elide.git`
+1. Run the following command to build a list of changelog entries since the prior release: 
+   - `git log $CURRENT_VERSION... --pretty=format:'   * [view commit](https://github.com/yahoo/elide/commit/%H) %s ' --reverse`
+   - The environment variable `$CURRENT_VERSION` must be set to the current elide version.
 2. After the command runs, edit `changelog.md` on the release branch.  The file must be hand edited to break the log into sections for **Features** and **Fixes** along with a new heading for the current release.  Commit the changes and pull them into your local github clone.
 3. Either run:
-   1. `mvn -B release:prepare` if the build is for a patch release.
-   2. `mvn -B release:prepare -DautoVersionSubmodules=true -DreleaseVersion=$NEXT_VERSION` for all other releases.  The environment variable $NEXT_VERSION must be set to the next elide release version.
+   - `mvn -B release:prepare` if the build is for a patch release.
+   - `mvn -B release:prepare -DautoVersionSubmodules=true -DreleaseVersion=$NEXT_VERSION` for all other releases.  The environment variable $NEXT_VERSION must be set to the next elide release version.
 2. Monitor the build and make sure it succeeds in screwdriver.cd.
 3. In a browser, navigate to https://bintray.com/yahoo/maven/elide
 4. Navigate to the release tag and then to "Maven Central"
@@ -81,6 +84,25 @@ To initiate a release, perform the following steps:
 7. Copy the user token key and password into bintray.  Click Sync (to publish to maven central).  Click Publish (to release on bintray).
 
 ### Integration Tests
+
+The elide-integration-tests module runs API tests against an embedded Jetty application with an H2 database for persistence.  Integration tests are run for the JPA, hibernate, and inmemory stores.  The module produce a 'test-jar' artifact that is then referenced for each data store module (jpa, hibernate, etc) that runs the corresponding tests.
+
+Not every tests works for every store, and JUnit tags are leveraged to isolate the tests appropriate for each target.  
+
+When run in an IDE, the inmemory store is leveraged.  To tests against a different data store, the IDE must be configured to:
+1. Set a property that selects the [DataStoreTestHarness](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/datastore/test/DataStoreTestHarness.java) which in turn initializes the data store to test. 
+2. Sets the classpath appropriately to the data store submodule that is being tested.
+
+The following screenshot demonstrates configuring these two settings for the 'FilterIT' tests in IntelliJ:
+
+![Configuring IT Tests In Intellij](/assets/images/intellij_config.png){:class="img-fluid"}
+
 ### High Level Design
+
 ### Security Subsystem
+
+Coming Soon.
+
 ### Analytic Query Subsystem
+
+Coming Soon.
