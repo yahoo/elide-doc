@@ -99,6 +99,52 @@ The following screenshot demonstrates configuring these two settings for the 'Fi
 
 ### High Level Design
 
+The following diagram represents a high level component breakout of Elide.  Names in italics represent class names whereas other names represent functional blocks (made up of many classes).  Gray arrows represent client request and response flow through the system.  
+
+![High Level Design](/assets/images/high_level_design.png){:class="img-fluid"}
+
+Elide can be broken down into the following layers:
+
+#### Parsing Layer
+
+The parsing layer consists of a JSON-API parser and GraphQL parser.  This layer is responsible for mapping a client request in JSON-API or GraphQL into [Elide's internal request model](#client-request-model).  The parsers load, create, and manipulate Elide models via the `PersistentResource`.  
+
+#### Business Logic Layer
+
+The business logic layer is responsible for performing:
+ - Authorization checks
+ - Lifecycle hooks
+ - Audit & Logging
+
+All elide models (once loaded or created) are wrapped in a `PersistentResource`.  All attribute and relationship access (read & write) occur through this abstraction allowing a central place to enforce business rules.
+
+In addition to invoking security checks and lifecycle hooks, the `PersistentResource` is also responsible for reading and writing the model and its fields to the persistence layer.
+
+#### Persistence Layer
+
+The persistence layer consists of two abstractions and their concrete implementations:
+
+ - A `DataStore` which is responsible for telling Elide which models it manages and creating `DataStoreTransaction` objects.
+ - A `DataStoreTransaction` which is created per request and is responsible for saving, loading, and deleting Elide models.   Each request's interactions with the persistence layer should occur atomically. 
+
+Elide comes bundled with a number of `DataStore` [implementations](/pages/guide/v{{ page.version }}/06-datatstores.html).  The most notable are the JPA, Search, and Aggregation stores.
+
+#### Client Request Model
+
+The primary object in the client request model is the `EntityProjection`.  It represents the entire object graph to return for a particular client request.  The entity projection consists of `Attribute` objects (model fields), `Relationship` objects (named entity projections), and also whether the projection should be filtered, sorted, or paginated.  `Attribute` objects can take `Argument` objects as parameters.
+
+#### Metadata and Configuration
+
+Elide is configured either with Spring Boot or the elide-standalone module.  Application settings for spring and standalone are mapped to an internal `ElideSettings` object that configures the Elide framework (denoted by the `Elide` object).   
+
+All static metadata about Elide models is extracted at service boot and stored in the `EntityDictionary`.  This class is used throughout Elide whenever a model must be read from or written to by the `PersistentResource`.
+
+While earlier versions of Elide represented models as JVM classes, Elide 5 introduces its own `Type` system.  This allows Elide to register and use dynamic models that are not JVM classes or even models that are created after the service starts.
+
+#### Modeling
+
+CRUD models in Elide are created from JVM classes whereas analytic models are created either from JVM classes or HJSON configuration files.  In either case, Elide annotations are used to add metadata Elide needs to perform persistence and business rules.  All Elide annotations are documented [here](/pages/guide/v{{ page.version }}/15-annotations.html).
+
 ### Security Subsystem
 
 Coming Soon.
