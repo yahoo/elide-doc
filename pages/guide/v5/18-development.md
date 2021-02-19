@@ -18,7 +18,7 @@ Thereafter, individual modules can be built whenever making changes to them.  Fo
 
 `mvn clean install -f elide-core`
 
-Pull requests and release builds leverage [screwdriver][screwdriver.cd].   PR builds simply run the complete build along with code coverage:
+Pull requests and release builds leverage [screwdriver](https://screwdriver.cd).   PR builds simply run the complete build along with code coverage:
 `mvn -B clean verify coveralls:report`.
 
 ### Release Versions
