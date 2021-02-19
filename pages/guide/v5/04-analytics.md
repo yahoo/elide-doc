@@ -180,6 +180,7 @@ A dialect must be configured for Elide to correctly generate analytic SQL querie
 | PrestoDB      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PrestoDBDialect |
 | Postgres      | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.PostgresDialect |
 | MySQL         | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.MySQLDialect    |
+| Druid         | com.yahoo.elide.datastores.aggregation.queryengines.sql.dialects.impl.DruidDialect    |
 {:.table}
 
 If not leveraging Hjson configuration, a default dialect can be configured for analytic queries:
