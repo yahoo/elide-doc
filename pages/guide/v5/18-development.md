@@ -44,7 +44,7 @@ To initiate a release, perform the following steps:
 3. Either run:
    - `mvn -B release:prepare` if the build is for a patch release.
    - `mvn -B release:prepare -DautoVersionSubmodules=true -DreleaseVersion=$NEXT_VERSION` for all other releases.  The environment variable $NEXT_VERSION must be set to the next elide release version.
-2. Monitor the build and make sure it succeeds in screwdriver.cd.
+2. [Monitor the build](https://cd.screwdriver.cd/pipelines/6103) and make sure it succeeds in screwdriver.cd.
 3. In a browser, navigate to https://bintray.com/yahoo/maven/elide
 4. Navigate to the release tag and then to "Maven Central"
 5. Navigate to oss.sonatype.org
