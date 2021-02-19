@@ -30,9 +30,7 @@ There are two mechanisms to create models in the Aggregation store's semantic la
 
 The former is preferred for most use cases because of better ergonomics for non-developers.  The latter is useful to add custom Elide security rules or life cycle hooks.
 
-<!-- 
 With the introduction of the Aggregation store, Elide now integrates with [Yavin](https://yavin.dev/) - a companion UI framework that provides data visualization and analytics.
--->
 
 # Querying
 
@@ -236,7 +234,7 @@ Tables include the following properties:
 | readAccess            | An elide permission rule that governs read access to the table. | 'member and admin.user' | `@ReadPermission(expression="member and admin.user")` |
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
-| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise. <!-- Yavin will use this flag to determine which tables can be used to build reports. --> | true | `@TableMeta(isFact=false)` |
+| isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise.  Yavin will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 {:.table}
 
 ### Columns
