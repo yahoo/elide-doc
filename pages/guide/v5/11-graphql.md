@@ -190,6 +190,7 @@ The following RSQL operators are supported:
 * `=hasmember=` : Determines if a collection contains a particular element.
 * `=hasnomember=` : Determines if a collection does not contain a particular element.
 
+The operators 'hasmember' and 'hasnomember' can be applied to collections (book.awards) or across to-many relationships (book.authors.name).
 
 ##### FIQL Default Behaviour
 By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
