@@ -262,10 +262,10 @@ The Swagger UI is very slow when the number of generated URL paths exceeds a few
 generate separate swagger documents for subgraphs of the model.  
 
 ```java
-Set<Class<?>> entities = Sets.newHashSet(
-    Book.class,
-    Author.class,
-    Publisher.class
+Set<Type<?>> entities = Sets.newHashSet(
+    new ClassType(Book.class),
+    new ClassType(Author.class),
+    new ClassType(Publisher.clas)s
 );
 
 SwaggerBuilder coreBuilder = new SwaggerBuilder(dictionary, info)

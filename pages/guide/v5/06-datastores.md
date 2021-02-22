@@ -170,29 +170,43 @@ The Data Store Transaction can inform Elide of its capabilities by overriding th
 ```java
 /**
  * Whether or not the transaction can filter the provided class with the provided expression.
- * @param entityClass The class to filter
- * @param expression The filter expression
+ * @param scope The request scope
+ * @param projection The projection being loaded
+ * @param parent Are we filtering a root collection or a relationship
+ * @param <T> - The model type of the parent model (if a relationship is being filtered).
  * @return FULL, PARTIAL, or NONE
  */
-default FeatureSupport supportsFiltering(Class<?> entityClass, FilterExpression expression) {
+default <T> FeatureSupport supportsFiltering(RequestScope scope,
+                                             Optional<T> parent,
+                                             EntityProjection projection) {
     return FeatureSupport.FULL;
 }
 
 /**
  * Whether or not the transaction can sort the provided class.
- * @param entityClass
+ * @param scope The request scope
+ * @param projection The projection being loaded
+ * @param parent Are we filtering a root collection or a relationship
+ * @param <T> - The model type of the parent model (if a relationship is being sorted).
  * @return true if sorting is possible
  */
-default boolean supportsSorting(Class<?> entityClass, Sorting sorting) {
+default <T> boolean supportsSorting(RequestScope scope,
+                                    Optional<T> parent,
+                                    EntityProjection projection) {
     return true;
 }
 
 /**
  * Whether or not the transaction can paginate the provided class.
- * @param entityClass
+ * @param scope The request scope
+ * @param projection The projection being loaded
+ * @param parent Are we filtering a root collection or a relationship
+ * @param <T> - The model type of the parent model (if a relationship is being paginated).
  * @return true if pagination is possible
  */
-default boolean supportsPagination(Class<?> entityClass) {
+default <T> boolean supportsPagination(RequestScope scope,
+                                       Optional<T> parent,
+                                       EntityProjection projection) {
     return true;
 }
 ```

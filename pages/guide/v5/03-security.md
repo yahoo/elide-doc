@@ -90,7 +90,7 @@ In some cases, the check logic can be pushed down to the data store itself. For 
  * @param requestScope Request scope object
  * @return FilterExpression for FilterExpressionCheck.
  */
-public abstract FilterExpression getFilterExpression(Class<?> entityClass, RequestScope requestScope);
+public abstract FilterExpression getFilterExpression(Type<?> entityClass, RequestScope requestScope);
 ```
 
 `FilterExpressionCheck` _is_ an `OperationCheck`.  If a security rule combines both an `OperationCheck` and `FilterExpression` in a disjunction (logical OR), Elide will evaluate both in memory as operation checks.  

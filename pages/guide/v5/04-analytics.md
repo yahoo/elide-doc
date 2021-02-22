@@ -281,7 +281,7 @@ Non-time dimensions include the following properties that describe where a discr
 
 #### Time Dimensions & Time Grains
 
-Time dimensions represent time and include a time grain.  The time grain determines how time is represented as text in query filters and query results.  Supported time grains include:
+Time dimensions represent time and include one or more time grains.  The time grain determines how time is represented as text in query filters and query results.  Supported time grains include:
 
 | Grain        | Text Format           |
 | ------------ | --------------------- |
