@@ -71,19 +71,15 @@ Elide provides two capabilities to work around these issues for large tables tha
 To override the JPQL fragment Elide generates for a filter operator, you must define a JPQL Predicate Generator:
 
 ```java
-/**
- * Converts a JPQL column alias and list of arguments into a JPQL filter predicate fragment.
- */
 @FunctionalInterface
 public interface JPQLPredicateGenerator {
-
     /**
      * Generate a JPQL fragment for a particular filter operator.
-     * @param columnAlias The entity attribute being filtered.
-     * @param parameters A list of prepared statement parameters that will be populated.
+     * @param predicate The filter predicate
+     * @param aliasGenerator Given a path, returns a JPQL alias for that path.
      * @return A JPQL fragment.
      */
-    String generate(String columnAlias, List<FilterPredicate.FilterParameter> parameters);
+    String generate(FilterPredicate predicate, Function<Path, String> aliasGenerator);
 }
 ```
 
@@ -91,8 +87,8 @@ And then register it with Elide for the filter operator you want to modify.  Thi
 
 ```java
 FilterTranslator.registerJPQLGenerator(Operator.NOTNULL,
-    (columnAlias, params) -> {
-        return String.format("%s IS NOT NULL", columnAlias);
+    (predicate, aliasGenerator) -> {
+            return String.format("%s IS NOT NULL", aliasGenerator.apply(predicate.getPath()));
     }
 );
 ```
@@ -101,8 +97,8 @@ Or the override can be registered for a specific model attribute:
 
 ```java
 FilterTranslator.registerJPQLGenerator(Operator.NOTNULL, Book.class, "title",
-    (columnAlias, params) -> {
-        return String.format("%s IS NOT NULL", columnAlias);
+    (predicate, aliasGenerator) -> {
+            return String.format("%s IS NOT NULL", aliasGenerator.apply(predicate.getPath()));
     }
 );
 

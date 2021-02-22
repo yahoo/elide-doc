@@ -193,7 +193,7 @@ public interface JPQLPredicateGenerator {
 }
 ```
 
-## Types intead of Classes
+## Types instead of Classes
 
 Elide models are no longer static JVM classes but instead leverage Elide's new `Type` system.  This change allows data stores to register models that are not static classes.
 It is possible to convert between a Class and Type and vice versa.  An Elide model class can be converted to a Type by wrapping it in a `ClassType`:
