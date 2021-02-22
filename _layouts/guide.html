@@ -15,6 +15,11 @@ layout: default
         {% endif %} 
         {% endif %} 
         {% endfor %}
+        {% if page.version == 4 %}
+        <li><a href="{{ BASE_PATH }}/pages/guide/v5/01-start.html">Version 5 Documentation</a></li>
+        {% else %}
+        <li><a href="{{ BASE_PATH }}/pages/guide/v4/01-start.html">Version 4 Documentation</a></li>
+        {% endif %} 
       </ul>
     </div>
     <div class="col-sm-9 docs">

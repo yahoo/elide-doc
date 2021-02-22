@@ -54,13 +54,12 @@
             {% endif %} 
             {% endif %} 
             {% endfor %}
-  
-            {% if page.version %}
-            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/v{{ page.version }}/01-start.html">Documentation</a>
-            {% else %}
-            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/v4/01-start.html">Documentation</a>
-            {% endif %} 
             <a class="nav-item nav-link text-light ml-auto" href="https://spectrum.chat/elide">Community</a>
+            {% if page.version == 4 %}
+            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/v5/01-start.html">Version 5 Documentation</a></li>
+            {% else %}
+            <a class="nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}/pages/guide/v4/01-start.html">Version 4 Documentation</a></li>
+            {% endif %} 
           </div>
         </div>
         <a class="navbar-brand mr-0 d-none d-md-block" href="https://github.com/yahoo/elide">

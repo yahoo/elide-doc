@@ -6,7 +6,7 @@ layout: default
   <div class="jumbotron">
     <div class="container text-center">
       <h2>Model driven <span class="text-primary">{json:api}</span> & <span class="text-primary">GraphQL</span> web services for CRUD and Analytics.</h2>
-      <a href="pages/guide/v4/01-start.html">
+      <a href="pages/guide/v5/01-start.html">
         <button type="button" class="btn btn-primary text-light my-3">Get Started</button>
       </a>
       <div class="mb-3">
@@ -125,7 +125,7 @@ layout: default
   </div>
   <div class="text-center mt-5">
     <h2>Want to learn more?</h2>
-    <a href="/pages/guide/v4/01-start.html">
+    <a href="/pages/guide/v5/01-start.html">
       <button type="button" class="btn btn-primary text-light mb-2">Documentation</button>
     </a>
     <p>Or see our features below</p>
@@ -204,7 +204,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Analytic Queries</h4>
-        <p>Elide supports analytic queries against models crafted with its powerful semantic layer.  Elide APIs work natively with <a href="https://github.com/yahoo/navi">Navi</a> to visualize, explore, and report on your data.</p>
+        <p>Elide supports analytic queries against models crafted with its powerful semantic layer.  Elide APIs work natively with <a href="https://yavin.dev">Yavin</a> to visualize, explore, and report on your data.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
@@ -284,7 +284,7 @@ layout: default
 <div class="container text-center my-5">
   <h2>Opinionated APIs for web & mobile</h2>
   <p>Improve the velocity and quality of your team's work.</p>
-  <a href="/pages/guide/v4/01-start.html">
+  <a href="/pages/guide/v5/01-start.html">
     <button type="button" class="btn btn-primary text-light">Get Started</button>
   </a>
 </div>
@@ -296,7 +296,7 @@ layout: default
         <img src="assets/images/elide-white-logo.png" class="img-fluid" alt="Elide Logo">
       </div>
       <div class="col-sm links">
-        <a href="/pages/guide/v4/01-start.html">Documentation</a>
+        <a href="/pages/guide/v5/01-start.html">Documentation</a>
         <a href="/pages/license.html">Licensing</a>
       </div>
       <div class="col-sm links">
