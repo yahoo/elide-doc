@@ -12,15 +12,18 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 Elide 5 introduces three primary new features:
  - A new [semantic modeling layer and analytic query API](/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
  - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
+ - An [data export API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for exporting flat models as CSV or JSON.
  - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
+ - The 'hasmember' and 'hasnomember' filter operator supports predicates that traverse to-many relationships (book.authors.name=hasmember='Foo').
 
-The analytics capabilities and asynchronous API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). 
+The analytics capabilities, asynchronous API, and table export API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). 
 
 ## API Changes
 
 The only notable API change are:
 - [Improved error responses](https://github.com/yahoo/elide/pull/1200) that are more compatible with the JSON-API specification.
 - [FIQL operators are now case sensitive by default](https://github.com/yahoo/elide/pull/1519).  New case insensitive operators have been introduced allowing greater flexibility.  It is possible to revert to elide 4 semantics through configuration.
+- JSON-API now validates requests for invalid sparse fields and throws a 400 error if present.
 
 ## Interface Changes
 
@@ -34,6 +37,8 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - GraphQL has its own `FilterDialect` interface.
  - The `Include` annotation now defaults to marking models as root level.
  - Elide settings has been stripped of unnecessary configuration options.
+ - Elide 5 introduces a new type system for models allowing dynamic models that are not bound to JVM classes.
+ - The interface for overriding JPQL predicate generation for filter operators includes more information about the filter.
 
 ## Module & Package Changes
 
@@ -44,9 +49,9 @@ Because Elide 5 is a major release, we took time to reorganize the module & pack
  - New modules were created for elide-async (async API), elide-model-config (the semantic layer), and elide-datastore/elide-datastore-aggregation (the analytics module).
  - Some classes in elide-core were reorganized into new packages.
 
-### Security
+## Security
 
-#### Security Checks
+### Security Checks
 
 Elide no longer has separate classes (`InlineCheck` & `CommitCheck`) that determine when a check runs (immediately before a field is read/written or immediately before transaction commit).  Instead, all checks (regardless of type) run immediately before a field is read/written except for checks on newly created objects (which run at transaction commit).  The new class hierarchy looks like this:
 
@@ -77,9 +82,15 @@ Elide no longer has separate classes (`InlineCheck` & `CommitCheck`) that determ
   })
 </script>
 
+Filter expression checks now take a `Type` instead of a `Class` when referring to the Elide model:
+
+```java
+public abstract FilterExpression getFilterExpression(Type<?> entityClass, RequestScope requestScope);
+```
+
 See Elide's [security documentation](/pages/guide/v{{ page.version }}/03-security.html) for details on how to define checks.
 
-#### NonTransferable & SharePermission
+### NonTransferable & SharePermission
 
 Prior to Elide 5, models were unshareable by default and had to be annotated with `SharePermission` to share them with other collections after creation.  In Elide 5, the default state is inverted.  All models are shareable by default and must be explicitly marked `NonTransferable` to limit collection assignment after creation.  
 
@@ -87,7 +98,7 @@ Similar to Elide 4:
 1. All models, when initially created, can be added to any collection regardless of the `NonTransferable` annotation.
 2. A user agent must have read permission on a model to change which collections it belongs to after creation.
 
-#### User Object
+### User Object
 
 Elide's `User` abstraction has four new changes:
 1. `User` explicitly wraps a `java.security.Principal` object rather than a `java.lang.Object`.
@@ -99,13 +110,13 @@ Elide's `User` abstraction has four new changes:
 
 Security checks which dereference the `User` object will require changes to access the underlying principal object depending on the framework they use.
 
-#### User Checks for newly created objects
+### User Checks for newly created objects
 
 When a new model instance is created, only user checks are evaluated.
 
-### DataStoreTransaction Changes
+## DataStoreTransaction Changes
 
-#### Object Loading Changes
+### Object Loading Changes
 
 All methods which load objects from persistence now are passed an `EntityProjection` rather than a `Class`.  The projection has more information to help the `DataStore` optimize its loads including:
 1. The data type to load.
@@ -115,27 +126,31 @@ All methods which load objects from persistence now are passed an `EntityProject
 5. Any sorting to apply.
 6. Any pagination to apply.
 
-#### Relationship Fetching
+### Relationship Fetching
 
 The transaction `getRelation` method now takes a `Relationship` object instead of a `Class`.  The relationship is essentially a named `EntityProjection`.
 
-#### Attribute Reads & Writes
+### Attribute Reads & Writes
 
 The transaction `getAttribute` and `setAttribute` functions now take `Attribute` objects - a shared concept with the new `EntityProjection`.
 
-#### Removal of accessUser function
+### Removal of accessUser function
 
 The `DataStoreTransaction` no longer requires a method to access the User object during transaction initialization.
 
-#### RequestScope in every contract
+### RequestScope in every contract
 
 Nearly every method now takes a RequestScope object.
 
-#### Contract changes for support methods
+### Contract changes for support methods
 
 The methods `supportsFiltering`, `supportPagination`, and `supportSorting` include additional information to help data stores make more informed decisions.
 
-### Lifecycle Hook Refactor
+### Replaced Object with Java Generics
+
+All methods that referred to models as Objects now leverage Java generics instead. 
+
+## Lifecycle Hook Refactor
 
 The life cycle hook function now includes extra parameters to indicate what operation is being performed on the model and when in the transaction lifecycle it occurred:
 ```java
@@ -148,7 +163,7 @@ public abstract void execute(LifeCycleHookBinding.Operation operation,
 
 To register life cycle hooks, all the prior annotations have been replaced with [a single annotation](/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
 
-### New Public Interfaces
+## New Public Interfaces
 
 The following classes/interfaces have been refactored to limit exposure to only the public contract:
  - Pagination
@@ -158,7 +173,7 @@ The following classes/interfaces have been refactored to limit exposure to only 
 
 To accomplish this, elide-core and elide-annotations had to be consolidated into a single artifact.
 
-### Error Reporting
+## Error Reporting
 
 Elide 5 fixes a number of problems with error reporting:
 1. All error responses are HTML encoded.
@@ -166,3 +181,35 @@ Elide 5 fixes a number of problems with error reporting:
 3. Better, human readable descriptions were added for many errors.
 4. The error status for JSON-API is now correctly encoded as a String (was a number before).
 5. The JSON-API patch extension response now correctly returns an array of error objects.
+
+## JPQL Predicate Generation
+
+The interface to override a JPQL predicate for a filter operator has new, richer contract:
+
+```java
+@FunctionalInterface
+public interface JPQLPredicateGenerator {
+    String generate(FilterPredicate predicate, Function<Path, String> aliasGenerator);
+}
+```
+
+## Types intead of Classes
+
+Elide models are no longer static JVM classes but instead leverage Elide's new `Type` system.  This change allows data stores to register models that are not static classes.
+It is possible to convert between a Class and Type and vice versa.  An Elide model class can be converted to a Type by wrapping it in a `ClassType`:
+
+```java
+new ClassType(Book.class)
+```
+
+A Type can be converted to a model class by calling the following method:
+
+```java
+Optional<Class<T>> getUnderlyingClass();
+```
+
+The type of any model instance can be returned by calling the following static method on the `EntityDictionary`:
+
+```java
+public static <T> Type<T> getType(T object);
+```
