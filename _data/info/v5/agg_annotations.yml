@@ -171,11 +171,11 @@
       - Method
       - Field
   parameters:
-      - name: grain
+      - name: grains
         default: <em>None</em>
-        type: TimeGrainDefinition
+        type: TimeGrainDefinition[]
         required: True
-        description: The time grain or period associated with the time dimension.
+        description: The time grains or periods associated with the time dimension.
       - name: timeZone
         default: UTC
         type: String
