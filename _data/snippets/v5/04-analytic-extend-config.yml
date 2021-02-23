@@ -21,14 +21,18 @@ Hjson: |+2
                 name : gameOn
                 type : TIME
                 definition : '{{game_on}}'
-                grain:
-                {
-                    # Change Type from DAY to YEAR
-                    type :  YEAR
-                    sql :  '''
-                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')
-                    '''
-                }
+                # Change Type from MONTH, DAY & SECOND to YEAR & MONTH
+                grains:
+                [
+                    {
+                        type: YEAR
+                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')
+                    },
+                    {
+                        type: MONTH
+                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                    }
+                ]
             }
         ]
     }]
@@ -71,17 +75,21 @@ Java: |+2
       @ColumnMeta(friendlyName = "Game Type")
       private String gameType;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT) }, timeZone = "UTC")
       @DimensionFormula("{{updated_on}}")
-      private Month updatedOn;
+      private Time updatedOn;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT) }, timeZone = "UTC")
       @DimensionFormula("{{created_on}}")
-      private Day createdOn;
+      private Time createdOn;
 
-      // Change type of gameOn from Day to Year
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT), timeZone = "UTC")
+      // Change types of gameOn from Day & Month to Day, Month & Year
+      @Temporal(grains = {
+            @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT),
+            @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT)
+            @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT)
+      }, timeZone = "UTC")
       @DimensionFormula("{{game_on}}")
-      private Year gameOn;
+      private Time gameOn;
   }
   ```
