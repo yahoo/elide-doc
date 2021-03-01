@@ -60,37 +60,45 @@ Hjson: |+2
                 name : gameOn
                 type : TIME
                 definition : '{{game_on}}'
-                grain:
-                {
-                    type :  DAY
-                    sql :  '''
-                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
-                    '''
-                }
+                grains:
+                [
+                    {
+                        type: MONTH
+                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                    },
+                    {
+                        type: DAY
+                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                    },
+                    {
+                        type: SECOND
+                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd HH:mm:ss'), 'yyyy-MM-dd HH:mm:ss')
+                    }
+                ]
             },
             {
                 name : createdOn
                 type : TIME
                 definition : '{{created_on}}'
-                grain:
-                {
+                grains:
+                [{
                     type :  DAY
                     sql :  '''
                     PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
                     '''
-                }
+                }]
             },
             {
                 name : updatedOn
                 type : TIME
                 definition : '{{updated_on}}'
-                grain:
-                {
+                grains:
+                [{
                     type :  MONTH
                     sql :  '''
                     PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
                     '''
-                }
+                }]
             }
         ]
     }]
@@ -132,16 +140,19 @@ Java: |+2
       @ColumnMeta(friendlyName = "Game Type")
       private String gameType;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
+      @Temporal(grains = {
+            @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT),
+            @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT)
+      }, timeZone = "UTC")
       @DimensionFormula("{{game_on}}")
-      private Day gameOn;
+      private Time gameOn;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT), timeZone = "UTC")
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT) }, timeZone = "UTC")
       @DimensionFormula("{{created_on}}")
-      private Day createdOn;
+      private Time createdOn;
 
-      @Temporal(grain = @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT), timeZone = "UTC")
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT) }, timeZone = "UTC")
       @DimensionFormula("{{updated_on}}")
-      private Month updatedOn;
+      private Time updatedOn;
   }
   ```
