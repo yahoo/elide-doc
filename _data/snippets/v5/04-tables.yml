@@ -1,0 +1,68 @@
+files:
+  - Hjson
+  - Java Package
+  - Java Model
+
+Hjson: |+2
+  ```  
+  {
+    tables:
+    [
+      {
+        namespace: SalesNamespace
+        name: orderDetails
+        friendlyName: Order Details
+        description: Sales orders broken out by line item.
+        category: revenue
+        tags: [Sales, Revenue]
+        cardinality: large
+        isFact: true
+        filterTemplate: 'recordedDate>={{start}};recordedDate<{{end}}'
+  
+        #Instead of table, could also specify either 'sql' or 'extend'.
+        table: order_details  
+        schema: revenue
+        dbConnectionName: SalesDBConnection
+        hints: [AggregateBeforeJoin]
+  
+        readAccess: guest user
+  
+        arguments: []
+        joins: [] 
+        measures: []
+        dimensions: []
+      }
+    ]
+  }
+  ```
+Java Package: |+2
+  ```java
+  @Include(name = "SalesNamespace")
+  package example;
+
+  import com.yahoo.elide.annotation.Include;
+  ```
+
+Java Model: |+2
+  ```java
+  @Include(name = "orderDetails")                               //Tells Elide to expose this model in the API.
+  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")       //Used to detect when the cache is stale.
+  @FromTable(                                                   //Could also be @FromSubquery
+  	name = "revenue.order_details", 
+  	dbConnectionName = "SalesDBConnection"
+  ) 
+  @TableMeta(
+  	friendlyName = "Order Details",
+  	description = "Sales orders broken out by line item.",         
+  	category = "revenue",
+  	tags = {"Sales", "Revenue"},
+  	size = CardinalitySize.LARGE,
+  	isFact = true,
+  	filterTemplate = "recordedDate>={{start}};recordedDate<{{end}}",
+  	hints = {"AggregateBeforeJoin"},
+  )
+  #ReadPermission(expression = "guest user")
+  public class OrderDetails extends ParameterizedModel {        //ParameterizedModel is a required base class if any columns take arguments. 
+     //...
+  }
+  ```

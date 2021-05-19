@@ -283,66 +283,7 @@ Tables also include:
 - A list of [joins](#joins).
 - A list of [arguments](#arguments).
 
-#### HJSON Table Example
-
-```
-{
-  tables:
-  [
-    {
-      namespace: SalesNamespace
-      name: orderDetails
-      friendlyName: Order Details
-      description: Sales orders broken out by line item.
-      category: revenue
-      tags: [Sales, Revenue]
-      cardinality: large
-      isFact: true
-      filterTemplate: 'recordedDate>={{start}};recordedDate<{{end}}'
-
-      #Instead of table, could also specify either 'sql' or 'extend'.
-      table: order_details  
-      schema: revenue
-      dbConnectionName: SalesDBConnection
-      hints: [AggregateBeforeJoin]
-
-      readAccess: guest user
-
-      arguments: []
-      joins: [] 
-      measures: []
-      dimensions: []
-    }
-  ]
-}
-```
-
-#### Java Code Table Example
-
-TODO - Add Version and Namespace
-
-```java
-@Include(name = "orderDetails")                               //Tells Elide to expose this model in the API.
-@VersionQuery(sql = "SELECT COUNT(*) from playerStats")       //Used to detect when the cache is stale.
-@FromTable(                                                   //Could also be @FromSubquery
-        name = "revenue.order_details", 
-        dbConnectionName = "SalesDBConnection"
-) 
-@TableMeta(
-        friendlyName = "Order Details",
-        description = "Sales orders broken out by line item.",         
-        category = "revenue",
-        tags = {"Sales", "Revenue"},
-        size = CardinalitySize.LARGE,
-        isFact = true,
-        filterTemplate = "recordedDate>={{start}};recordedDate<{{end}}",
-        hints = {"AggregateBeforeJoin"},
-)
-#ReadPermission(expression = "guest user")
-public class OrderDetails extends ParameterizedModel {        //ParameterizedModel is a required base class if any columns take arguments. 
-   //...
-}
-```
+{% include code_example example="04-tables" %}
 
 ### Columns
 
@@ -371,7 +312,6 @@ Columns include the following properties:
 | definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
-| arguments |||
 {:.table}
 
 Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead search or other uses) :
@@ -420,10 +360,10 @@ Each join definition includes the following properties:
 | Hjson Property        | Explanation                                                      |
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | A unique name for the join.  The name can be referenced in column definitions. |
-| namespace             | |
+| namespace             | The namepsace the join table belongs to.  If none is provided, the default namespace is presumed. | 
 | to                    | The name of the Elide model being joined against.  This can be a semantic model or a CRUD model. |
-| kind                  | 'toMany' or 'toOne' (Default: toOne)                  |
-| type                  | 'left', 'inner', 'full' or 'cross' (Default: left)                           |
+| kind                  | 'toMany' or 'toOne' (Default: toOne) |
+| type                  | 'left', 'inner', 'full' or 'cross' (Default: left) |
 | definition            | A templated SQL join expression.  See below. |
 {:.table}
 
