@@ -201,9 +201,11 @@ Analytic models are called **Tables** in Elide.  They are made up of:
 3. **TimeDimension** - A type of **Dimension** that represents time.  Time dimensions are tied to grain (a period) and a timezone.
 4. **Columns** - The supertype of **Metrics**, **Dimensions**, and **TimeDimensions**.  All columns share a set of common metadata.
 5. **Joins** - Even though Elide analytic models are flat (there are no relationships to other models), individual model columns can be sourced from multiple physical tables.  **Joins** provide Elide the information it needs to join other database tables at query time to compute a given column.
-6. **Namespace** - Every table maps to one namespace or the __default__ namespace if undefined.  Namespace group related tables together that share a common API prefix.
+6. **Namespace** - Every **Table** maps to one **Namespace** or the __default__ **Namespace** if undefined.  **Namespaces** group related tables together that share a common API prefix.
 
-Tables and columns can optional have **Arguments**.  They represent parameters that are supplied by the client to change how the column or table SQL is generated.
+Other concepts include:
+7. **Arguments** - **Tables** and **Columns** can optionally have **Arguments**.  They represent parameters that are supplied by the client to change how the column or table SQL is generated.
+8. **Table Source** - **Columns** and **Arguments** can optionally include metadata about where distinct legal values can be found.  **Table Source** references another **Column** in a different **Table**.
 
 ### Example Configuration
 
@@ -216,7 +218,7 @@ There are a number of locations in the model configuration that require a SQL fr
  - Table query definitions
  - Table join expressions
 
-SQL fragments cannot refer to physical database tables or columns directly by name.  Elide generates SQL queries at runtime, and these queries reference tables and columns by aliases that are also generated.  Without the correct alias, the generated SQL query will be invalid.  Instead, physical table and column names should be substituted with [handlebar](https://handlebarsjs.com/guide/) template expressions.
+SQL fragments cannot refer to physical database tables or columns directly by name.  Elide generates SQL queries at runtime, and these queries reference tables and columns by aliases that are also generated.  Without the correct alias, the generated SQL query will be invalid.  Instead, physical table and column names should be substituted with [handlebars](https://handlebarsjs.com/guide/) template expressions.
 
 All SQL fragments support handlebars template expressions.  The handlebars context includes the following fields you can reference in your templated SQL:
 
@@ -244,7 +246,7 @@ The helper takes two arguments:
 ### Tables
 
 Tables must source their columns from somewhere.  There are three, mutually exclusive options:
-1.  Tables can source their columns from a physical table.  
+1.  Tables can source their columns from a physical table by its name.  
 2.  Tables can source their columns from a SQL subquery.
 3.  Tables can extend (override or add columns to) an existing Table. More details can be found [here](#inheritance).
 
@@ -252,11 +254,11 @@ These options are configured via the 'table', 'sql', and 'extend' [properties](#
 
 #### Table Properties
 
-Tables include the following properties:
+Tables include the following simple properties:
 
-| Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
+| Hjson Property        | Explanation                                                      |  Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
-| name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(type="tableName")` |
+| name                  | The name of the elide model.  It will be exposed through the API with this name. | tableName | `@Include(name="tableName")` |
 | version               | If leveraging Elide API versions, the API version associated with this model.  | 1.0 | `@ApiVersion(version="1.0")` |
 | friendlyName          | The friendly name for this table.  Unicode characters are supported.  | 'Player Stats' | `@TableMeta(friendlyName="Player Stats")` |
 | description           | A description of the table. | 'A description for tableName' | `@TableMeta(description="A description for tableName")` |
@@ -272,7 +274,75 @@ Tables include the following properties:
 | filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 | isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise.  Yavin will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
+| namespace             | The namepsace this table belongs to.  If none is provided, the default namespace is presumed. | SalesNamespace | `@Include(name="namespace")` on the Java package. |
+| hints                 | A list of optimizer hints to enable for this particular table.  This is an [experimental feature](#query-optimization). | ['AggregateBeforeJoin'] | @TableMeta(hints="AggregateBeforeJoin") |
 {:.table}
+
+Tables also include:
+- A list of [columns](#columns) including measures, dimensions, and time dimensions.
+- A list of [joins](#joins).
+- A list of [arguments](#arguments).
+
+#### HJSON Table Example
+
+```
+{
+  tables:
+  [
+    {
+      namespace: SalesNamespace
+      name: orderDetails
+      friendlyName: Order Details
+      description: Sales orders broken out by line item.
+      category: revenue
+      tags: [Sales, Revenue]
+      cardinality: large
+      isFact: true
+      filterTemplate: 'recordedDate>={{start}};recordedDate<{{end}}'
+
+      #Instead of table, could also specify either 'sql' or 'extend'.
+      table: order_details  
+      schema: revenue
+      dbConnectionName: SalesDBConnection
+      hints: [AggregateBeforeJoin]
+
+      readAccess: guest user
+
+      arguments: []
+      joins: [] 
+      measures: []
+      dimensions: []
+    }
+  ]
+}
+```
+
+#### Java Code Table Example
+
+TODO - Add Version and Namespace
+
+```java
+@Include(name = "orderDetails")                               //Tells Elide to expose this model in the API.
+@VersionQuery(sql = "SELECT COUNT(*) from playerStats")       //Used to detect when the cache is stale.
+@FromTable(                                                   //Could also be @FromSubquery
+        name = "revenue.order_details", 
+        dbConnectionName = "SalesDBConnection"
+) 
+@TableMeta(
+        friendlyName = "Order Details",
+        description = "Sales orders broken out by line item.",         
+        category = "revenue",
+        tags = {"Sales", "Revenue"},
+        size = CardinalitySize.LARGE,
+        isFact = true,
+        filterTemplate = "recordedDate>={{start}};recordedDate<{{end}}",
+        hints = {"AggregateBeforeJoin"},
+)
+#ReadPermission(expression = "guest user")
+public class OrderDetails extends ParameterizedModel {        //ParameterizedModel is a required base class if any columns take arguments. 
+   //...
+}
+```
 
 ### Columns
 
@@ -301,6 +371,7 @@ Columns include the following properties:
 | definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
 | type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
+| arguments |||
 {:.table}
 
 Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead search or other uses) :
@@ -311,7 +382,7 @@ Non-time dimensions include the following properties that describe where a discr
 | tableSource           | The semantic table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
 {:.table}
 
-#### Time Dimensions & Time Grains
+#### Time Dimensions And Time Grains
 
 Time dimensions represent time and include one or more time grains.  The time grain determines how time is represented as text in query filters and query results.  Supported time grains include:
 
@@ -328,7 +399,7 @@ Time dimensions represent time and include one or more time grains.  The time gr
 | YEAR         | "yyyy"                |
 {:.table}
 
-When defining a time dimension, a native SQL expression may be provided with the grain to convert the underlying column (represented as \{\{\}\}) to its expanded SQL definition:
+When defining a time dimension, a native SQL expression may be provided with the grain to convert the underlying column (represented as \{\{\$$column.expr}\}) to its expanded SQL definition:
 
 {% include code_example example="04-time-dimensions" %}
 
@@ -349,6 +420,7 @@ Each join definition includes the following properties:
 | Hjson Property        | Explanation                                                      |
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | A unique name for the join.  The name can be referenced in column definitions. |
+| namespace             | |
 | to                    | The name of the Elide model being joined against.  This can be a semantic model or a CRUD model. |
 | kind                  | 'toMany' or 'toOne' (Default: toOne)                  |
 | type                  | 'left', 'inner', 'full' or 'cross' (Default: left)                           |
@@ -369,6 +441,50 @@ Column references must be wrapped in curly braces and are replaced at query time
 1. A logical column in the current model that should be expanded by its corresponding SQL definition.
 2. A physical column in the current table.
 3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
+
+### Arguments
+
+Columns and tables can both be parameterized with arguments.  Arguments include the following properties:
+
+| Hjson Property        | Explanation                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| name                  | The name of the argument                                         |
+| description           | The argument description                                         |
+| type                  | The [primitive type](column-and-argument-types) of the argument  |
+| values                | An optional list of allowed values                               |
+| default               | An optional default value if none is supplied by the client      |
+
+In addition, arguments can also optionally reference a [Table Source](#table-source).  The properties `values` and `tableSource` are mutually exclusive.
+
+### Column And Argument Types
+
+Column and argument values are mapped to primitive types which are used for validation, serialization, deserialization, and formatting.
+
+The following primitive types are supported:
+1. **Time** - Maps to [Elide supported time grains](time-dimensions-and-time-grains).
+2. **Integer** - Integer number.
+3. **Decimal** - Decimal number.
+4. **Money** - A decimal number that represents money.
+5. **Text** - A text string.  
+6. **Coordinate** - A text representation of latitude, longitude or both.
+7. **Boolean** - true or false.
+8. **Id** - Represents the ID of the model.  For analytic models, this is the row number and not an actual primary key.
+
+Input values (filter values, column arguments, or table arguments) are validated by:
+1. Type coercion to the underlying Java data type.
+2. Regular expression matching using the [following rules](https://github.com/yahoo/elide/blob/master/elide-datastore/elide-datastore-aggregation/src/main/java/com/yahoo/elide/datastores/aggregation/metadata/enums/ValueType.java).
+
+### Table Source
+
+Table sources contain additional metadata about where distinct legal values of a column or argument can be found.  This metadata is intended to aid presentation layers with search suggestions.
+
+| Hjson Property        | Explanation                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| table                 | The table where the distinct values can be located.              |
+| namespace             | The namespace that qualifies the table.  If not provided, the default namespace is presumed. |
+| column                | The column in the table where the distinct values can be located |
+| suggestionColumns     | Zero or more additional columns that should be searched in conjunction with the primary column to locate a particular value. |
+{:.table}
 
 ### Inheritance
 
@@ -453,6 +569,10 @@ The Aggregation data store supports a configurable caching strategy to cache que
 
 Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support a Bypass Cache header ('bypasscache') that can be set to `true` for caching to be disabled on a per query basis. If no bypasscache header is specified by the client or a value other than `true` is used, caching is enabled by default.
 
+# Security
+
+# Experimental Features
+
 ## Configuration Validation
 
 All Hjson configuration files are validated by a JSON schema.  The schemas for each file type can be found here:
@@ -473,3 +593,5 @@ Hjson configuration files can be validated against schemas using a command-line 
    `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
 
 1. The config directory needs to adhere to this [file layout](#file-layout).
+
+## Query Optimization
