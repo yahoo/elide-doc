@@ -35,7 +35,7 @@ With the introduction of the Aggregation store, Elide now integrates with [Yavin
 # Querying
 
 Models managed by the `AggregationDataStore` can be queried via JSON-API or GraphQL similar to other Elide models.  There are a few important distinctions:
-1. If one or more metrics are included in the query, every dimension will be used to aggregate the selected metrics.
+1. If one or more metrics are included in the query, every requested dimension will be used to aggregate the selected metrics.
 2. If only dimensions (no metrics) are included in the query, Elide will return a distinct list of the requested dimension value combinations.
 3. Every elide model includes an ID field.  The ID field returned from aggregation store models is not a true identifier.  It represents the row number from a returned result.  Attempts to load the model by its identifier will result in an error.
 
@@ -57,7 +57,7 @@ Here are the respective responses:
 
 ## Metadata Queries
 
-A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. To enable the metadata query APIs, we have to turn on the `MetaDataStore`. The `enableMetaDataStore` flag is described [here](#feature-flags).
+A full list of available table and column metadata is covered in the [configuration section](#tables). Metadata can be queried through the _table_ model and its associated relationships. 
 
 {% include code_example example="04-metadata-query" %}
 
@@ -90,6 +90,9 @@ CONFIG_ROOT/
   |  ├── tables/
   |  |  ├── model1.hjson
   |  |  ├── model2.hjson
+  |  ├── namespaces/
+  |  |  ├── namespace1.hjson
+  |  |  ├── namespace2.hjson
   |  ├── security.hjson
   |  └── variables.hjson
   ├── db/
@@ -99,10 +102,11 @@ CONFIG_ROOT/
 ```
 
 1. Analytic model files are stored in `/models/tables`.  Multiple models can be grouped together into a single file.
-2. Security rules are stored in `/models/security.hjson`.
-3. Model and security Hjson files support variable substitution with variables defined in `/models/variables.hjson`.
-4. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
-5. Data source Hjson files support variable substitution with variables defined in `/db/variables.hjson`.
+2. Analytic models can optionally belong to a namespace - a grouping of related models with the same API prefix.   Namespace configuration is defined in `/models/namespaces`.
+3. Security rules are stored in `/models/security.hjson`.
+4. Model, namespace, and security Hjson files support variable substitution with variables defined in `/models/variables.hjson`.
+5. Data source configurations are stored in `/db/sql`.  Multiple configurations can be grouped together into a single file.
+6. Data source Hjson files support variable substitution with variables defined in `/db/variables.hjson`.
 
 CONFIG_ROOT can be any directory in the filesystem or classpath.  The root configuration location can be set as follows:
 
@@ -197,12 +201,45 @@ Analytic models are called **Tables** in Elide.  They are made up of:
 3. **TimeDimension** - A type of **Dimension** that represents time.  Time dimensions are tied to grain (a period) and a timezone.
 4. **Columns** - The supertype of **Metrics**, **Dimensions**, and **TimeDimensions**.  All columns share a set of common metadata.
 5. **Joins** - Even though Elide analytic models are flat (there are no relationships to other models), individual model columns can be sourced from multiple physical tables.  **Joins** provide Elide the information it needs to join other database tables at query time to compute a given column.
+6. **Namespace** - Every table maps to one namespace or the __default__ namespace if undefined.  Namespace group related tables together that share a common API prefix.
 
-Some metrics have **FunctionArguments**.  They represent parameters that are supplied by the client to change how the metric is computed.
+Tables and columns can optional have **Arguments**.  They represent parameters that are supplied by the client to change how the column or table SQL is generated.
 
 ### Example Configuration
 
 {% include code_example example="04-analytic-config" %}
+
+### Handlebars Templates
+
+There are a number of locations in the model configuration that require a SQL fragment.  These include:
+ - Column definitions
+ - Table query definitions
+ - Table join expressions
+
+SQL fragments cannot refer to physical database tables or columns directly by name.  Elide generates SQL queries at runtime, and these queries reference tables and columns by aliases that are also generated.  Without the correct alias, the generated SQL query will be invalid.  Instead, physical table and column names should be substituted with [handlebar](https://handlebarsjs.com/guide/) template expressions.
+
+All SQL fragments support handlebars template expressions.  The handlebars context includes the following fields you can reference in your templated SQL:
+
+1. \{\{$columnName\}\} - Expands to the correctly aliased, physical database column name for the current Elide model.
+2. \{\{columnName\}\} - Expands another column in the current Elide model.
+3. \{\{joinName.column\}\} - Expands to a column in another Elide model joined to the current model through the referenced join.
+4. \{\{joinName.$column\}\} - Expands to the correctly aliased, physical database column name for another Elide model joined to the current model through the referenced join. 
+5. \{\{$$table.args.argumentName\}\} - Expands to a table argument passed by the client. 
+6. \{\{$$column.args.argumentName\}\} - Expands to a column argument.  `$$column` always refers to the current column that is being expanded.
+6. \{\{$$column.expr\}\} - Expands to a column's SQL fragment.  `$$column` always refers to the current column that is being expanded.
+
+Join names can be linked together to create a path from one model to another model's column through a set of joins.  For example the handlebar expression: \{\{join1.join2.join3.column\}\} references
+a column that requires three separate joins.
+
+The templating engine also supports a custom handlebars helper that can reference another column and provide overridden column arguments:
+
+1. \{\{sql column='columnName[arg1:value1][arg2:value2]'\}\} - Expands to a column in the current Elide model with argument values explicitly set.
+2. \{\{sql from='joinName' column='columnName'\}\} - Identical to \{\{joinName.columnName\}\}.
+3. \{\{sql from='joinName' column='$columnName'\}\} - Identical to \{\{joinName.$columnName\}\}.
+
+The helper takes two arguments:
+1. **column** - The column to expand.  Optional column arguments (`[argumentName:argumentValue]`) can be appended after the column name.
+2. **from** - An optional argument containing the join name where to source the column from.  If not present, the column is sourced from the current model.
 
 ### Tables
 
@@ -244,12 +281,7 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Any part of the column definition enclosed in double curly braces (\{\{foo\}\}) is interpreted either as:
-- Another column in the current table (assuming the parameter matches another column name in the table).  
-- A column in the underlying physical table (assuming either the parameter does not match any columns in the current table _or_ it matches the current column name).
-- Another column in a different table.  The parameter is a dot ('.') separated path where each segment of the path represents a join to another table (denoted by the join name) ending with the destination column name (\{\{player.team.name\}\}).  
-
-Column expressions can be defined in Hjson or Java:
+Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Column expressions can be defined in Hjson or Java:
 
 {% include code_example example="04-columns" %}
 
