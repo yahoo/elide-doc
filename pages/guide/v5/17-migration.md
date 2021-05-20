@@ -16,7 +16,7 @@ Elide 5 introduces several new features:
  - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
  - The 'hasmember' and 'hasnomember' filter operator supports predicates that traverse to-many relationships (book.authors.name=hasmember='Foo').
  - New 'between' and 'notbetween' filter operators.
- - Eliminates N+1 database query scenarios.
+ - [Eliminates N+1 database query scenarios](/pages/guide/v{{ page.version}}/16-performance.html).
 
 The analytics capabilities, asynchronous API, and table export API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). 
 
