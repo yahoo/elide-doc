@@ -26,14 +26,14 @@ Hjson: |+2
                 to: PlayerCountry
                 kind: toOne
                 type: left
-                definition: '{{playerCountry.id}} = {{country_id}}'
+                definition: '{{playerCountry.$id}} = {{$country_id}}'
             }
         ]
         measures : [
             {
             name : highScore
             type : INTEGER
-            definition: 'MAX({{highScore}})'
+            definition: 'MAX({{$highScore}})'
             friendlyName: High Score
             }
         ]
@@ -41,7 +41,7 @@ Hjson: |+2
             {
                 name : name
                 type : TEXT
-                definition : '{{name}}'
+                definition : '{{$name}}'
                 cardinality : large
             },
             {
@@ -53,50 +53,50 @@ Hjson: |+2
             {
                 name : gameType
                 type : TEXT
-                definition : '{{game_type}}'
+                definition : '{{$game_type}}'
                 friendlyName: Game Type
             },
             {
                 name : gameOn
                 type : TIME
-                definition : '{{game_on}}'
+                definition : '{{$game_on}}'
                 grains:
                 [
                     {
                         type: MONTH
-                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')
                     },
                     {
                         type: DAY
-                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
                     },
                     {
                         type: SECOND
-                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd HH:mm:ss'), 'yyyy-MM-dd HH:mm:ss')
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd HH:mm:ss'), 'yyyy-MM-dd HH:mm:ss')
                     }
                 ]
             },
             {
                 name : createdOn
                 type : TIME
-                definition : '{{created_on}}'
+                definition : '{{$created_on}}'
                 grains:
                 [{
                     type :  DAY
                     sql :  '''
-                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
+                    PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')
                     '''
                 }]
             },
             {
                 name : updatedOn
                 type : TIME
-                definition : '{{updated_on}}'
+                definition : '{{$updated_on}}'
                 grains:
                 [{
                     type :  MONTH
                     sql :  '''
-                    PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                    PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')
                     '''
                 }]
             }
@@ -109,34 +109,32 @@ Java: |+2
   ```java
   @Include
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
-  @EqualsAndHashCode
-  @ToString
   @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
   @TableMeta(description = "A long description", category = "Sports", tags = {"Game", "Player"}, filterTemplate = "createdOn>={{start}};createdOn<{{end}}", size = CardinalitySize.LARGE, friendlyName = "Player Stats")
   @ReadPermission(expression = "(user AND member) OR (admin.user AND NOT guest user)")
   public class PlayerStats {
 
-      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
-      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')";
+      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')";
 
       @Id
       private String id;
 
-      @MetricFormula("MAX({{highScore}})")
+      @MetricFormula("MAX({{$highScore}})")
       @ColumnMeta(friendlyName = "High Score")
       private long highScore;
 
       @ColumnMeta(size = CardinalitySize.LARGE)
       private String name;
 
-      @Join("{{country_id}} = {{playerCountry.id}}", type = JoinType.LEFT)
+      @Join("{{$country_id}} = {{playerCountry.$id}}", type = JoinType.LEFT)
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
-      @DimensionFormula("{{game_type}}")
+      @DimensionFormula("{{$game_type}}")
       @ColumnMeta(friendlyName = "Game Type")
       private String gameType;
 
@@ -144,15 +142,15 @@ Java: |+2
             @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT),
             @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT)
       }, timeZone = "UTC")
-      @DimensionFormula("{{game_on}}")
+      @DimensionFormula("{{$game_on}}")
       private Time gameOn;
 
       @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT) }, timeZone = "UTC")
-      @DimensionFormula("{{created_on}}")
+      @DimensionFormula("{{$created_on}}")
       private Time createdOn;
 
       @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT) }, timeZone = "UTC")
-      @DimensionFormula("{{updated_on}}")
+      @DimensionFormula("{{$updated_on}}")
       private Time updatedOn;
   }
   ```

@@ -9,14 +9,14 @@ Hjson: |+2
       {
         name : highScore
         type : INTEGER
-        definition: 'MAX({{highScore}})'
+        definition: 'MAX({{$highScore}})'
       }
     ]
     dimensions : [
       {
         name : name
         type : TEXT
-        definition : '{{name}}'
+        definition : '{{$name}}'
       },
       {
         name : countryCode
@@ -30,7 +30,7 @@ Hjson: |+2
 Java: |+2
   ```java
   //A Dimension
-  @DimensionFormula("CASE WHEN {{name}}  = 'United States' THEN true ELSE false END")
+  @DimensionFormula("CASE WHEN {{$name}}  = 'United States' THEN true ELSE false END")
   private boolean inUsa;
 
   //A metric

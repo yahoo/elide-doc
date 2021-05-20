@@ -7,12 +7,12 @@ Hjson: |+2
   {
       name : createdOn
       type : TIME
-      definition : "FORMATDATETIME({{createdOn}}, 'yyyy-MM')"
+      definition : "FORMATDATETIME({{$createdOn}}, 'yyyy-MM')"
       grains:
       [{
           type :  MONTH
           sql :  '''
-          PARSEDATETIME({{}}, 'yyyy-MM')
+          PARSEDATETIME({{$$column.expr}}, 'yyyy-MM')
           '''
       }]
   }
@@ -20,12 +20,12 @@ Hjson: |+2
 
 Java: |+2
   ```java
-  public static final String DATE_FORMAT = "PARSEDATETIME({{}}, 'yyyy-MM')";
+  public static final String DATE_FORMAT = "PARSEDATETIME({{$$column.expr}}, 'yyyy-MM')";
 
 
   @Temporal(grains = {
       @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = DATE_FORMAT)
   }, timeZone = "UTC")
-  @DimensionFormula("FORMATDATETIME({{createdOn}}, 'yyyy-MM')")
+  @DimensionFormula("FORMATDATETIME({{$createdOn}}, 'yyyy-MM')")
   private Date createdOn;
   ```
