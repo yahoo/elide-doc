@@ -9,12 +9,14 @@ Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 
 ## New Features in Elide 5.X
 
-Elide 5 introduces three primary new features:
+Elide 5 introduces several new features:
  - A new [semantic modeling layer and analytic query API](/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
  - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
  - An [data export API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for exporting flat models as CSV or JSON.
  - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
  - The 'hasmember' and 'hasnomember' filter operator supports predicates that traverse to-many relationships (book.authors.name=hasmember='Foo').
+ - New 'between' and 'notbetween' filter operators.
+ - Eliminates N+1 database query scenarios.
 
 The analytics capabilities, asynchronous API, and table export API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). 
 
@@ -24,6 +26,7 @@ The only notable API change are:
 - [Improved error responses](https://github.com/yahoo/elide/pull/1200) that are more compatible with the JSON-API specification.
 - [FIQL operators are now case sensitive by default](https://github.com/yahoo/elide/pull/1519).  New case insensitive operators have been introduced allowing greater flexibility.  It is possible to revert to elide 4 semantics through configuration.
 - JSON-API now validates requests for invalid sparse fields and throws a 400 error if present.
+- To enable parameterized attributes in analytic queries, RSQL filter grammar was augmented to include support for field arguments.
 
 ## Interface Changes
 
@@ -35,7 +38,8 @@ In addition to new features, Elide 5 streamlines a number of public interfaces t
  - Initializers have been removed.  Dependency Injection is available for models, checks, lifecycle hooks, and serdes.
  - A simpler and more powerful `DataStoreTransaction` interface.
  - GraphQL has its own `FilterDialect` interface.
- - The `Include` annotation now defaults to marking models as root level.
+ - The `Include` annotation now defaults to marking models as root level.  The 'type' attribute was renamed to 'name'.
+ - The `Include` annotation at the package level now denotes a namespace.  The 'name' attribute will be prepended to all elide models contained therein.
  - Elide settings has been stripped of unnecessary configuration options.
  - Elide 5 introduces a new type system for models allowing dynamic models that are not bound to JVM classes.
  - The interface for overriding JPQL predicate generation for filter operators includes more information about the filter.
@@ -53,7 +57,7 @@ Because Elide 5 is a major release, we took time to reorganize the module & pack
 
 ### Security Checks
 
-Elide no longer has separate classes (`InlineCheck` & `CommitCheck`) that determine when a check runs (immediately before a field is read/written or immediately before transaction commit).  Instead, all checks (regardless of type) run immediately before a field is read/written except for checks on newly created objects (which run at transaction commit).  The new class hierarchy looks like this:
+Elide no longer has separate classes (`InlineCheck` & `CommitCheck`) that determine when a check runs (immediately before a field is read/written or immediately before transaction commit).  Instead, all checks (regardless of type) run immediately before a field is read/written except for checks on newly created objects (which run at transaction commit).  However, there is a method in Check that can force Elide to run the check at transaction commit preserving the legacy behavior.  The new class hierarchy looks like this:
 
 <div id="check-tree" style="height: 250px"></div>
 
@@ -161,7 +165,8 @@ public abstract void execute(LifeCycleHookBinding.Operation operation,
                              Optional<ChangeSpec> changes);
 ```
 
-To register life cycle hooks, all the prior annotations have been replaced with [a single annotation](/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
+To register life cycle hooks, all the prior annotations can be replaced with [a single annotation](/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
+However, legacy life cycle hook annotations remain supported.
 
 ## New Public Interfaces
 
