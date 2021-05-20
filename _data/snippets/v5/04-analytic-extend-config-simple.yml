@@ -23,15 +23,11 @@ Hjson: |+2
 Java: |+2
   ```java
   @Include
-  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
-  @EqualsAndHashCode
-  @ToString
   @ReadPermission(expression = "admin.user OR guest user")
   public class TournamentPlayerStats extends PlayerStats {
 
       // Change formula to filter on Tournament Games
       @MetricFormula("MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)")
-      @ColumnMeta(friendlyName = "High Score")
       private long highScore;
   }
   ```

@@ -20,17 +20,17 @@ Hjson: |+2
             {
                 name : gameOn
                 type : TIME
-                definition : '{{game_on}}'
+                definition : '{{$game_on}}'
                 # Change Type from MONTH, DAY & SECOND to YEAR & MONTH
                 grains:
                 [
                     {
                         type: YEAR
-                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy'), 'yyyy')
                     },
                     {
                         type: MONTH
-                        sql: PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')
                     }
                 ]
             }
@@ -43,15 +43,13 @@ Java: |+2
   ```java
   @Include
   @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
-  @EqualsAndHashCode
-  @ToString
   @ReadPermission(expression = "admin.user OR guest user")
   @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
   public class TournamentPlayerStats {
 
-      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
-      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy-MM'), 'yyyy-MM')";
-      public static final String YEAR_FORMAT = "PARSEDATETIME(FORMATDATETIME({{}}, 'yyyy'), 'yyyy')";
+      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')";
+      public static final String YEAR_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy'), 'yyyy')";
 
       @Id
       private String id;
@@ -64,23 +62,23 @@ Java: |+2
       @ColumnMeta(size = CardinalitySize.LARGE)
       private String name;
 
-      @Join("{{country_id}} = {{playerCountry.id}}", type = JoinType.LEFT)
+      @Join("{{$country_id}} = {{playerCountry.$id}}", type = JoinType.LEFT)
       private Country playerCountry;
 
       @DimensionFormula("{{playerCountry.isoCode}}")
       @ColumnMeta(friendlyName = "Country Code")
       private String countryCode;
 
-      @DimensionFormula("{{game_type}}")
+      @DimensionFormula("{{$game_type}}")
       @ColumnMeta(friendlyName = "Game Type")
       private String gameType;
 
       @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT) }, timeZone = "UTC")
-      @DimensionFormula("{{updated_on}}")
+      @DimensionFormula("{{$updated_on}}")
       private Time updatedOn;
 
       @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT) }, timeZone = "UTC")
-      @DimensionFormula("{{created_on}}")
+      @DimensionFormula("{{$created_on}}")
       private Time createdOn;
 
       // Change types of gameOn from Day & Month to Day, Month & Year
@@ -89,7 +87,7 @@ Java: |+2
             @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT)
             @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT)
       }, timeZone = "UTC")
-      @DimensionFormula("{{game_on}}")
+      @DimensionFormula("{{$game_on}}")
       private Time gameOn;
   }
   ```
