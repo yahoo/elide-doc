@@ -205,7 +205,7 @@ Analytic models are called **Tables** in Elide.  They are made up of:
 
 Other concepts include:
 7. **Arguments** - **Tables** and **Columns** can optionally have **Arguments**.  They represent parameters that are supplied by the client to change how the column or table SQL is generated.
-8. **Table Source** - **Columns** and **Arguments** can optionally include metadata about where distinct legal values can be found.  **Table Source** references another **Column** in a different **Table**.
+8. **Table Source** - **Columns** and **Arguments** can optionally include metadata about their distinct legal values.  **Table Source** references another **Column** in a different **Table** where the values are stored.
 
 ### Example Configuration
 
@@ -227,8 +227,8 @@ All SQL fragments support handlebars template expressions.  The handlebars conte
 3. \{\{joinName.column\}\} - Expands to a column in another Elide model joined to the current model through the referenced join.
 4. \{\{joinName.$column\}\} - Expands to the correctly aliased, physical database column name for another Elide model joined to the current model through the referenced join. 
 5. \{\{$$table.args.argumentName\}\} - Expands to a table argument passed by the client. 
-6. \{\{$$column.args.argumentName\}\} - Expands to a column argument.  `$$column` always refers to the current column that is being expanded.
-6. \{\{$$column.expr\}\} - Expands to a column's SQL fragment.  `$$column` always refers to the current column that is being expanded.
+6. \{\{\$\$column.args.argumentName\}\} - Expands to a column argument.  $$column always refers to the current column that is being expanded.
+7. \{\{\$\$column.expr\}\} - Expands to a column's SQL fragment.  $$column always refers to the current column that is being expanded.
 
 Join names can be linked together to create a path from one model to another model's column through a set of joins.  For example the handlebar expression: \{\{join1.join2.join3.column\}\} references
 a column that requires three separate joins.
@@ -238,6 +238,7 @@ The templating engine also supports a custom handlebars helper that can referenc
 1. \{\{sql column='columnName[arg1:value1][arg2:value2]'\}\} - Expands to a column in the current Elide model with argument values explicitly set.
 2. \{\{sql from='joinName' column='columnName'\}\} - Identical to \{\{joinName.columnName\}\}.
 3. \{\{sql from='joinName' column='$columnName'\}\} - Identical to \{\{joinName.$columnName\}\}.
+4. \{\{sql from='joinName' column='columnName[arg1:value1]'\}\} - Identical to \{\{joinName.columnName\}\} but passing 'value1' for the column argument, 'arg1'.
 
 The helper takes two arguments:
 1. **column** - The column to expand.  Optional column arguments (`[argumentName:argumentValue]`) can be appended after the column name.
@@ -271,7 +272,7 @@ Tables include the following simple properties:
 | sql                   | Exactly one of _table_, _sql_, and _extend_ must be provided.  Provides a SQL subquery where the data will be sourced from. | 'SELECT foo, bar FROM blah;' | `@FromSubquery(sql="SELECT foo, bar FROM blah;")` |
 | extend                | Exactly one of _table_, _sql_, and _extend_ must be provided.  This model extends or inherits from another analytic model. | tableName | class Foo extends Bar |
 | readAccess            | An elide permission rule that governs read access to the table. | 'member and admin.user' | `@ReadPermission(expression="member and admin.user")` |
-| filterTemplate        | An RSQL filter expression template that must directly match or be included in the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
+| filterTemplate        | An RSQL filter expression template that either must directly match the client provided filter or be conjoined with logical 'and' to the client provided filter. | countryIsoCode==\{\{code\}\} | @TableMeta(filterTemplate="countryIsoCode==\{\{code\}\}") |
 | hidden                | The table is not exposed through the API. | true | `@Exclude` |
 | isFact                | Is the table a fact table. Models annotated using FromTable or FromSubquery or TableMeta or configured through Hjson default to true unless marked otherwise.  Yavin will use this flag to determine which tables can be used to build reports. | true | `@TableMeta(isFact=false)` |
 | namespace             | The namepsace this table belongs to.  If none is provided, the default namespace is presumed. | SalesNamespace | `@Include(name="namespace")` on the Java package. |
@@ -292,7 +293,7 @@ Columns are either measures, dimensions, or time dimensions.   They all share a 
 2. The data type of the column.
 3. The definition of the column.
 
-Column definitions are templated, native SQL fragments.  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Column expressions can be defined in Hjson or Java:
+Column definitions are [templated, native SQL fragments](#handlebars-templates).  Columns definitions can include references to other column definitions or physical column names that are expanded at query time.  Column expressions can be defined in Hjson or Java:
 
 {% include code_example example="04-columns" %}
 
@@ -314,12 +315,12 @@ Columns include the following properties:
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
 
-Non-time dimensions include the following properties that describe where a discrete list of values can be sourced from (for type-ahead search or other uses) :
+Non-time dimensions include the following, mutually exclusive properties that describe the set of discrete, legal values (for type-ahead search or other usecases) :
 
 | Hjson Property        | Explanation                                                      |  Example Hjson Value | Annotation/Java Equivalent |
 | --------------------- | ---------------------------------------------------------------- | -------------------- | -------------------------- |
 | values                | An optional enumerated list of dimension values for small cardinality dimensions | ['Africa', 'Asia', 'North America'] | `@ColumnMeta(values = {"Africa", "Asia", "North America")` |
-| tableSource           | The semantic table and column names where to find the values (tableName.columnName). | continent.name | `@ColumnMeta(tableSource = "continent.name")` |
+| tableSource           | The semantic table and column names where to find the values | See the section on [Table Source](#table-source). | See the section on [Table Source](#table-source). |
 {:.table}
 
 #### Time Dimensions And Time Grains
@@ -345,7 +346,7 @@ When defining a time dimension, a native SQL expression may be provided with the
 
 Elide would expand the above example to this SQL fragment: `PARSEDATETIME(FORMATDATETIME(createdOn, 'yyyy-MM'), 'yyyy-MM')`.
 
-Time grain definitions are optional and default to type 'DAY' and an empty SQL expression.
+Time grain definitions are optional and default to type 'DAY' with a native SQL expression of \{\{\$\$column.expr\}\}.  
 
 ### Joins
 
@@ -369,18 +370,13 @@ Each join definition includes the following properties:
 
 #### Join Definition
 
-Join definitions are templated SQL expressions that represent the _ON_ clause of a SQL statement:
+Join definitions are [templated SQL expressions](#handlebars-templates) that represent the _ON_ clause of a SQL statement:
 
 {% raw %}
 ```
-definition: "{{ orderId}} = {{delivery.orderId}} AND {{ delivery.delivered_on }} > '1970-01-01'"
+definition: "{{$orderId}} = {{delivery.$orderId}} AND {{delivery.$delivered_on }} > '1970-01-01'"
 ```
 {% endraw %}
-
-Column references must be wrapped in curly braces and are replaced at query time with the correctly qualified SQL names.  A column reference can either refer to:
-1. A logical column in the current model that should be expanded by its corresponding SQL definition.
-2. A physical column in the current table.
-3. A reference to logical or physical column in the join table.  The reference consists of the join name, a period, and finally the column name in the join table.
 
 ### Arguments
 
@@ -390,9 +386,10 @@ Columns and tables can both be parameterized with arguments.  Arguments include 
 | --------------------- | ---------------------------------------------------------------- |
 | name                  | The name of the argument                                         |
 | description           | The argument description                                         |
-| type                  | The [primitive type](column-and-argument-types) of the argument  |
+| type                  | The [primitive type](#column-and-argument-types) of the argument  |
 | values                | An optional list of allowed values                               |
 | default               | An optional default value if none is supplied by the client      |
+{:.table}
 
 In addition, arguments can also optionally reference a [Table Source](#table-source).  The properties `values` and `tableSource` are mutually exclusive.
 
@@ -401,7 +398,7 @@ In addition, arguments can also optionally reference a [Table Source](#table-sou
 Column and argument values are mapped to primitive types which are used for validation, serialization, deserialization, and formatting.
 
 The following primitive types are supported:
-1. **Time** - Maps to [Elide supported time grains](time-dimensions-and-time-grains).
+1. **Time** - Maps to [Elide supported time grains](#time-dimensions-and-time-grains).
 2. **Integer** - Integer number.
 3. **Decimal** - Decimal number.
 4. **Money** - A decimal number that represents money.
@@ -465,7 +462,7 @@ We can use Java's inheritance, if the goal does not involve changing the type of
 
 The semantics of security is described [here](#security).  
 
-HJSON has limited support for security definitions.  Currently, only role based access controls (user checks) can be defined in HJSON.  For more elaborate rules, the Elide security checks must be written in code.
+HJSON has limited support for security definitions.  Currently, only role based access controls ([user checks][user-checks]) can be defined in HJSON.  For more elaborate rules, the Elide security checks must be written in code.
 
 A list of available user roles can be dinfed in HJSON in the security.hjson file:
 
