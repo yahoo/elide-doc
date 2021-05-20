@@ -157,6 +157,8 @@ The following RSQL operators are supported:
 * `=le=` : Evaluates to true if the attribute is less than or equal to the value.
 * `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
 * `=isempty=` : Determines if a collection is empty or not.
+* `=between=` : Determines if a model attribute is >= and <= the two provided arguments.
+* `=notbetween=` : Negates the between operator.
 * `=hasmember=` : Determines if a collection contains a particular element.  
 * `=hasnomember=` : Determines if a collection does not contain a particular element.
 
@@ -187,6 +189,14 @@ By default, the FIQL operators =in=,=out=,== are case sensitive. This can be rev
 #### Values & Type Coercion
 Values are specified as URL encoded strings.  Elide will type coerce them into the appropriate primitive 
 data type for the attribute filter.
+
+#### Attribute arguments.
+
+Some data stores like the Aggregation Store support parameterized model attributes.  Parameters can be included in a filter predicate with the following syntax:
+
+`field[arg1:value1][arg2:value2]`
+
+Argument values must be URL encoded.  There is no limit to the number of arguments provided in this manner.
 
 ## Pagination
 --------------------------
