@@ -423,6 +423,19 @@ Table sources contain additional metadata about where distinct legal values of a
 | suggestionColumns     | Zero or more additional columns that should be searched in conjunction with the primary column to locate a particular value. |
 {:.table}
 
+{% include code_example example="04-tablesources" %}
+
+### Namespaces
+
+Namespaces organize a set of related tables together so they can share:
+ - Package level metadata like name, friendly name, and description.
+ - Default read permission rules for every table in the namespace.
+ - A common API prefix that is prepended to each model name in the namespace (NamespaceName_ModelName).
+
+While, namespaces are optional, all tables belong to one and only one namespace.  If no namespace is defined, the table will belong to the 'default' namespace.  The default namespace does not have an API prefix.
+
+{% include code_example example="04-namespaces" %}
+
 ### Inheritance
 
 Tables can extend another existing Table. The following actions can be performed:
