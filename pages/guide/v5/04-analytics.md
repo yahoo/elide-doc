@@ -463,7 +463,11 @@ We can use Java's inheritance, if the goal does not involve changing the type of
 
 ## Security Configuration
 
-The list of available security roles can be defined in the security.hjson file:
+The semantics of security is described [here](#security).  
+
+HJSON has limited support for security definitions.  Currently, only role based access controls (user checks) can be defined in HJSON.  For more elaborate rules, the Elide security checks must be written in code.
+
+A list of available user roles can be dinfed in HJSON in the security.hjson file:
 
 ```
 {
@@ -476,7 +480,7 @@ The list of available security roles can be defined in the security.hjson file:
 }
 ```
 
-Each role defined generates an Elide [user check](/pages/guide/v{{ page.version }}/03-security.html#user-checks) that extends [RoleMemberCheck](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/security/checks/prefab/Role.java#L38-L48).  
+Each role defined generates an Elide [user check][user-checks] that extends [RoleMemberCheck](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/security/checks/prefab/Role.java#L38-L48).  
 
 These roles can then be referenced in security rules applied to entire tables or individual columns in their respective Hjson configuration:
 
@@ -511,6 +515,28 @@ Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support
 
 # Security
 
+Elide analytic models differ from CRUD models in some important ways.  In a client query on a CRUD model backed by JPA, all model fields are hydrated (in some cases with lazy proxies) regardless of what fields the client requests.
+In an analytic query, only the model fields requested are hydrated.  Checks which can execute in memory on the Elide server ([Operation][operation-checks] & [Filter Expression][filter-checks] checks) may examine fields that are not hydrated and result in errors for analytic queries.  To avoid this scenario, the Aggregation Store implements its own permission executor with different restrictions and semantics.
+
+The aggregation store enforces the following model permission restrictions:
+ - [Operation checks][operation-checks] are forbidden.
+ - [Filter Expression checks][filter-checks] may only decorate the model but not its fields.
+ - [User checks][user-checks] are allowed anywhere.
+
+Unlike CRUD models, model 'read' permissions are not interpretted as field permission defaults.  Model and field permissions are interpretted independently.
+
+Elide performs the following authorization steps when reading records:
+1. Determine if the database query can be avoided (by only evaluating checks on the user principal).
+2. Filter records in the database (by evaluating only filter expression checks).
+3. Filter records in memory (by evaluating all checks on each record returned from the database).
+4. Verify the client has permission to filter on the fields in the client's filter expression (by evaluating field level permissions).
+5. Prune fields from the response that the client cannot see (by evaluating field level permissions).
+
+The aggregation store will prune rows returned in the response (steps 1-3) by evaluating the following expression:
+```(entityRule AND (field1Rule OR field2Rule ... OR fieldNRule)```
+
+Step 4 and 5 simply evaluates the user checks on each individual field.
+
 # Experimental Features
 
 ## Configuration Validation
@@ -535,3 +561,9 @@ Hjson configuration files can be validated against schemas using a command-line 
 1. The config directory needs to adhere to this [file layout](#file-layout).
 
 ## Query Optimization
+
+Some queries run faster if aggregation is performed prior to joins (for dense joins).  Others my run faster if aggregation is performed after joins (for sparse joins).  By default, Elide generates queries that first aggregatoin and then join.  Elide includes an experimental optimizer that will rewrite the queries to aggregate first and then join.  This can be enabled at the table level by providing the hint, 'AggregateBeforeJoin' in the table configuration.
+
+[user-checks]: /pages/guide/v{{ page.version }}/03-security.html#user-checks
+[filter-checks]: /pages/guide/v{{ page.version }}/03-security.html#filter-expression-checks
+[operation-checks]: /pages/guide/v{{ page.version }}/03-security.html#operation-checks
