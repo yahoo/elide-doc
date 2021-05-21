@@ -11,7 +11,7 @@ The easiest way to get started with Elide is to use the [Spring Boot starter dep
 
 You can deploy and play with this example on Heroku or locally.  The landing page will let you toggle between the [swagger UI][swagger-ui] and [Graphiql](https://github.com/graphql/graphiql) for the example service.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-spring-boot-example)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-standalone-example)
 
 Don't like Spring/Spring Boot? - check out the same getting starting guide using Jetty/Jersey and [Elide standalone](https://github.com/yahoo/elide/tree/master/elide-standalone).
 Don't like Java?  [Here][yavin-example] is an example project using Elide with Kotlin.
