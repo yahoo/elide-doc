@@ -13,7 +13,7 @@ JSON-API: |+2
           "product": "elide-core"
         },
         "id": "0",
-        "type": "Downloads"
+        "type": "downloads"
       }
     ]
   }
@@ -23,7 +23,7 @@ GraphQL: |+2
   ```json
   {
     "data": {
-      "Downloads": {
+      "downloads": {
         "edges": [
           {
             "node": {
