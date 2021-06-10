@@ -39,7 +39,7 @@ Elide has first class support for [JPA (Java Persistence API)](http://www.oracle
  - describing the attributes, relationships, and id field of a model.
  - provide an object relational mapping that can be used by an Elide data store to persist the model.
 
-Elide makes use of the following JPA annotations: `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@Id`, and `@GeneratedValue`.  
+Elide makes use of the following JPA annotations: `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@Id`, `@EmbeddedId`, and `@GeneratedValue`.  
 If you need more information about JPA, please [review their documentation](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) or see our examples below.
 
 However, JPA is not required and Elide supports its own set of annotations for describing models:
@@ -49,7 +49,7 @@ However, JPA is not required and Elide supports its own set of annotations for d
 | Expose a model in elide  |                             | `@Include`        |
 | To One Relationship      | `@OneToOne`, `@ManyToOne`   | `@ToOne`          |
 | To Many Relationship     | `@OneToMany`, `@ManyToMany` | `@ToMany`         |
-| Mark an identifier field | `@Id`                       |                   |
+| Mark an identifier field | `@Id`, `@EmbeddedId`        |                   |
 {:.table}
 
 Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/15-annotations.html).
@@ -94,7 +94,7 @@ Considering the example above, we have a full data model that exposes a specific
 
 Every model in Elide must have an ID.  This is a requirement of both the JSON-API specification and Elide's GraphQL API.  Identifiers can be assigned by the persistence layer automatically or the client.  Elide must know two things:
 
-1. What field is the ID of the model.  This is determined by the `@Id` annotation.
+1. What field is the ID of the model.  This is determined by the `@Id` or `@EmbeddedId` annotation.
 2. Whether the persistence layer is assigning the ID or not.  This is determined by the presence or absence of the `@GeneratedValue` annotation.
 
 Identifier fields in Elide are typically integers, longs, strings, or UUIDs.  It is also possible to have composite/compound ID fields composed of multiple fields.  For example, the following identifier type includes three fields that together create a primary key:
@@ -118,8 +118,7 @@ This new compound ID type can then be referenced in an Elide model identifier li
 @Data
 @Entity
 public class Building {
-    @Id
-    @Embedded
+    @EmbeddedId
     private Address address;
 }
 ```
@@ -168,7 +167,7 @@ Elide distinguishes between attributes and relationships in a data model:
 
 ## Model Properties or Fields
 
-An elide model can be described using properties (getter and setter functions) or fields (class member variables) but not both on the same entity.  For any given entity, Elide looks at whether `@Id` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying persistence layer without exposing it through the Elide API.
+An elide model can be described using properties (getter and setter functions) or fields (class member variables) but not both on the same entity.  For any given entity, Elide looks at whether `@Id` or `@EmbeddedId` is a property or field to determine the access mode (property or field) for that entity.  All public properties and all fields are exposed through the Elide API if they are not explicitly marked `@Transient` or `@Exclude`. `@Transient` allows a field to be ignored by both Elide and an underlying persistence store while `@Exclude` allows a field to exist in the underlying persistence layer without exposing it through the Elide API.
 
 ## Computed Attributes
 
