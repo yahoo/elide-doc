@@ -114,10 +114,6 @@ Elide's `User` abstraction has four new changes:
 
 Security checks which dereference the `User` object will require changes to access the underlying principal object depending on the framework they use.
 
-### User Checks for newly created objects
-
-When a new model instance is created, only user checks are evaluated.
-
 ## DataStoreTransaction Changes
 
 ### Object Loading Changes
