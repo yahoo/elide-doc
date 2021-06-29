@@ -7,7 +7,7 @@ files:
 
 User.java: |+2
   ```java
-  @ReadPermission(expression = "Prefab.Roll.All")
+  @ReadPermission(expression = "Prefab.Role.All")
   @UpdatePermission(expression = "user is a superuser OR user is this user")
   @DeletePermission(expression = "user is a superuser OR user is this user")
   public class User {
