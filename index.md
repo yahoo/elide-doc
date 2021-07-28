@@ -300,7 +300,7 @@ layout: default
         <a href="/pages/license.html">Licensing</a>
       </div>
       <div class="col-sm links">
-        <a href="https://spectrum.chat/elide">Community</a>
+        <a href="https://discord.com/widget?id=869678398241398854&theme=dark">Community</a>
       </div>
       <div class="col-sm links">
         <a href="https://github.com/yahoo/elide/releases">Releases</a>
