@@ -159,6 +159,11 @@
         default: <em>Camel-cased name of the entity class</em>
         required: False
         description: The API-exposed name for a particular entity type.
+      - name: description
+        type: String
+        default: <em>None</em>
+        required: False
+        description: Model description that will be exported in Swagger (JSON-API) or the GraphQL schema.
 
 - name: LifeCycleHookBinding
   description: Registers a function that will be invoked when a model is read or manipulated by Elide.

@@ -74,37 +74,22 @@ By default these descriptions are disabled.  They can be turned on in Elide Sett
 
 ### Elide Standalone
 
-If using [Elide standalone][elide-standalone], override the following function in `ElideStandaloneSettings` and enable the `VerbosePermissionExecutor`:
+If using [Elide standalone][elide-standalone], override the following function in `ElideStandaloneSettings` and enable verbose errors:
 
 ```java
 @Override
-public ElideSettings getElideSettings(ServiceLocator injector) {
-
-    ...
-    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-            .withVerboseErrors()
-    ...
-
-    return builder.build();
-} 
+public boolean verboseErrors() {
+    return true;
+}
 ```
 
 ### Elide Spring Boot
 
-If using [Elide spring boot][elide-spring], override the following bean and enable the `VerbosePermissionExecutor`:
+If using [Elide spring boot][elide-spring], set the following setting in application.yml:
 
-```java
-@Bean
-public Elide initializeElide(EntityDictionary dictionary,
-                      DataStore dataStore, ElideConfigProperties settings) {
-
-    ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-             ...
-            .withVerboseErrors()
-             ...
-
-    return new Elide(builder.build());
-}
+```yaml
+elide:
+  verboseErrors: true
 ```
 
 ## Hibernate SQL Logging
