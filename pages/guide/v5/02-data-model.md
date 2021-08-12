@@ -195,9 +195,10 @@ The same principles are analogous to `@ComputedRelationship`s.
 
 ## Lifecycle Hooks
 
-Lifecycle hooks allow custom business logic (defined in functions) to be invoked during CRUD operations at three distinct phases of the client request:
+Lifecycle hooks allow custom business logic (defined in functions) to be invoked during CRUD operations at four distinct phases of the client request:
 
 1. *Pre Security* - Executed immediate prior to Elide security check evaluation.
+1. *Pre Flush* - Executed immediate prior to Elide flushing the transaction.  This is when database calls are first sent to the database.
 1. *Pre Commit* - Executed immediately prior to transaction commit but after all security checks have been evaluated.
 1. *Post Commit* - Executed immediately after transaction commit.
 
@@ -232,7 +233,7 @@ public interface LifeCycleHook<T> {
 Model fields can be decorated with a `LifeCycleHookBinding` annotation.  The annotation provides the following information:
 1. The hook function to invoke.
 2. The model operation (CREATE, READ, UPDATE, or DELETE) that triggers the hook.
-3. The transaction phase of when to trigger the hook (PRESECURITY, PRECOMMIT, or POSTCOMMIT).
+3. The transaction phase of when to trigger the hook (PRESECURITY, PREFLUSH, PRECOMMIT, or POSTCOMMIT).
 4. For class level triggers, whether or not the hook should be called for each impacted field or exactly once for the class.
 
 ```java
