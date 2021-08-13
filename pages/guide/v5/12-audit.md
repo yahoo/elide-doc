@@ -17,7 +17,7 @@ To enable logging to see these queries, set the following property (based on the
 
 ```xml
 <!-- Log JPA Datastore HQL Statements -->
-<logger name="com.yahoo.elide.datastores.jpa.porting.EntityManagerWrapper" level="DEBUG" />
+<logger name="com.yahoo.elide.core.hibernate.hql.DefaultQueryLogger" level="DEBUG" />
 ```
 
 ```xml
@@ -32,8 +32,25 @@ To enable logging to see these queries, set the following property (based on the
 
 This will enable logs similar to:
 ```
-HQL Query: SELECT example_models_ArtifactGroup FROM example.models.ArtifactGroup AS example_models_ArtifactGroup
+Query Hash: 1839872383  HQL Query: SELECT example_models_ArtifactGroup FROM example.models.ArtifactGroup AS example_models_ArtifactGroup
 ```
+
+## Query Latency Logging
+
+To get information about how long Elide JPQL or analytic queries are taking, you can enable timings:
+
+```xml
+<!-- Log JPA Datastore HQL Statements -->
+<logger name="com.yahoo.elide.core.utils.TimedFunction" level="DEBUG" />
+```
+
+This will enable logs similar to:
+
+```
+Query Hash: 1839872383        Time spent: 14
+```
+
+Not the query hash matches the JPQL log statement.  The time spent is given in milliseconds.
 
 ## Elide Error Response Logging
 
