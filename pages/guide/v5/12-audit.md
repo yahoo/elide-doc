@@ -40,7 +40,7 @@ Query Hash: 1839872383  HQL Query: SELECT example_models_ArtifactGroup FROM exam
 To get information about how long Elide JPQL or analytic queries are taking, you can enable timings:
 
 ```xml
-<!-- Log JPA Datastore HQL Statements -->
+<!-- Log SQL/JPQL Query Latencies -->
 <logger name="com.yahoo.elide.core.utils.TimedFunction" level="DEBUG" />
 ```
 
