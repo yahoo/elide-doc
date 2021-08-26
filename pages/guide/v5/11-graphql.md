@@ -104,34 +104,27 @@ Entity attributes generally do not take arguments.
 
 #### Relationship Operations
 
-Elide GraphQL relationships support six operations which can be broken into two groups: data operations and id operations.
-The operations are separated into those that accept a _data_ argument and those that accept an _ids_ argument:
+Elide GraphQL relationships support six operations which can be broken into two groups: data operations and id operations.  The operations are separated into those that accept a _data_ argument and those that accept an _ids_ argument.  Operations that edit or manipulate data are restricted to GraphQL Mutation queries:
 
 
-| Operation | Data | Ids |
-| --------- |------|-----|
-| Upsert    | ✓    | X   |
-| Update    | ✓    | X   |
-| Fetch     | X    | ✓   |
-| Replace   | ✓    | X   |
-| Remove    | X    | ✓   |
-| Delete    | X    | ✓   |
+| Operation | Data | Ids | Mutation Support | Query Support |
+| --------- |------|-----|------------------|---------------|
+| Upsert    | ✓    | X   | ✓                | X             |
+| Update    | ✓    | X   | ✓                | X             |
+| Fetch     | X    | ✓   | ✓                | ✓             |
+| Replace   | ✓    | X   | ✓                | X             |
+| Remove    | X    | ✓   | ✓                | X             |
+| Delete    | X    | ✓   | ✓                | X             |
 {:.table}
 
 --------------------------
 
-1. The **FETCH** operation retrieves a set of objects. When a list of ids is specified, it will only extract the set of objects within the
-relationship with matching ids.  If no ids are specified, then the entire collection of objects will be returned to the caller.
+1. The **FETCH** operation retrieves a set of objects. When a list of ids is specified, it will only extract the set of objects within the relationship with matching ids.  If no ids are specified, then the entire collection of objects will be returned to the caller.
 2. The **DELETE** operation fully deletes an object from the system.
-3. The **REMOVE** operation removes a specified set (qualified by the _ids_ argument) of objects from a relationship. This allows the caller to remove
-relationships between objects without being forced to fully delete the referenced objects.
-4. The **UPSERT** operation behaves much like SQL’s MERGE.  Namely, if the object already exists (based on the provided
-id) then it will be updated.  Otherwise, it will be created. In the case of updates, attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPSERT**.
-5. The **UPDATE** operation behaves much like SQL’s UPDATE.  Namely, if the object already exists (based on the provided
-id) then it will be updated.  Attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPDATE**.
-6. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.
-**REPLACE** can be thought of as an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client
-has authorization to see & manipulate.
+3. The **REMOVE** operation removes a specified set (qualified by the _ids_ argument) of objects from a relationship. This allows the caller to remove relationships between objects without being forced to fully delete the referenced objects.  **REMOVE** is ony supported in GraphQL mutation requests.
+4. The **UPSERT** operation behaves much like SQL’s MERGE.  Namely, if the object already exists (based on the provided id) then it will be updated.  Otherwise, it will be created. In the case of updates, attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPSERT**.
+5. The **UPDATE** operation behaves much like SQL’s UPDATE.  Namely, if the object already exists (based on the provided id) then it will be updated.  Attributes that are not specified are left unmodified.  If the _data_ argument contains a complex subgraph of nested objects, nested objects will also invoke **UPDATE**.
+6. The **REPLACE** operation is intended to replace an entire relationship with the set of objects provided in the _data_ argument.  **REPLACE** can be thought of as an **UPSERT** followed by an implicit **REMOVE** of everything else that was previously in the collection that the client has authorization to see & manipulate.
 
 #### Map Data Types
 
@@ -156,15 +149,14 @@ All subsequent query examples are based on the following data model including `B
 ## Filtering
 --------------------------
 
-Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in 
-the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping
-of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).
-FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
-RSQL predicates can filter attributes in:
-* The relationship model
-* Another model joined to the relationship model through to-one relationships
+Elide supports filtering relationships for any _FETCH_ operation by passing a [RSQL](https://github.com/jirutka/rsql-parser) expression in the _filter_ parameter for the relationship.  RSQL is a query language that allows conjunction (and), disjunction (or), and parenthetic grouping of boolean expressions.  It is a superset of the [FIQL language](https://tools.ietf.org/html/draft-nottingham-atompub-fiql-00).  FIQL defines all String comparison operators to be case insensitive. Elide overrides this behavior making all operators case sensitive by default. For case insensitive queries, Elide introduces new operators.
 
-To join across relationships, the attribute name is prefixed by one or more relationship names separated by period ('.')
+RSQL predicates can filter attributes:
+* In the relationship model itself
+* In another model joined to the relationship model through to-one or to-many relationships
+* Inside an object or nested object hierarchy
+
+To join across relationships or drill into nested objects, the attribute name is prefixed by one or more relationship or field names separated by period ('.').  For example, 'author.books.price.total' references all of the author's books with a price having a particular total value.
 
 ### Operators
 
@@ -224,8 +216,8 @@ Argument values must be URL encoded.  There is no limit to the number of argumen
 
 
 ### Examples
-* Filter books by title equal to 'abc' _and_ genre starting with 'Science':
-  `"title=='abc';genre=='Science*'` 
+* Filter books by title equal to 'abc' _and_ genre starting with 'Science' _and_ whose total price is greater than 100.00:
+  `"title=='abc';genre=='Science*';price.total>100.0` 
 * Filter books with a publication date greater than a certain time _or_ the genre is _not_ 'Literary Fiction'
 or 'Science Fiction':
   `publishDate>1454638927411,genre=out=('Literary Fiction','Science Fiction')`
