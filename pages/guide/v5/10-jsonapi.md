@@ -104,12 +104,17 @@ Filter query parameters either look like:
 1. `filter` with no type specified.   This is a global filter and can be used to filter across relationships (by performing joins in the persistence layer).
 
 Any number of typed filter parameters can be specified provided the 'TYPE' is different for each parameter.  There can only be a single global filter for the entire
-query.  
+query.  Typed filters can be used for any collection returned by Elide.  Global filters can only be used to filter root level collections.
 
-The value of any query parameter is a RSQL expression composed of predicates.  Each predicate contains an attribute of the data model,
+The value of any query parameter is a RSQL expression composed of predicates.  Each predicate contains an attribute of the data model or a related data model,
 an operator, and zero or more comparison values.
 
-Typed filters can be used for any collection returned by Elide.  Global filters can only be used to filter root level collections.
+Filter attributes can be:
+* In the data model itself
+* In another related model traversed through to-one or to-many relationships
+* Inside an object or nested object hierarchy
+
+To join across relationships or drill into nested objects, the attribute name is prefixed by one or more relationship or field names separated by period ('.').  For example, 'author.books.price.total' references all of the author's books with a price having a particular total value.
 
 #### Typed Filter Examples
 
@@ -117,9 +122,9 @@ Return all the books written by author '1' with the genre exactly equal to 'Scie
 
 `/author/1/book?filter[book]=genre=='Science Fiction'`
 
-Return all the books written by author '1' with the genre exactly equal to 'Science Fiction' _and_ the title starts with 'The':
+Return all the books written by author '1' with the genre exactly equal to 'Science Fiction' _and_ the title starts with 'The' _and_ whose total price is greater than 100.00:
 
-`/author/1/book?filter[book]=genre=='Science Fiction';title==The*`
+`/author/1/book?filter[book]=genre=='Science Fiction';title==The*;price.total>100.00`
 
 Return all the books written by author '1' with the publication date greater than a certain time _or_ the genre _not_ 'Literary Fiction'
 or 'Science Fiction':
