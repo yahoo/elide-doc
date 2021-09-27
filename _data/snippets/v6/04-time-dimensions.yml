@@ -1,0 +1,31 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```  
+  {
+      name : createdOn
+      type : TIME
+      definition : "FORMATDATETIME({{$createdOn}}, 'yyyy-MM')"
+      grains:
+      [{
+          type :  MONTH
+          sql :  '''
+          PARSEDATETIME({{$$column.expr}}, 'yyyy-MM')
+          '''
+      }]
+  }
+  ```
+
+Java: |+2
+  ```java
+  public static final String DATE_FORMAT = "PARSEDATETIME({{$$column.expr}}, 'yyyy-MM')";
+
+
+  @Temporal(grains = {
+      @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = DATE_FORMAT)
+  }, timeZone = "UTC")
+  @DimensionFormula("FORMATDATETIME({{$createdOn}}, 'yyyy-MM')")
+  private Date createdOn;
+  ```

@@ -1,0 +1,45 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  {
+    book(first: "1", after: "1") {
+      edges {
+        node {
+  	id
+  	title
+        }
+      }
+      pageInfo {
+        totalRecords
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "book": {
+      "edges": [
+        { 
+  	"node": {
+  	  "id": "2",
+  	  "title": "Libro Dos"
+  	}
+        }
+      ],
+      "pageInfo": {
+        "totalRecords": 3,
+        "startCursor": "1",
+        "endCursor": "2",
+        "hasNextPage": true
+      }
+    }
+  }
+  ```

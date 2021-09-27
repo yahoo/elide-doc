@@ -1,0 +1,42 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  <br/>
+  Update your application.yaml with the additional code below. (Only the relevant portions are included.). You will have to initialize your implementation as a Bean.
+
+  ```yaml
+  elide:
+    async:
+      defaultResultStorageEngine: false
+  ```
+
+  ```java
+    /**
+     * Configure the ResultStorageEngine used by TableExport requests.
+     * @return a ResultStorageEngine object.
+     */
+    @Bean
+    public ResultStorageEngine buildResultStorageEngine() {
+        return yourResultStorageEngineImplementationObject;
+    }
+  ```
+
+Elide Standalone: |+2
+  ```java
+  @Override
+  public ElideStandaloneAsyncSettings getAsyncProperties() {
+      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+          /**
+           * Implementation of ResultStorageEngine to use.
+           * @return ResultStorageEngine type object.
+           */
+          @Override
+          default ResultStorageEngine getResultStorageEngine() {
+              return yourResultStorageEngineImplementationObject;
+          }
+      }
+      return asyncProperties;
+  }
+  ```

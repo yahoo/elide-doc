@@ -1,0 +1,93 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```
+  {
+    tables: [{
+        name: TournamentPlayerStats
+        extend: PlayerStats
+        readAccess : 'admin.user OR guest user'
+        measures : [
+            {
+            name : highScore
+            type : INTEGER
+            definition: MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)
+            }
+        ],
+        dimensions : [
+            {
+                name : gameOn
+                type : TIME
+                definition : '{{$game_on}}'
+                # Change Type from MONTH, DAY & SECOND to YEAR & MONTH
+                grains:
+                [
+                    {
+                        type: YEAR
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy'), 'yyyy')
+                    },
+                    {
+                        type: MONTH
+                        sql: PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')
+                    }
+                ]
+            }
+        ]
+    }]
+  }
+  ```
+
+Java: |+2
+  ```java
+  @Include
+  @VersionQuery(sql = "SELECT COUNT(*) from playerStats")
+  @ReadPermission(expression = "admin.user OR guest user")
+  @FromTable(name = "playerStats", dbConnectionName = "Presto Data Source")
+  public class TournamentPlayerStats {
+
+      public static final String DATE_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM-dd'), 'yyyy-MM-dd')";
+      public static final String YEAR_MONTH_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy-MM'), 'yyyy-MM')";
+      public static final String YEAR_FORMAT = "PARSEDATETIME(FORMATDATETIME({{$$column.expr}}, 'yyyy'), 'yyyy')";
+
+      @Id
+      private String id;
+
+      // Change formula to filter on Tournament Games
+      @MetricFormula("MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)")
+      @ColumnMeta(friendlyName = "High Score")
+      private long highScore;
+
+      @ColumnMeta(size = CardinalitySize.LARGE)
+      private String name;
+
+      @Join("{{$country_id}} = {{playerCountry.$id}}", type = JoinType.LEFT)
+      private Country playerCountry;
+
+      @DimensionFormula("{{playerCountry.isoCode}}")
+      @ColumnMeta(friendlyName = "Country Code")
+      private String countryCode;
+
+      @DimensionFormula("{{$game_type}}")
+      @ColumnMeta(friendlyName = "Game Type")
+      private String gameType;
+
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT) }, timeZone = "UTC")
+      @DimensionFormula("{{$updated_on}}")
+      private Time updatedOn;
+
+      @Temporal(grains = { @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT) }, timeZone = "UTC")
+      @DimensionFormula("{{$created_on}}")
+      private Time createdOn;
+
+      // Change types of gameOn from Day & Month to Day, Month & Year
+      @Temporal(grains = {
+            @TimeGrainDefinition(grain = TimeGrain.DAY, expression = DATE_FORMAT),
+            @TimeGrainDefinition(grain = TimeGrain.MONTH, expression = YEAR_MONTH_FORMAT)
+            @TimeGrainDefinition(grain = TimeGrain.YEAR, expression = YEAR_FORMAT)
+      }, timeZone = "UTC")
+      @DimensionFormula("{{$game_on}}")
+      private Time gameOn;
+  }
+  ```

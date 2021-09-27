@@ -1,0 +1,51 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  {
+    book(ids: ["1"]) {
+      edges {
+        node {
+          id
+          title
+          authors {
+            edges {
+              node {
+                id
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "book": {
+      "edges": [
+        { 
+          "node": {
+            "id": "1",
+            "title": "Libro Uno",
+            "authors": {
+              "edges": [
+                { 
+                  "node": {
+                    "id": "1",
+                    "name": "Mark Twain"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+  ```

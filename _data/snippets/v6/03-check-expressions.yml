@@ -1,0 +1,80 @@
+files:
+  - User.java
+  - Post.java
+  - Comment.java
+  - IsOwner.java
+  - IsSuperuser.java
+
+User.java: |+2
+  ```java
+  @ReadPermission(expression = "Prefab.Role.All")
+  @UpdatePermission(expression = "user is a superuser OR user is this user")
+  @DeletePermission(expression = "user is a superuser OR user is this user")
+  public class User {
+      String name;
+
+      @OneToMany(mappedBy = "author")
+      Set<Post> posts;
+  }
+  ```
+
+Post.java: |+2
+  ```java
+  @ReadPermission(expression = "Post.isVisible OR user owns this post OR user is a superuser")
+  @UpdatePermission(expression = "user owns this post")
+  @CreatePermission(expression = "user owns this post")
+  @DeletePermission(expression = "user owns this post")
+  public class Post {
+      @ManyToOne
+      User author;
+
+      @UpdatePermission(expression = "user owns this post OR user is a superuser")
+      boolean published;
+
+      @OneToMany(mappedBy = "post")
+      Set<Comment> comments;
+  }
+  ```
+
+Comment.java: |+2
+  ```java
+  // user has to be able to see the post and to see the comment, or else be a super user
+  @ReadPermission(expression = "((Post.isVisible OR user owns this post) AND (comment is visible OR user made this comment)) OR user is a superuser")
+  @UpdatePermission(expression = "user made this comment")
+  @CreatePermission(expression = "post is visible")
+  @DeletePermission(expression = "user made this comment")
+  public class Comment {
+      @ManyToOne
+      User author;
+      @ManyToOne
+      Post post;
+      @UpdatePermission(expression = "user owns this post OR user is a superuser")
+      boolean suppressed;
+  }
+  ```
+
+IsOwner.java: |+2
+  ```java
+  @SecurityCheck(IsOwner.PRINCIPAL_IS_OWNER)
+  public static class IsOwner<Post> extends OperationCheck {
+      public static final String PRINCIPAL_IS_OWNER = "user owns this post";
+      
+      @Override
+      boolean ok(Post post, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
+          return post.author.equals(requestScope.getUser());
+      }
+  }
+  ```
+
+IsSuperuser.java: |+2
+  ```java
+  @SecurityCheck(IsSuperUser.PRINCIPAL_IS_SUPERUSER)
+  public static class IsSuperuser extends UserCheck {
+      public static final String PRINCIPAL_IS_SUPERUSER = "user is a superuser";
+
+      @Override
+      boolean ok(User user) {
+          return user.isInRole("SUPER_USER");
+      }
+  }
+  ```

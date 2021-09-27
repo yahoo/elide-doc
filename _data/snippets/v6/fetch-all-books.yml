@@ -1,0 +1,53 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  {
+    book {
+      edges {
+        node {
+          id
+          title
+          genre
+          language
+        }
+      }
+    }
+  }
+  ```
+
+Response: |+2
+  ```
+  {
+    "book": {
+      "edges": [
+        { 
+          "node": {
+            "id": "1",
+            "title": "Libro Uno",
+            "genre": null,
+            "language": null
+          }
+        },
+        { 
+          "node": {
+            "id": "2",
+            "title": "Libro Dos",
+            "genre": null,
+            "language": null
+          }
+        },
+        { 
+          "node": {
+            "id": "3",
+            "title": "Doctor Zhivago",
+            "genre": null,
+            "language": null
+          }
+        }
+      ]
+    }
+  }
+  ```
