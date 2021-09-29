@@ -37,7 +37,9 @@ Elide Standalone: |+2
   @Override
   public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
       return new ElideStandaloneSubscriptionSettings() { 
-          default SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
+
+          @Override
+          public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
               SubscriptionScanner scanner = SubscriptionScanner.builder()
       
                   //Things you may want to override...
