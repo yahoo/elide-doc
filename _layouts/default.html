@@ -48,9 +48,9 @@
             {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
             {% if pages.group == "guide" and page.version == pages.version %}
             {% if pages.subtopic == true %}
-            <a class="show-phone nav-item nav-link text-light ml-auto subtopic" href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a>
+            <a class="show-phone nav-item nav-link text-light ml-auto subtopic" href="{{ site.baseurl }}{{ pages.url }}">{{ pages.title }}</a>
             {% else %}
-            <a class="show-phone nav-item nav-link text-light ml-auto" href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a>
+            <a class="show-phone nav-item nav-link text-light ml-auto" href="{{ site.baseurl }}{{ pages.url }}">{{ pages.title }}</a>
             {% endif %} 
             {% endif %} 
             {% endfor %}
