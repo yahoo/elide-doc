@@ -141,7 +141,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Production Quality</h4>
-        <p>Quickly build and deploy production quality web services that expose your data as a service.  Elide APIs support complex filtering rules, sorting, pagination, and text search.</p>
+        <p>Quickly build and deploy production quality web services that expose your data as a service.  Elide APIs support complex filtering rules, sorting, pagination, subscriptions, and text search.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/code-icon.png" class="img-fluid" alt="Features: Production Quality">
@@ -172,7 +172,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Mobile Friendly</h4>
-        <p>JSON-API & GraphQL lets developers fetch entire object graphs in a single round trip. Only requested elements of the data model are returned.</p>
+        <p>Fetch entire object graphs in a single round trip.  Subscribe to changes in your data model in realtime.  Only requested elements of the data model are returned.</p>
       </div>
       <div class="col-sm text-right d-none d-sm-block">
         <img src="assets/images/features/mobile-icon.png" class="img-fluid" alt="Features: Mobile Friendly">

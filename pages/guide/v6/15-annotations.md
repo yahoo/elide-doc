@@ -31,6 +31,10 @@ Elide exposes data models using a set of annotations. To describe relational mod
 
 {% include annotation_link_list source='core_annotations' %}
 
+## Subscription Annotations
+
+{% include annotation_link_list source='sub_annotations' %}
+
 ## Aggregation Annotations
 
 {% include annotation_link_list source='agg_annotations' %}
@@ -38,4 +42,5 @@ Elide exposes data models using a set of annotations. To describe relational mod
 ## Annotation Details
 
 {% include annotation_description source='core_annotations' %}
+{% include annotation_description source='sub_annotations' %}
 {% include annotation_description source='agg_annotations' %}
