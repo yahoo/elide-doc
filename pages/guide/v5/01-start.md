@@ -45,7 +45,7 @@ There will two kinds of models:
 
 So now we have some models, but without an API it is not very useful. Before we add the API component, we need to create the schema in the database that our models will use.   Our example uses liquibase to manage the schema.  When Heroku releases the application, our example will execute the [database migrations][demo-schema] to configure the database with some test data automatically.  This demo uses Postgres.  Feel free to modify the migration script if you are using a different database provider.
 
-You may notice the example liquibase migration script adds an extra table, `AsyncQuery`.  This is only required if leveraging Elide's [asynchronous API](/pages/guide/v{{ page.version }}/11.5-asyncapi.html) to manage long running analytic queries.
+You may notice the example liquibase migration script adds an extra table, `AsyncQuery`.  This is only required if leveraging Elide's [asynchronous API]({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html) to manage long running analytic queries.
 
 There may be more tables in your database than models in your project or vice versa.  Similarly, there may be more columns in a table than in a particular model or vice versa.  Not only will our models work just fine, but we expect that models will normally expose only a subset of the fields present in the database. Elide is an ideal tool for building micro-services - each service in your system can expose only the slice of the database that it requires.
 
@@ -190,7 +190,7 @@ data to help our users is just as easy as it is to add new data. Let’s update 
 
 ## Running Analytic Queries
 
-Analytic queries leverage the same API as reading any other Elide model.  Note that Elide will aggregate the measures selected by the dimensions requested.  Learn more about analytic queries [here](/pages/guide/v{{ page.version }}/04-analytics.html).
+Analytic queries leverage the same API as reading any other Elide model.  Note that Elide will aggregate the measures selected by the dimensions requested.  Learn more about analytic queries [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/04-analytics.html).
 
 {% include code_example example="01-data-analytics" %}
 

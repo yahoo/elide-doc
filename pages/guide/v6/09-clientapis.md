@@ -32,6 +32,7 @@ All Elide APIs share a common set of concepts:
 4.  Filtering, sorting, and pagination share common languages and expressions.
 5.  Text and numeric representation of complex attributes is common.
 6.  API versioning works in the same manner.
+7.  Custom error responses have the same configuration mechanism.
 
 ### API Versioning
 
@@ -147,3 +148,46 @@ Elide has built in support for converting between Strings or Integers to enumera
 
 [elide-standalone]: https://github.com/yahoo/elide/tree/master/elide-standalone
 [elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure
+
+### Custom Error Responses
+
+For normal error handling, Elide throws runtime exceptions which are mapped to error responses.  You can override any error response in Elide by providing a custom `ErrorMapper`:
+
+```java
+/**
+ * The ErrorMapper allows mapping any RuntimeException of your choice into more meaningful
+ * CustomErrorExceptions to improved your error response to the client.
+ */
+@FunctionalInterface
+public interface ErrorMapper {
+    /**
+     * @param origin any Exception not caught by default
+     * @return a mapped CustomErrorException or null if you do not want to map this error
+     */
+    @Nullable CustomErrorException map(Exception origin);
+}
+```
+
+The mapper returns a `CustomErrorException` which allows the developer complete control over the error objects returned in the 'errors' array for both JSON-API and GraphQL.
+
+```java
+        ErrorObjects.ErrorObjectsBuilder builder = ErrorObjects.builder()
+                .withCode("506")
+                .with("customKey", "customValue")
+                .withDetail("A detailed message")
+                .addError();
+       
+        // Add a second error to the 'errors' array:
+        builder
+                .withCode("540")
+                .with("customKey", "customValue")
+                .withDetail("A different message")
+                .addError();
+        
+        throw new CustomErrorException(500, "Exception while doing something", builder.build());
+
+```
+
+You can configure a custom ErrorMapper as follows:
+
+{% include code_example example="error-mapper" %}

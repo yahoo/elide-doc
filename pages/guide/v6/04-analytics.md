@@ -517,7 +517,7 @@ The file format is a simple mapping from the variable name to a JSON structure. 
 
 ## Caching
 
-The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section](/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
+The Aggregation data store supports a configurable caching strategy to cache query results.  More details can be found in the [performance section]({{site.baseurl}}/pages/guide/v{{ page.version }}/16-performance.html#aggregationdatastore-cache).
 
 ### Bypassing Cache
 
@@ -574,6 +574,6 @@ Hjson configuration files can be validated against schemas using a command-line 
 
 Some queries run faster if aggregation is performed prior to joins (for dense joins).  Others my run faster if aggregation is performed after joins (for sparse joins).  By default, Elide generates queries that first aggregatoin and then join.  Elide includes an experimental optimizer that will rewrite the queries to aggregate first and then join.  This can be enabled at the table level by providing the hint, 'AggregateBeforeJoin' in the table configuration.
 
-[user-checks]: /pages/guide/v{{ page.version }}/03-security.html#user-checks
-[filter-checks]: /pages/guide/v{{ page.version }}/03-security.html#filter-expression-checks
-[operation-checks]: /pages/guide/v{{ page.version }}/03-security.html#operation-checks
+[user-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#user-checks
+[filter-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#filter-expression-checks
+[operation-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#operation-checks

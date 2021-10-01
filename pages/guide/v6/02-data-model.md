@@ -25,13 +25,13 @@ version: 6
 }
 </style>
 
-**NOTE:** This page is a description on how to _create_ CRUD data models (create, read, update, and delete) in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation](/pages/guide/v{{ page.version }}/09-clientapis.html).  More information for creating analytic models can be found [here](/pages/guide/v{{ page.version}}/04-analytics.html).
+**NOTE:** This page is a description on how to _create_ CRUD data models (create, read, update, and delete) in the backend using Elide. For more information on _interacting_ with an Elide API, please see our [API usage documentation]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html).  More information for creating analytic models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version}}/04-analytics.html).
 
 ---------------------
 
-Elide generates its API entirely based on the concept of **data models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
+Elide generates its API entirely based on the concept of **data models**.   Data models are JVM classes that represent both a concept to your application and also the _schema_ of an exposed web service endpoint.  Data models are intended to be a _view_ on top of the [data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service.  
 
-All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model](/pages/guide/v{{ page.version }}/03-security.html). 
+All Elide models have an identifier field that identifies a unique instance of the model.  Models are also composed of optional attributes and relationships.  Attribute are properties of the model.  Relationships are simply links to other related Elide models.    Annotations are used to declare that a class is an Elide model, that a relationship exists between two models, to denote which field is the identifier field, and to [secure the model]({{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html). 
 
 ## Annotations
 
@@ -52,7 +52,7 @@ However, JPA is not required and Elide supports its own set of annotations for d
 | Mark an identifier field | `@Id`, `@EmbeddedId`        |                   |
 {:.table}
 
-Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview](/pages/guide/v{{ page.version }}/15-annotations.html).
+Much of the Elide per-model configuration is done via annotations. For a full description of all Elide-supported annotations, please check out the [annotation overview]({{site.baseurl}}/pages/guide/v{{ page.version }}/15-annotations.html).
 
 ## Exposing a Model as an Elide Endpoint
 
@@ -156,7 +156,7 @@ public class AddressSerde implements Serde<String, Address> {
 }
 ```
 
-More information about `Serde` and user defined types can be found [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+More information about `Serde` and user defined types can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 
 ## Attributes vs Relationships
@@ -313,7 +313,7 @@ Data models can be validated using [bean validation](http://beanvalidation.org/1
 
 ## Type Coercion
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
 ## Inheritance
 
@@ -348,7 +348,7 @@ Details of how to construct client queries for a specific version can be found [
 
 ## Philosophy
 
-Data models are intended to be a _view_ on top of the [data store](/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the data store, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping data store requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying data store schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesirable.
+Data models are intended to be a _view_ on top of the [data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datatstores.html) or the set of data stores which support your Elide-based service. While other JPA-based workflows often encourage writing data models that exactly match the underlying schema of the data store, we propose a strategy of isolation on per-service basis. Namely, we recommend creating a data model that only supports precisely the bits of data you need from your underlying schema. Often times there will be no distinction when first building your systems. However, as your systems scale and you develop multiple services with overlapping data store requirements, isolation often serves as an effective tool to **reduce interdependency** among services and **maximize the separation of concern**. Overall, while models can correspond to your underlying data store schema as a one-to-one representation, it's not always strictly necessary and sometimes even undesirable.
 
 As an example, let's consider a situation where you have two Elide-based microservices: one for your application backend and another for authentication (suppose account creation is performed out-of-band for this example). Assuming both of these rely on a common data store, they'll both likely want to recognize the same underlying _User_ table. However, it's quite likely that the authentication service will only ever require information about user **credentials** and the application service will likely only ever need user **metadata**. More concretely, you could have a system that looks like the following:
 

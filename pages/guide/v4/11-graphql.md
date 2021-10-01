@@ -355,5 +355,5 @@ The response includes the complete set of books (id & title) and their new autho
 ## Type Serialization/Deserialization
 -------------------------------------
 
-Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here](/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
+Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 

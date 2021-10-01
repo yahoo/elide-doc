@@ -72,7 +72,7 @@ The persistence layer consists of two abstractions and their concrete implementa
  - A `DataStore` which is responsible for telling Elide which models it manages and creating `DataStoreTransaction` objects.
  - A `DataStoreTransaction` which is created per request and is responsible for saving, loading, and deleting Elide models.   Each request's interactions with the persistence layer should occur atomically. 
 
-Elide comes bundled with a number of `DataStore` [implementations](/pages/guide/v{{ page.version }}/06-datastores.html).  The most notable are the JPA, Search, and Aggregation stores.
+Elide comes bundled with a number of `DataStore` [implementations]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html).  The most notable are the JPA, Search, and Aggregation stores.
 
 ### Client Request Model
 
@@ -88,7 +88,7 @@ While earlier versions of Elide represented models as JVM classes, Elide 5 intro
 
 ### Modeling
 
-CRUD models in Elide are created from JVM classes whereas analytic models are created either from JVM classes or HJSON configuration files.  In either case, Elide annotations are used to add the metadata Elide needs to perform persistence and business rules.  All Elide annotations are documented [here](/pages/guide/v{{ page.version }}/15-annotations.html).
+CRUD models in Elide are created from JVM classes whereas analytic models are created either from JVM classes or HJSON configuration files.  In either case, Elide annotations are used to add the metadata Elide needs to perform persistence and business rules.  All Elide annotations are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/15-annotations.html).
 
 ## Security Subsystem
 

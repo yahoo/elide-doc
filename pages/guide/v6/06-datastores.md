@@ -24,7 +24,7 @@ Elide comes bundled with a number of data stores:
 4. Multiplex Store - A multiplex store delegates persistence to different underlying stores depending on the data model.
 5. Noop Store - A store which does nothing, allowing business logic in computed attributes and life cycle hooks to entirely implement CRUD operations on the model.
 6. [Search Store](https://github.com/yahoo/elide/tree/master/elide-datastore/elide-datastore-search) - A store which provides full text search on text fields while delegating other requests to another provided store.
-7. [Aggregation Store](/pages/guide/v{{ page.version }}/04-analytics.html) - A store which provides computation of groupable measures (similar to SQL group by).  The aggregation store has custom annotations that map an Elide model to native SQL queries against a JDBC database.
+7. [Aggregation Store]({{site.baseurl}}/pages/guide/v{{ page.version }}/04-analytics.html) - A store which provides computation of groupable measures (similar to SQL group by).  The aggregation store has custom annotations that map an Elide model to native SQL queries against a JDBC database.
 
 Stores can be included through the following artifact dependencies:
 

@@ -402,3 +402,8 @@ Type coercion between the API and underlying data model has common support acros
 
 Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
 initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html).
+
+## Custom Error Responses
+--------------------------
+
+Configuring custom error responses is documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#custom-error-responses).
