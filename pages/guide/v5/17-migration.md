@@ -5,6 +5,7 @@ title: Migration From Elide 4
 version: 5
 ---
 
+Elide 6 documentation can be found [here](/pages/guide/v6/01-start.html).
 Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
 
 ## New Features in Elide 5.X

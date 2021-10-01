@@ -1,7 +1,9 @@
 {% if page.version == 4 %}
 {% assign annotations = site.data.info.v4[include.source] | sort: 'name' %}
-{% else %}
+{% elsif page.version == 5 %}
 {% assign annotations = site.data.info.v5[include.source] | sort: 'name' %}
+{% else %}
+{% assign annotations = site.data.info.v6[include.source] | sort: 'name' %}
 {% endif %}
 
 {% for annotation in annotations %}
