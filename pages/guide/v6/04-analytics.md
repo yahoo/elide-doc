@@ -582,6 +582,7 @@ A filter template is a RSQL filter expression that must match (in whole or in pa
 
 A filter template can optionally contain a template variable on the right hand side of any predicate.  These variables are assigned to the values provided in the client query filter and added to the table arguments (for table filter templates) or the column arguments (for column filter templates).  For example, the following filterTemplate would add the variables 'start' and 'end' to the table arguments:
 
+{% raw %}
 ```
 {
   tables:
@@ -592,6 +593,7 @@ A filter template can optionally contain a template variable on the right hand s
 
       ...
 ```
+{% endraw %}
 
 ### Matching
 
@@ -599,7 +601,7 @@ A filter templates matches a client query if one of the two conditions holds:
  - The filter template exactly matches the client filter.
  - The filter template exactly matches part of the client filter that is conjoined with logical 'and' to the remainder of the client filter.
 
-For example, the client RSQL filter `lowScore>100;(highScore>=100;highScore<999)` matches the template `highScore>={{low}};highScore<{{high}}`.
+For example, the client RSQL filter `lowScore>100;(highScore>=100;highScore<999)` matches the {% raw %}template `highScore>={{low}};highScore<{{high}}`{% endraw %}.
 
 [user-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#user-checks
 [filter-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#filter-expression-checks
