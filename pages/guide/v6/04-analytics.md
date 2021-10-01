@@ -226,8 +226,8 @@ All SQL fragments support handlebars template expressions.  The handlebars conte
 2. \{\{columnName\}\} - Expands another column in the current Elide model.
 3. \{\{joinName.column\}\} - Expands to a column in another Elide model joined to the current model through the referenced join.
 4. \{\{joinName.$column\}\} - Expands to the correctly aliased, physical database column name for another Elide model joined to the current model through the referenced join. 
-5. \{\{$$table.args.argumentName\}\} - Expands to a table argument passed by the client. 
-6. \{\{\$\$column.args.argumentName\}\} - Expands to a column argument.  $$column always refers to the current column that is being expanded.
+5. \{\{$$table.args.argumentName\}\} - Expands to a table argument passed by the client or extracted from the client query filter through a table [filterTemplate](#filter-templates). 
+6. \{\{\$\$column.args.argumentName\}\} - Expands to a column argument passed by the client or extracted from the client query filter through a column [filterTemplate](#filter-templates).  $$column always refers to the current column that is being expanded.
 7. \{\{\$\$column.expr\}\} - Expands to a column's SQL fragment.  $$column always refers to the current column that is being expanded.
 
 Join names can be linked together to create a path from one model to another model's column through a set of joins.  For example the handlebar expression: \{\{join1.join2.join3.column\}\} references
@@ -573,6 +573,33 @@ Hjson configuration files can be validated against schemas using a command-line 
 ## Query Optimization
 
 Some queries run faster if aggregation is performed prior to joins (for dense joins).  Others my run faster if aggregation is performed after joins (for sparse joins).  By default, Elide generates queries that first aggregatoin and then join.  Elide includes an experimental optimizer that will rewrite the queries to aggregate first and then join.  This can be enabled at the table level by providing the hint, 'AggregateBeforeJoin' in the table configuration.
+
+## Filter Templates
+
+A filter template is a RSQL filter expression that must match (in whole or in part) the client's query (or the client query will be rejected).  Filter templates can be added to either table or column definitions.  At the table level, the filter template must match every query against the table.  At the column level, the template is only required to match if the client query explicitly requests the particular column.
+
+### Variable extraction
+
+A filter template can optionally contain a template variable on the right hand side of any predicate.  These variables are assigned to the values provided in the client query filter and added to the table arguments (for table filter templates) or the column arguments (for column filter templates).  For example, the following filterTemplate would add the variables 'start' and 'end' to the table arguments:
+
+```
+{
+  tables:
+  [
+    {
+      name: orderDetails
+      filterTemplate : deliveryTime>={{start}};deliveryTime<{{end}}
+
+      ...
+```
+
+### Matching
+
+A filter templates matches a client query if one of the two conditions holds:
+ - The filter template exactly matches the client filter.
+ - The filter template exactly matches part of the client filter that is conjoined with logical 'and' to the remainder of the client filter.
+
+For example, the client RSQL filter `lowScore>100;(highScore>=100;highScore<999)` matches the template `highScore>={{low}};highScore<{{high}}`.
 
 [user-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#user-checks
 [filter-checks]: {{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html#filter-expression-checks
