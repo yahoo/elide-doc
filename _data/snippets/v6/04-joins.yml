@@ -1,0 +1,41 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```  
+  joins: [
+      {
+         name: playerCountry
+         to: country
+         kind: toOne
+         type: left
+         definition: '{{$country_id}} = {{playerCountry.$id}}' # 'playerCounty' here is the join name.
+      },
+      {
+         name: playerTeam
+         to: team
+         kind: toMany
+         type: full
+         definition: '{{$team_id}} = {{playerTeam.$id}}'      # 'playerTeam' here is the joinName.
+      }
+  ]
+  ```
+
+Java: |+2
+  ```java
+  private Country country;
+  private Team team;
+
+  //'country' here is the the join/field name.
+  @Join("{{$country_id}} = {{country.$id}}", type = JoinType.LEFT)
+  public Country getCountry() {
+      return country;
+  }
+
+  //'team' here is the the join/field name.
+  @Join("{{$team_id}} = {{team.$id}}", type = JoinType.FULL)
+  public Team getTeam() {
+      return team;
+  }
+  ```

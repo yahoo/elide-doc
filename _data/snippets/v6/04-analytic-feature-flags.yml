@@ -1,0 +1,37 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```yaml
+  # application.yaml
+  elide:
+    dynamic-config:
+      enabled: true
+    aggregation-store:
+      enabled: true
+      enableMetaDataStore: true
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+
+  @Override
+  public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+      return new ElideStandaloneAnalyticSettings() {
+          @Override
+          public boolean enableDynamicModelConfig() {
+              return true;
+          }
+          @Override
+          public boolean enableAggregationDataStore() {
+              return true;
+          }
+          @Override
+          public boolean enableMetaDataStore() {
+              return true;
+          }
+      };
+  }
+  ```

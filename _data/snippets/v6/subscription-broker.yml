@@ -1,0 +1,29 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```yaml
+  # application.yaml
+
+  spring:
+    activemq:
+      broker-url: 'vm://embedded?broker.persistent=false,useShutdownHook=false'
+      in-memory: true
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+
+  @Override
+  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+      return new ElideStandaloneSubscriptionSettings() { 
+          public ConnectionFactory getConnectionFactory() {
+
+            //create, configure, and return a JMS connection factory....
+
+          }
+      };
+  }
+  ```

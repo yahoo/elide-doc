@@ -9,16 +9,21 @@ layout: default
         {% assign sorted_pages = site.pages | sort:"name" %} {% for pages in sorted_pages %} 
         {% if pages.group == "guide" and page.version == pages.version %}
         {% if pages.subtopic == true %}
-        <li class="subtopic"><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
+        <li class="subtopic"><a href="{{ site.baseurl }}{{ pages.url }}">{{ pages.title }}</a></li>
         {% else %}
-        <li><a href="{{ BASE_PATH }}{{ pages.url }}">{{ pages.title }}</a></li>
+        <li><a href="{{ site.baseurl }}{{ pages.url }}">{{ pages.title }}</a></li>
         {% endif %} 
         {% endif %} 
         {% endfor %}
         {% if page.version == 4 %}
-        <li><a href="{{ BASE_PATH }}/pages/guide/v5/01-start.html">Version 5 Documentation</a></li>
+        <li><a href="{{ site.baseurl }}/pages/guide/v6/01-start.html">Version 6 Documentation</a></li>
+        <li><a href="{{ site.baseurl }}/pages/guide/v5/01-start.html">Version 5 Documentation</a></li>
+        {% elsif page.version == 5 %}
+        <li><a href="{{ site.baseurl }}/pages/guide/v6/01-start.html">Version 6 Documentation</a></li>
+        <li><a href="{{ site.baseurl }}/pages/guide/v4/01-start.html">Version 4 Documentation</a></li>
         {% else %}
-        <li><a href="{{ BASE_PATH }}/pages/guide/v4/01-start.html">Version 4 Documentation</a></li>
+        <li><a href="{{ site.baseurl }}/pages/guide/v5/01-start.html">Version 5 Documentation</a></li>
+        <li><a href="{{ site.baseurl }}/pages/guide/v4/01-start.html">Version 4 Documentation</a></li>
         {% endif %} 
       </ul>
     </div>

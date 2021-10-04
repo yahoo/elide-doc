@@ -1,0 +1,32 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```  
+  {
+    namespaces:
+    [
+      {
+        name: SalesNamespace
+        description: Namespace for Sales Schema Tables
+        friendlyName: Sales
+        readAccess: Admin or SalesTeam
+      }
+    ]
+  }
+  ```
+
+Java: |+2
+  ```java
+  @Include(
+      name = "SalesNamespace",
+      description = "Namespaces for Sales Schema Tables",
+      friendlyName = "Sales"
+  )
+  @ReadPermission(expression = "Admin or SalesTeam")
+  package example;
+
+  import com.yahoo.elide.annotation.Include;
+  import com.yahoo.elide.annotation.ReadPermission;
+  ```

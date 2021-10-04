@@ -1,0 +1,47 @@
+files:
+  - Book.java
+  - Author.java
+  - Publisher.java
+
+Book.java: |+2
+  ```java
+  @Entity
+  @Table(name = "book")
+  @Include(rootLevel = true)
+  public class Book {
+      @Id private long id;
+      private String title;
+      private String genre;
+      private String language;
+      @ManyToMany
+      private Set<Author> authors;
+      @ManyToOne
+      private Publisher publisher;
+  }
+  ```
+
+Author.java: |+2
+  ```java
+  @Entity
+  @Table(name = "author")
+  @Include(rootLevel = false)
+  public class Author {
+      @Id private long id;
+      private String name;
+      @ManyToMany
+      private Set<Book> books;
+  }
+  ```
+
+Publisher.java: |+2
+  ```java
+  @Entity
+  @Table(name = "publisher")
+  @Include(rootLevel = false)
+  public class Publisher {
+      @Id private long id;
+      private String name;
+      @OneToMany
+      private Set<Book> books;
+  }
+  ```

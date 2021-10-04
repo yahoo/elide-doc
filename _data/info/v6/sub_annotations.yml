@@ -1,0 +1,17 @@
+- name: Subscription
+  description: Marks an elide model as a subscription topic.  Only fields marked with @SubscriptionField are sent to subscribers.
+  applicationLevel:
+    - Class
+  parameters:
+    - name: operation
+      required: False
+      type: Operation[]
+      default: "{Operation.CREATE, Operation.UPDATE, Operation.DELETE}"
+      description: Will emit an updated model to the subscription listeners whenever the model is manipulated with a matching operation.  If no operations are provided, the subscription topic is considered 'custom'.  It is the developer's responsibility to emit model events for custom topics.
+
+- name: SubscriptionField
+  description: On an Elide model subscription (annotated with @Subscription), only fields marked with this annotation are sent to subscribers.
+  applicationLevel:
+    - Method
+    - Field
+  parameters: []

@@ -1,0 +1,64 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```java
+  //Override the following bean:
+
+  @Bean
+  @Override
+  public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
+      SubscriptionScanner scanner = SubscriptionScanner.builder()
+
+              //Things you may want to override...
+              .deliveryDelay(Message.DEFAULT_DELIVERY_DELAY)
+              .messagePriority(Message.DEFAULT_PRIORITY)
+              .timeToLive(Message.DEFAULT_TIME_TO_LIVE)
+              .deliveryMode(Message.DEFAULT_DELIVERY_MODE)
+
+              //Things you probably don't care about...
+              .scanner(elide.getScanner())
+              .dictionary(elide.getElideSettings().getDictionary())
+              .connectionFactory(connectionFactory)
+              .mapper(elide.getMapper().getObjectMapper())
+              .build();
+
+      scanner.bindLifecycleHooks();
+
+      return scanner;
+  }
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+
+  @Override
+  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+      return new ElideStandaloneSubscriptionSettings() { 
+
+          @Override
+          public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
+              SubscriptionScanner scanner = SubscriptionScanner.builder()
+      
+                  //Things you may want to override...
+                  .deliveryDelay(Message.DEFAULT_DELIVERY_DELAY)
+                  .messagePriority(Message.DEFAULT_PRIORITY)
+                  .timeToLive(Message.DEFAULT_TIME_TO_LIVE)
+                  .deliveryMode(Message.DEFAULT_DELIVERY_MODE)
+      
+                  //Things you probably don't care about...
+                  .scanner(elide.getScanner())
+                  .dictionary(elide.getElideSettings().getDictionary())
+                  .connectionFactory(connectionFactory)
+                  .mapper(elide.getMapper().getObjectMapper())
+                  .build();
+      
+              scanner.bindLifecycleHooks();
+      
+              return scanner;
+          }
+      };
+  }
+  ```

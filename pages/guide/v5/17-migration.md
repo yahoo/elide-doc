@@ -5,18 +5,19 @@ title: Migration From Elide 4
 version: 5
 ---
 
-Elide 4 documentation can be found [here](/pages/guide/v4/01-start.html).
+Elide 6 documentation can be found [here]({{site.baseurl}}/pages/guide/v6/01-start.html).
+Elide 4 documentation can be found [here]({{site.baseurl}}/pages/guide/v4/01-start.html).
 
 ## New Features in Elide 5.X
 
 Elide 5 introduces several new features:
- - A new [semantic modeling layer and analytic query API](/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
- - An [asynchronous API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
- - An [data export API]((/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for exporting flat models as CSV or JSON.
- - [A mechanism](/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
+ - A new [semantic modeling layer and analytic query API]({{site.baseurl}}/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
+ - An [asynchronous API](({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
+ - An [data export API](({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for exporting flat models as CSV or JSON.
+ - [A mechanism]({{site.baseurl}}/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
  - The 'hasmember' and 'hasnomember' filter operator supports predicates that traverse to-many relationships (book.authors.name=hasmember='Foo').
  - New 'between' and 'notbetween' filter operators.
- - [Eliminates N+1 database query scenarios](/pages/guide/v{{ page.version}}/16-performance.html).
+ - [Eliminates N+1 database query scenarios]({{site.baseurl}}/pages/guide/v{{ page.version}}/16-performance.html).
 
 The analytics capabilities, asynchronous API, and table export API were developed in conjunction with a powerful Analytics UI called [Yavin](https://yavin.dev/). 
 
@@ -92,7 +93,7 @@ Filter expression checks now take a `Type` instead of a `Class` when referring t
 public abstract FilterExpression getFilterExpression(Type<?> entityClass, RequestScope requestScope);
 ```
 
-See Elide's [security documentation](/pages/guide/v{{ page.version }}/03-security.html) for details on how to define checks.
+See Elide's [security documentation]({{site.baseurl}}/pages/guide/v{{ page.version }}/03-security.html) for details on how to define checks.
 
 ### NonTransferable & SharePermission
 
@@ -161,7 +162,7 @@ public abstract void execute(LifeCycleHookBinding.Operation operation,
                              Optional<ChangeSpec> changes);
 ```
 
-To register life cycle hooks, all the prior annotations can be replaced with [a single annotation](/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
+To register life cycle hooks, all the prior annotations can be replaced with [a single annotation]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#annotation-based-hooks).  The hook logic now should reside outside the Elide model classes.
 However, legacy life cycle hook annotations remain supported.
 
 ## New Public Interfaces
