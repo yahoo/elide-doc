@@ -162,53 +162,51 @@ Custom stores can be written by implementing the `DataStore` and `DataStoreTrans
 
 ## Enabling In-Memory Filtering, Sorting, or Pagination
 
-If a Data Store is unable to fully or partially implement sorting, filtering, or pagination, the Elide framework can perform
-this function in-memory instead.
+If a Data Store is unable to fully implement sorting, filtering, or pagination, the Elide framework can perform
+these functions in-memory instead.
 
-The Data Store Transaction can inform Elide of its capabilities by overriding the following methods:
+The Data Store Transaction can inform Elide of its capabilities (or lack thereof) by returning a `DataStoreIterable` for any collection loaded:
 
 ```java
 /**
- * Whether or not the transaction can filter the provided class with the provided expression.
- * @param scope The request scope
- * @param projection The projection being loaded
- * @param parent Are we filtering a root collection or a relationship
- * @param <T> - The model type of the parent model (if a relationship is being filtered).
- * @return FULL, PARTIAL, or NONE
+ * Returns data loaded from a DataStore.   Wraps an iterable but also communicates to Elide
+ * if the framework needs to filter, sort, or paginate the iterable in memory before returning to the client.
+ * @param <T> The type being iterated over.
  */
-default <T> FeatureSupport supportsFiltering(RequestScope scope,
-                                             Optional<T> parent,
-                                             EntityProjection projection) {
-    return FeatureSupport.FULL;
+public interface DataStoreIterable<T> extends Iterable<T> {
+
+    /**
+     * Returns the underlying iterable.
+     * @return The underlying iterable.
+     */
+    Iterable<T> getWrappedIterable();
+
+
+    /**
+     * Whether the iterable should be filtered in memory.
+     * @return true if the iterable needs sorting in memory.  false otherwise.
+     */
+    default boolean needsInMemoryFilter() {
+        return false;
+    }
+
+    /**
+     * Whether the iterable should be sorted in memory.
+     * @return true if the iterable needs sorting in memory.  false otherwise.
+     */
+    default boolean needsInMemorySort() {
+        return false;
+    }
+
+    /**
+     * Whether the iterable should be paginated in memory.
+     * @return true if the iterable needs pagination in memory.  false otherwise.
+     */
+    default boolean needsInMemoryPagination() {
+        return false;
+    }
 }
 
-/**
- * Whether or not the transaction can sort the provided class.
- * @param scope The request scope
- * @param projection The projection being loaded
- * @param parent Are we filtering a root collection or a relationship
- * @param <T> - The model type of the parent model (if a relationship is being sorted).
- * @return true if sorting is possible
- */
-default <T> boolean supportsSorting(RequestScope scope,
-                                    Optional<T> parent,
-                                    EntityProjection projection) {
-    return true;
-}
-
-/**
- * Whether or not the transaction can paginate the provided class.
- * @param scope The request scope
- * @param projection The projection being loaded
- * @param parent Are we filtering a root collection or a relationship
- * @param <T> - The model type of the parent model (if a relationship is being paginated).
- * @return true if pagination is possible
- */
-default <T> boolean supportsPagination(RequestScope scope,
-                                       Optional<T> parent,
-                                       EntityProjection projection) {
-    return true;
-}
 ```
 
 # Multiple Stores

@@ -48,7 +48,7 @@
         description: The category of the column.
       - name: tableSource
         default: <em>None</em>
-        type: String
+        type: TableSource
         required: False
         description: The table and column names where to find the values (tableName.columnName).
       - name: tags
@@ -61,6 +61,16 @@
         type: String[]
         required: False
         description: An optional enumerated list of dimension values for small cardinality dimensions.
+      - name: filterTemplate
+        default: <em>None</em>
+        type: String[]
+        required: False
+        description: An RSQL filter expression template that must directly match or be included in the client provided filter to query this column.
+      - name: isHidden
+        default: False
+        type: Boolean
+        required: False
+        description: This column is not exported as part of the API or API metadata.
       - name: size
         default: <em>UNKNOWN</em>
         type: CardinalitySize
@@ -96,12 +106,17 @@
         default: <em>None</em>
         type: String[]
         required: False
-        description: An RSQL filter expression template that must directly match or be included in the client provided filter.
+        description: An RSQL filter expression template that must directly match or be included in the client provided filter to query this table.
       - name: isFact
         default: True
         type: Boolean
         required: False
         description: Is the table a Fact table.
+      - name: isHidden
+        default: False
+        type: Boolean
+        required: False
+        description: This table is not exported as part of the API or API metadata.
       - name: size
         default: <em>UNKNOWN</em>
         type: CardinalitySize
