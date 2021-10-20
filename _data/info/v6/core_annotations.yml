@@ -154,7 +154,7 @@
         required: False
         default: True
         description: Whether or not the entity is accessible as a "rootable" entity. Namely, if this collection of objects can be queried directly or whether or not it must be queried through a relationship.
-      - name: type
+      - name: name
         type: String
         default: <em>Camel-cased name of the entity class</em>
         required: False

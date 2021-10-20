@@ -31,7 +31,7 @@ Elide accepts GraphQL queries embedded in HTTP POST requests.  It follows the [c
 {
     "query": "mutation myMutation($bookName: String $authorName: String) {book(op: UPSERT data: {id:2,title:$bookName}) {edges {node {id title authors(op: UPSERT data: {id:2,name:$authorName}) {edges {node {id name}}}}}}}",
     "variables": {
-        "authorName": "John Setinbeck",
+        "authorName": "John Steinbeck",
         "bookName": "Grapes of Wrath"
     }
 }
