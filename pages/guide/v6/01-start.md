@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Getting Started
+description: Getting Started
 version: 6
 ---
 ## So You Want An API?

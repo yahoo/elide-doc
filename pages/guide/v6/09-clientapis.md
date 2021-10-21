@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Client APIs
+description: JSON API and GraphQL Client APIs
 version: 6
 ---
 

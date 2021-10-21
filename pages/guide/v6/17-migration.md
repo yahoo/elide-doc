@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Migration From Elide 5
+description: Migration From Elide 5
 version: 6
 ---
 

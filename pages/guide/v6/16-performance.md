@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Performance
+description: Performance Considerations
 version: 6
 ---
 

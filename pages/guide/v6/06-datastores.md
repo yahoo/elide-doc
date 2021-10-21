@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Data Stores
+description: Configuring Elide with Different Data Sources and Databases
 version: 6
 ---
 

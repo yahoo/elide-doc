@@ -1,6 +1,9 @@
-title: Elide
+title: "Elide"
+tagline: "JSON API and GraphQL Web Services"
+description: "A Java library to build model driven JSON API and GraphQL web services with minimal effort"
 baseurl: ""
-url: ""
+url: "https://elide.io"
+logo: "/assets/images/elide-logo.svg"
 # jekyll configuration
 exclude: ["README.md"]
 
@@ -11,6 +14,9 @@ sass:
     - _sass
     - node_modules
 exclude: []
+
+plugins:
+  - jekyll-seo-tag
 
 # site-specific configuration
 BASE_PATH: https://elide.io

@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Development
+description: Building and Releasing Elide
 version: 6
 ---
 

@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Swagger
+description: Open API Documentation (Swagger)
 version: 6
 ---
 
