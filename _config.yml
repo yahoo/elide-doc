@@ -17,6 +17,14 @@ exclude: []
 
 plugins:
   - jekyll-seo-tag
+  - jekyll-sitemap
+
+defaults:
+  - 
+    scope:
+      path: "node_modules/**"
+    values:
+      sitemap: false
 
 # site-specific configuration
 BASE_PATH: https://elide.io
