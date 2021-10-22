@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Design
+description: Design Overview
 version: 6
 ---
 

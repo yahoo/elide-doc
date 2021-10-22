@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Logging & Audit
+description: Logging & Audit
 version: 6
 ---
 

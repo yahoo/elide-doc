@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Analytic Query Support
+description: Semantic Layer and Analytic Queries
 version: 6
 ---
 

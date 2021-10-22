@@ -3,6 +3,7 @@ layout: guide
 group: guide
 subtopic: true
 title: GraphQL Queries & Mutations
+description: GraphQL Queries & Mutations
 version: 6
 ---
 

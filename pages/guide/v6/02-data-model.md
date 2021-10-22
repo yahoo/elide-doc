@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Data Models
+description: Building Elide Data Models
 version: 6
 ---
 <style>

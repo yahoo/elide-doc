@@ -2,6 +2,7 @@
 layout: guide
 group: guide
 title: Security
+description: Security and Authorization
 version: 6
 ---
 ## Core Concepts
