@@ -1,6 +1,6 @@
 title: "Elide"
-tagline: "JSON API and GraphQL Web Services"
-description: "A Java library to build model driven JSON API and GraphQL web services with minimal effort"
+tagline: "Model Driven Json API and GraphQL Web Services for Java"
+description: "Model Driven Json API and GraphQL Web Services for Java"
 baseurl: ""
 url: "https://elide.io"
 logo: "/assets/images/elide-logo.svg"
