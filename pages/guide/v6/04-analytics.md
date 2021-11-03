@@ -312,7 +312,7 @@ Columns include the following properties:
 | cardinality           | tiny, small, medium, large, huge - A hint about the dimension's cardinality. | small | `@ColumnMeta(size=CardinalitySize.SMALL)` |
 | readAccess            | An elide permission rule that governs read access to the column. | 'admin.user' | `@ReadPermission(expression="admin.user")` |
 | definition            | A SQL fragment that describes how to generate the column. | MAX(\{\{sessions\}\}) | @DimensionFormula("CASE WHEN \{\{name\}\} = 'United States' THEN true ELSE false END") |
-| type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' | 'BOOLEAN' | String columnName; |
+| type                  | The data type of the column.  One of 'INTEGER', 'DECIMAL', 'MONEY', 'TEXT', 'COORDINATE', 'BOOLEAN' or a fully qualified java class name (dimensions only). | 'BOOLEAN' | String columnName; |
 | hidden                | The column is not exposed through the API. | true | `@Exclude` |
 {:.table}
 

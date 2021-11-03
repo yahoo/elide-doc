@@ -14,7 +14,7 @@ Elide 4 documentation can be found [here]({{site.baseurl}}/pages/guide/v4/01-sta
 Elide 6 introduces several new features:
  - Elide 6 is built using Java 11 (as opposed to Java 8).
  - GraphQL subscription support is added along with a JMS data store that can read Elide models from JMS topics.
- - Coming Soon: Quarkus support including Elide native builds with GraalVM.
+ - In-memory sorting support for computed attributes.
 
 ## API Changes
 
@@ -32,6 +32,8 @@ Elide 6 introduces several new features:
 s
  - EntityDictionary is now entirely constructed with a Builder.  All prior constructors have been removed.
  - Security checks are now instantiated at boot and reused across requests.  This change requires security checks to be thread safe.
+ - READ lifecycle hooks are no longer supported.  CREATE, UPDATE, and DELETE hooks remain unchanged.
+ - UPDATE & CREATE lifecycle hooks are only invoked once per request when a toMany relationship is modified (as opposed to once for each individual relationship that was added or deleted to the collection).
 
 ## Module & Package Changes
 

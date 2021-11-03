@@ -210,7 +210,6 @@ There are two mechanisms to enable lifecycle hooks on a particular model:
 Life cycle hooks are simply functions that conform to the following interface:
 
 ```java
-/**
  * Function which will be invoked for Elide lifecycle triggers
  * @param <T> The elide entity type associated with this callback.
  */
@@ -218,22 +217,24 @@ Life cycle hooks are simply functions that conform to the following interface:
 public interface LifeCycleHook<T> {
     /**
      * Run for a lifecycle event.
-     * @param operation CREATE, READ, UPDATE, or DELETE
+     * @param operation CREATE, UPDATE, or DELETE
+     * @param phase PRESECURITY, PREFLUSH, PRECOMMIT or POSTCOMMIT
      * @param elideEntity The entity that triggered the event
      * @param requestScope The request scope
      * @param changes Optionally, the changes that were made to the entity
      */
-    public abstract void execute(LifeCycleHookBinding.Operation operation,
-                                 T elideEntity,
-                                 RequestScope requestScope,
-                                 Optional<ChangeSpec> changes);
+    void execute(LifeCycleHookBinding.Operation operation,
+                 LifeCycleHookBinding.TransactionPhase phase,
+                 T elideEntity,
+                 RequestScope requestScope,
+                 Optional<ChangeSpec> changes);
 ```
 
 ### Annotation Based Hooks
 
 Model fields can be decorated with a `LifeCycleHookBinding` annotation.  The annotation provides the following information:
 1. The hook function to invoke.
-2. The model operation (CREATE, READ, UPDATE, or DELETE) that triggers the hook.
+2. The model operation (CREATE, UPDATE, or DELETE) that triggers the hook.
 3. The transaction phase of when to trigger the hook (PRESECURITY, PREFLUSH, PRECOMMIT, or POSTCOMMIT).
 4. For class level triggers, whether or not the hook should be called for each impacted field or exactly once for the class.
 
