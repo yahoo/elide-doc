@@ -566,8 +566,9 @@ Hjson configuration files can be validated against schemas using a command-line 
 
 1. Using the generated JAR for validation:
 
-   `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --help`
-   `java -cp elide-*-example.jar com.yahoo.elide.modelconfig.validator.DynamicConfigValidator --configDir <Path for Config Directory>`
+Under spring boot:
+
+`java -cp target/elide-spring-boot-1.0.jar -Dloader.main=com.yahoo.elide.modelconfig.validator.DynamicConfigValidator org.springframework.boot.loader.PropertiesLauncher --configDir <Path for Config Directory>`
 
 1. The config directory needs to adhere to this [file layout](#file-layout).
 
