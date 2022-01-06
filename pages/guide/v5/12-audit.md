@@ -151,7 +151,7 @@ public Properties getDatabaseProperties() {
 
 ## HTTP Request & Response Logging
 
-Sometimes it is useful to log the actual HTTP request and response bodies (be careful in production if the entity bodies contain sensitive data).   This example requires spring boot and [logback-access-spring-boot-starter](https://github.com/akihyro/logback-access-spring-boot-starter):
+Sometimes it is useful to log the actual HTTP request and response bodies (be careful in production if the entity bodies contain sensitive data).   This example requires spring boot and logback-access-spring-boot-starter:
 
 ```xml
 <dependency>
