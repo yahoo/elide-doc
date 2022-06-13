@@ -94,7 +94,7 @@ set of arguments that either constrain the edges fetched from a relationship or 
 1. The **ids** parameter is a collection of node identifiers.  It is used to select one or more nodes from a relationship.
 2. The **filter** parameter is used to build [RSQL](https://github.com/jirutka/rsql-parser) filter predicates that select zero or more nodes from a relationship.
 3. The **sort** parameter is used to order a relationship's edges by one or more node attributes.
-4. The parameters **offset** and **first** are used to paginate a relationship across multiple API requests.
+4. The parameters **after** and **first** are used to paginate a relationship across multiple API requests.
 5. The **op** argument describes the operation to perform on the relationship. When not provided, this argument
 defaults to a FETCH operation which simply reads the collection of edges.
 6. The **data** parameter is provided for operations that mutate the collection (UPSERT, UPDATE, and REPLACE), It contains
@@ -230,7 +230,7 @@ or 'Science Fiction':
 
 Any relationship can be paginated by providing one or both of the following parameters:
 1. **first** - The number of items to return per page.
-2. **offset** - The number of items to skip.
+2. **after** - The number of items to skip.
 
 ### Relationship Metadata
 
