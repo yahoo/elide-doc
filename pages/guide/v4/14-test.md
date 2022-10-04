@@ -127,7 +127,7 @@ Using Rest Assured and the JSON-API DSL, you can issue JSON-API requests and ver
     }
 ```
 
-The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/jsonapi/JsonApiDSL.java).
+The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-test/src/main/java/com/yahoo/elide/test/jsonapi/JsonApiDSL.java).
 
 ## GraphQL DSL
 
