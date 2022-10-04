@@ -128,7 +128,7 @@ Using Rest Assured and the JSON-API DSL, you can issue JSON-API requests and ver
     }
 ```
 
-The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/jsonapi/JsonApiDSL.java).
+The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-test/src/main/java/com/yahoo/elide/test/jsonapi/JsonApiDSL.java).
 
 ## GraphQL DSL
 
@@ -186,7 +186,7 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 ```
 
 
-The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/graphql/GraphQLDSL.java).
+The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-test/src/main/java/com/yahoo/elide/test/graphql/GraphQLDSL.java).
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
 [elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
