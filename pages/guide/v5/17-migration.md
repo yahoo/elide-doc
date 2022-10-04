@@ -12,8 +12,8 @@ Elide 4 documentation can be found [here]({{site.baseurl}}/pages/guide/v4/01-sta
 
 Elide 5 introduces several new features:
  - A new [semantic modeling layer and analytic query API]({{site.baseurl}}/pages/guide/v{{ page.version }}/04-analytics.html) for OLAP style queries against your database.
- - An [asynchronous API](({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for API read requests with long durations.
- - An [data export API](({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html)) for exporting flat models as CSV or JSON.
+ - An [asynchronous API]({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html) for API read requests with long durations.
+ - An [data export API]({{site.baseurl}}/pages/guide/v{{ page.version }}/11.5-asyncapi.html) for exporting flat models as CSV or JSON.
  - [A mechanism]({{site.baseurl}}/pages/guide/v{{ page.version}}/02-data-model.html#api-versions) to version elide models and the corresponding API.
  - The 'hasmember' and 'hasnomember' filter operator supports predicates that traverse to-many relationships (book.authors.name=hasmember='Foo').
  - New 'between' and 'notbetween' filter operators.
