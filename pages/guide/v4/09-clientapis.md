@@ -123,8 +123,8 @@ This can be toggled by overriding the `Elide` autoconfigure bean:
 ##### Elide Library Configuration
 
 If using Elide as a library, the following date serdes can be registered:
-1. [IS8601 Serde](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/utils/coerce/converters/ISO8601DateSerde.java)
-2. [Epoch Serde](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/utils/coerce/converters/EpochToDateConverter.java)
+1. [ISO8601 Serde](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/utils/coerce/converters/ISO8601DateSerde.java)
+2. [Epoch Serde](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/core/utils/coerce/converters/EpochToDateConverter.java)
 
 #### UUID Coercion
 

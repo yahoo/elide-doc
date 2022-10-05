@@ -165,7 +165,7 @@ String jsonOutput = SwaggerBuilder.getDocument(document);
 
 #### Configure JAX-RS Endpoint
 
-Or you can use the Swagger document directly to configure the [provided JAX-RS Endpoint](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-swagger/src/main/java/com/yahoo/elide/contrib/swagger/resources/DocEndpoint.java):
+Or you can use the Swagger document directly to configure the [provided JAX-RS Endpoint](https://github.com/yahoo/elide/blob/master/elide-swagger/src/main/java/com/yahoo/elide/swagger/resources/DocEndpoint.java):
 
 ```java
 Map<String, Swagger> swaggerDocs = new HashMap<>();

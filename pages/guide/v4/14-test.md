@@ -5,7 +5,7 @@ title: Test
 version: 4
 ---
 
-The [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-contrib/elide-test-helpers) package provides a JSON-API and GraphQL
+The [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-test) package provides a JSON-API and GraphQL
 type safe DSL that simplifies adding integration tests to your service.  The DSLs are designed to work with [Rest Assured](http://rest-assured.io/).
 
 ## Dependencies
@@ -15,7 +15,7 @@ The tests described here are based on a [the getting started example repo][elide
 The example leverages: 
 1. [Elide Spring Boot Starter][elide-spring] for running the test service and setting up Elide.
 2. [JUnit 5](https://junit.org/junit5/) for adding tests.
-3. [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-contrib/elide-test-helpers) for the JSON-API and GraphQL DSLs.
+3. [elide-test-helpers](https://github.com/yahoo/elide/tree/master/elide-test) for the JSON-API and GraphQL DSLs.
 4. [Rest Assured](http://rest-assured.io/) for issuing HTTP requests against the test service.
 5. [Spring Boot Test Starter](https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test) for adding test data for each test.
 6. [H2 In Memory Database](https://www.h2database.com/html/main.html) for an in memory test database.
@@ -127,7 +127,7 @@ Using Rest Assured and the JSON-API DSL, you can issue JSON-API requests and ver
     }
 ```
 
-The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/jsonapi/JsonApiDSL.java).
+The complete set of static DSL operators for JSON-API can be found [here](https://github.com/yahoo/elide/blob/master/elide-test/src/main/java/com/yahoo/elide/test/jsonapi/JsonApiDSL.java).
 
 ## GraphQL DSL
 
@@ -185,7 +185,7 @@ Using Rest Assured and the GraphQL DSL, you can issue GraphQL requests and verif
 ```
 
 
-The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-contrib/elide-test-helpers/src/main/java/com/yahoo/elide/contrib/testhelpers/graphql/GraphQLDSL.java).
+The complete set of static DSL operators for GraphQL can be found [here](https://github.com/yahoo/elide/blob/master/elide-test/src/main/java/com/yahoo/elide/test/graphql/GraphQLDSL.java).
 
 [elide-demo]: https://github.com/yahoo/elide-spring-boot-example
 [elide-spring]: https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter

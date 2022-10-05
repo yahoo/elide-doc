@@ -67,7 +67,7 @@
       description: The API Version name.
 
 - name: CreatePermission
-  description: Define security rules for creating an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+  description: Define security rules for creating an object through Elide. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -78,10 +78,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
 
 - name: ReadPermission
-  description: Define security rules for reading an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+  description: Define security rules for reading an object through Elide. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -92,10 +92,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
 
 - name: UpdatePermission
-  description: Define security rules for updating an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+  description: Define security rules for updating an object through Elide. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -106,10 +106,10 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
 
 - name: DeletePermission
-  description: Define security rules for deleting an object through Elide. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+  description: Define security rules for deleting an object through Elide. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
   applicationLevel:
       - Field
       - Method
@@ -120,7 +120,7 @@
         required: True
         type: String
         default: <em>None</em>
-        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v{{ page.version }}/03-security.html">security section</a> for more information.
+        description: A security expression parsed by Elide security. See the <a href="/pages/guide/v6/03-security.html">security section</a> for more information.
 
 - name: NonTransferable
   description: Marks that a model cannot be assigned to another collection after its creation.  
