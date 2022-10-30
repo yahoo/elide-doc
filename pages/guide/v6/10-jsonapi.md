@@ -444,7 +444,7 @@ public interface WithMetadata {
      * @param property
      * @param value
      */
-    void setMetadataField(String property, Object value);
+    default void setMetadataField(String property, Object value) { //NOOP }
 
     /**
      * Retrieves a metadata property from this request.
@@ -461,7 +461,31 @@ public interface WithMetadata {
 }
 ```
 
-The models must be populated with at least one field (by calling `setMetadataField`) for the meta block to be returned in the response.  These fields can be populated in a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores) or [lifecycle hook]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#lifecycle-hooks).  This would produce a JSON response like:
+For example, the following example model implements `WithMetadata`:
+
+```java
+@Include
+public class Widget implements WithMetadata {
+    @Id
+    private String id;
+
+    @Override
+    public Optional<Object> getMetadataField(String property) {
+        if (property.equals("key")) {
+            return Optional.of(123);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Set<String> getMetadataFields() {
+        return Set.of("key");
+    }
+}
+```
+
+The models must be populated with at least one field (by calling `setMetadataField`) for the meta block to be returned in the response.  These fields can also be populated in a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores) or [lifecycle hook]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#lifecycle-hooks).  This would produce a JSON response like:
 
 
 ```json
