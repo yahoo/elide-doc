@@ -466,21 +466,19 @@ For example, the following example model implements `WithMetadata`:
 ```java
 @Include
 public class Widget implements WithMetadata {
+    static Map metadata = Map.of("key", 123);
+
     @Id
     private String id;
 
     @Override
     public Optional<Object> getMetadataField(String property) {
-        if (property.equals("key")) {
-            return Optional.of(123);
-        }
-
-        return Optional.empty();
+        return Optional.ofNullable(Widget.metadata.get(property));
     }
 
     @Override
     public Set<String> getMetadataFields() {
-        return Set.of("key");
+        return Widget.metadata.keySet();
     }
 }
 ```
