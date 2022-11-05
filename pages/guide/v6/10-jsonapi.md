@@ -483,7 +483,7 @@ public class Widget implements WithMetadata {
 }
 ```
 
-The models must be populated with at least one field (by calling `setMetadataField`) for the meta block to be returned in the response.  These fields can also be populated in a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores) or [lifecycle hook]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#lifecycle-hooks).  This would produce a JSON response like:
+The models must be populated with at least one field for the meta block to be returned in the response.  These fields can also be populated in a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores) or [lifecycle hook]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#lifecycle-hooks).  This would produce a JSON response like:
 
 
 ```json
