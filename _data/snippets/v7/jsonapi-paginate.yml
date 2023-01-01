@@ -1,0 +1,80 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  /book?page[offset]=3&page[limit]=2&page[totals]
+  ```
+
+Response: |+2
+  ```
+  {
+    "data": [
+        {
+            "attributes": {
+                "chapterCount": 0,
+                "editorName": null,
+                "genre": "Science Fiction",
+                "language": "English",
+                "publishDate": 1464638927412,
+                "title": "Enders Shadow"
+            },
+            "id": "4",
+            "relationships": {
+                "authors": {
+                    "data": [
+                        {
+                            "id": "2",
+                            "type": "author"
+                        }
+                    ]
+                },
+                "chapters": {
+                    "data": []
+                },
+                "publisher": {
+                    "data": null
+                }
+            },
+            "type": "book"
+        },
+        {
+            "attributes": {
+                "chapterCount": 0,
+                "editorName": null,
+                "genre": "Science Fiction",
+                "language": "English",
+                "publishDate": 0,
+                "title": "Foundation"
+            },
+            "id": "5",
+            "relationships": {
+                "authors": {
+                    "data": [
+                        {
+                            "id": "3",
+                            "type": "author"
+                        }
+                    ]
+                },
+                "chapters": {
+                    "data": []
+                },
+                "publisher": {
+                    "data": null
+                }
+            },
+            "type": "book"
+        }
+    ],
+    "meta": {
+        "page": {
+            "limit": 2,
+            "number": 2,
+            "totalPages": 4,
+            "totalRecords": 8
+        }
+    }
+  }
+  ```

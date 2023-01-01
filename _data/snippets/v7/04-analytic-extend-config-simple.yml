@@ -1,0 +1,33 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```
+  {
+    tables: [{
+        name: TournamentPlayerStats
+        extend: PlayerStats
+        readAccess : 'admin.user OR guest user'
+        measures : [
+            {
+            name : highScore
+            type : INTEGER
+            definition: MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)
+            }
+        ]
+    }]
+  }
+  ```
+
+Java: |+2
+  ```java
+  @Include
+  @ReadPermission(expression = "admin.user OR guest user")
+  public class TournamentPlayerStats extends PlayerStats {
+
+      // Change formula to filter on Tournament Games
+      @MetricFormula("MAX(CASE WHEN {{gameType}} = 'tournament' THEN {{highScore}}) ELSE NULL END)")
+      private long highScore;
+  }
+  ```

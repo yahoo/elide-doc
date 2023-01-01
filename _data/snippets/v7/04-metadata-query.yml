@@ -1,0 +1,28 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```
+  /table/playerStats?fields[table]=name,category,description,requiredFilter,tags,metrics,dimensions,timeDimensions
+  ```
+
+GraphQL: |+2
+  ```
+  {
+    table(ids: ["playerStats"]) {
+      edges {
+        node {
+          name 
+          category 
+          description 
+          requiredFilter 
+          tags
+          metrics {edges {node {id}}} 
+          dimensions {edges {node {id}}} 
+          timeDimensions {edges {node {id}}}
+        }
+      }
+    }
+  }
+  ```

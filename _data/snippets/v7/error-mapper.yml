@@ -1,0 +1,24 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```java
+  //Override the following bean:
+
+  @Bean
+  @Override
+  public ErrorMapper getErrorMapper() {
+      return error -> null;
+  }
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings
+
+  @Override
+  public ErrorMapper getErrorMapper() {
+      return error -> null;
+  }
+  ```

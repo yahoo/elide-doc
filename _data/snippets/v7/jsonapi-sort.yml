@@ -1,0 +1,78 @@
+files:
+  - Request
+  - Response
+
+Request: |+2
+  ```
+  /author/1/books?sort=-publisher.name
+  ```
+
+Response: |+2
+  ```
+  {
+    "data": [
+        {
+            "attributes": {
+                "chapterCount": 0,
+                "editorName": null,
+                "genre": "Literary Fiction",
+                "language": "English",
+                "publishDate": 0,
+                "title": "For Whom the Bell Tolls"
+            },
+            "id": "2",
+            "relationships": {
+                "authors": {
+                    "data": [
+                        {
+                            "id": "1",
+                            "type": "author"
+                        }
+                    ]
+                },
+                "chapters": {
+                    "data": []
+                },
+                "publisher": {
+                    "data": {
+                        "id": "2",
+                        "type": "publisher"
+                    }
+                }
+            },
+            "type": "book"
+        },
+        {
+            "attributes": {
+                "chapterCount": 0,
+                "editorName": null,
+                "genre": "Literary Fiction",
+                "language": "English",
+                "publishDate": 0,
+                "title": "The Old Man and the Sea"
+            },
+            "id": "1",
+            "relationships": {
+                "authors": {
+                    "data": [
+                        {
+                            "id": "1",
+                            "type": "author"
+                        }
+                    ]
+                },
+                "chapters": {
+                    "data": []
+                },
+                "publisher": {
+                    "data": {
+                        "id": "1",
+                        "type": "publisher"
+                    }
+                }
+            },
+            "type": "book"
+        }
+    ]
+  }
+  ```

@@ -1,0 +1,115 @@
+files:
+  - ArtifactGroup.java
+  - ArtifactProduct.java
+  - ArtifactVersion.java
+  - artifactDownloads.hjson
+
+ArtifactGroup.java: |+2
+  ```java
+  @Include(rootLevel = true, type = "group")
+  @Entity
+  public class ArtifactGroup {
+      @Id
+      private String name = "";
+
+      private String commonName = "";
+
+      private String description = "";
+
+      @OneToMany(mappedBy = "group")
+      private List<ArtifactProduct> products = new ArrayList<>();
+  }
+  ```
+
+ArtifactProduct.java: |+2
+  ```java
+  @Include(type = "product")
+  @Entity
+  public class ArtifactProduct {
+      @Id
+      private String name = "";
+
+      private String commonName = "";
+
+      private String description = "";
+
+      @ManyToOne
+      private ArtifactGroup group = null;
+
+      @OneToMany(mappedBy = "artifact")
+      private List<ArtifactVersion> versions = new ArrayList<>();
+  }
+  ```
+
+ArtifactVersion.java: |+2
+  ```java
+  @Include(type = "version")
+  @Entity
+  public class ArtifactVersion {
+      @Id
+      private String name = "";
+
+      private Date createdAt = new Date();
+
+      @ManyToOne
+      private ArtifactProduct artifact;
+  }
+  ```
+
+artifactDownloads.hjson: |+2
+  ```hjson
+  {
+    tables: [
+      {
+        name: Downloads
+        table: downloads
+        description:
+        '''
+        Analytics for artifact downloads.
+        '''
+        joins: [
+          {
+            name: artifactGroup
+            to: group
+            kind: toOne
+            type: left
+            definition: '{{group_id}} = {{artifactGroup.name}}'
+          },
+          {
+            name: artifactProduct
+            to: product
+            kind: toOne
+            definition: '{{product_id}} = {{artifactProduct.name}}'
+          }
+        ]
+        dimensions: [
+          {
+            name: group
+            type: TEXT
+            definition: '{{artifactGroup.name}}'
+          }
+          {
+            name: product
+            type: TEXT
+            definition: '{{artifactProduct.name}}'
+          }
+          {
+            name: date
+            type: TIME
+            definition: '{{date}}'
+            grains: [{
+              type: DAY
+            }]
+          }
+        ]
+        measures: [
+          {
+            name: downloads
+            type: INTEGER
+            definition: 'SUM({{downloads}})'
+          }
+        ]
+      }
+    ]
+  } 
+  ```
