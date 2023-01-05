@@ -211,7 +211,7 @@ Elide supports:
 1. Paginating a collection by row offset and limit.
 2. Paginating a collection by page size and number of pages.
 3. Returning the total size of a collection visible to the given user.
-4. Returning a _meta_ block in the JSON-API response body containing metadata about the collection.
+4. Returning a _meta_ block in the JSON-API response body containing metadata about the collection or individual resources.
 5. A simple way to control: 
   * the availability of metadata 
   * the number of records that can be paginated
@@ -391,6 +391,114 @@ public interface JSONApiLinks {
 
     Map<String, String> getRelationshipLinks(PersistentResource var1, String var2);
 }
+```
+
+## Meta Blocks
+-------------------------------------
+
+JSON-API supports returning non standard information in responses inside a [meta block](https://jsonapi.org/format/#document-meta).
+Elide supports meta blocks in three scenarios:
+1.  Document meta blocks are returned for any [pagination](#pagination) request.  
+2.  The developer can customize the Document meta block for any collection query.
+3.  The developer can customize a Resource meta block for any resource returned by Elide.
+
+### Customizing the Document Meta Block
+
+To customize the document meta block, add fields to the `RequestScope` object inside a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores):
+
+```java
+    @Override
+    public <T> DataStoreIterable<T> loadObjects(EntityProjection projection, RequestScope scope) { 
+
+        //Populates the JSON-API meta block with a new field, 'key':
+        scope.setMetadataField("key", 123);
+
+```
+
+This would produce a JSON response like:
+
+```json
+{
+    "data": [
+        {
+            "type": "widget",
+            "id": "1"
+        }
+    ],
+    "meta": {
+        "key": 123
+    }
+}
+
+```
+
+### Customizing the Resource Meta Block
+
+To customize the resource meta block, the resource model class must implement the `WithMetadata` interface:
+
+```java
+public interface WithMetadata {
+
+    /**
+     * Sets a metadata property for this request.
+     * @param property
+     * @param value
+     */
+    default void setMetadataField(String property, Object value) { //NOOP }
+
+    /**
+     * Retrieves a metadata property from this request.
+     * @param property
+     * @return An optional metadata property.
+     */
+    Optional<Object> getMetadataField(String property);
+
+    /**
+     * Return the set of metadata fields that have been set.
+     * @return metadata fields that have been set.
+     */
+    Set<String> getMetadataFields();
+}
+```
+
+For example, the following example model implements `WithMetadata`:
+
+```java
+@Include
+public class Widget implements WithMetadata {
+    static Map metadata = Map.of("key", 123);
+
+    @Id
+    private String id;
+
+    @Override
+    public Optional<Object> getMetadataField(String property) {
+        return Optional.ofNullable(Widget.metadata.get(property));
+    }
+
+    @Override
+    public Set<String> getMetadataFields() {
+        return Widget.metadata.keySet();
+    }
+}
+```
+
+The models must be populated with at least one field for the meta block to be returned in the response.  These fields can also be populated in a [custom data store]({{site.baseurl}}/pages/guide/v{{ page.version }}/06-datastores.html#custom-stores) or [lifecycle hook]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#lifecycle-hooks).  This would produce a JSON response like:
+
+
+```json
+{
+    "data": [
+        {
+            "type": "widget",
+            "id": "1",
+            "meta": {
+                "key": 123
+            }
+        }
+    ]
+}
+
 ```
 
 ## Type Serialization/Deserialization
