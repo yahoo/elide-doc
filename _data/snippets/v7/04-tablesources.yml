@@ -1,0 +1,29 @@
+files:
+  - Hjson
+  - Java
+
+Hjson: |+2
+  ```  
+    dimensions : [
+      {
+        name : countryNickname
+        type : TEXT
+        definition : '{{country.nickName}}'
+        tableSource : {
+          table: country
+          column: nickName
+          suggestionColumns: [name, description]
+        }
+      }
+    ]
+
+  ```
+
+Java: |+2
+  ```java
+  @DimensionFormula("{{country.nickName}}")
+  @ColumnMeta(
+          tableSource = @TableSource(table = "country", column = "nickName", suggestionColumn = {"name", "description"})
+  )
+  private String countryNickName;
+  ```

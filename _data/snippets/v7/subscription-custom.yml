@@ -1,0 +1,50 @@
+files:
+  - ChatBot.java
+  - ChatBotCreateHook.java
+
+ChatBot.java: |+2
+  ```java
+  @Include
+  @Data
+  @LifeCycleHookBinding(
+          hook = ChatBotCreateHook.class,
+          operation = LifeCycleHookBinding.Operation.CREATE,
+          phase = LifeCycleHookBinding.TransactionPhase.POSTCOMMIT
+  )
+  public class ChatBot {
+
+      @Id
+      long id;
+
+      String name;
+  }
+  ```
+
+ChatBotCreateHook.java: |+2
+  ```java
+  @Data
+  public class ChatBotCreateHook implements LifeCycleHook<ChatBot> {
+
+      @Inject
+      ConnectionFactory connectionFactory;
+
+      @Override
+      public void execute(
+              LifeCycleHookBinding.Operation operation,
+              LifeCycleHookBinding.TransactionPhase phase,
+              ChatBot bot,
+              RequestScope requestScope,
+              Optional<ChangeSpec> changes) {
+
+          NotifyTopicLifeCycleHook<Chat> publisher = new NotifyTopicLifeCycleHook<>(
+                  connectionFactory,
+                  new ObjectMapper(),
+                  JMSContext::createProducer
+          );
+  
+          publisher.publish(new Chat(1, "Hello!"), CHAT);
+          publisher.publish(new Chat(2, "How is your day?"), CHAT);
+          publisher.publish(new Chat(3, "My name is " + bot.getName()), CHAT);
+      }
+  }
+  ```

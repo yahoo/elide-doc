@@ -1,0 +1,49 @@
+files:
+  - Spring
+  - Elide Standalone
+
+Spring: |+2
+  ```java
+  //Override the following bean:
+
+  @Bean
+  public DataSourceConfiguration getDataSourceConfiguration() {
+      return new DataSourceConfiguration() {
+          @Override
+          public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
+              HikariConfig config = new HikariConfig();
+
+              config.setJdbcUrl(dbConfig.getUrl());
+              config.setUsername(dbConfig.getUser());
+              config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
+              config.setDriverClassName(dbConfig.getDriver());
+              dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
+
+              return new HikariDataSource(config);
+          }
+      };
+  }
+  ```
+
+Elide Standalone: |+2
+  ```java
+  //Override ElideStandaloneSettings:
+
+  @Override
+  public DataSourceConfiguration getDataSourceConfiguration() {
+      return new DataSourceConfiguration() {
+          @Override
+          public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
+              HikariConfig config = new HikariConfig();
+
+              config.setJdbcUrl(dbConfig.getUrl());
+              config.setUsername(dbConfig.getUser());
+              config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
+              config.setDriverClassName(dbConfig.getDriver());
+              dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
+
+              return new HikariDataSource(config);
+          }
+      };
+  }
+  ```

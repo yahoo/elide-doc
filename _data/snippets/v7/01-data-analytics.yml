@@ -1,0 +1,17 @@
+files:
+  - JSON-API 
+  - GraphQL
+
+JSON-API: |+2
+  ```curl 
+  curl -g "http://localhost:8080/api/v1/downloads?fields[downloads]=downloads,group,product"
+  ```
+
+GraphQL: |+2
+  ```curl 
+  curl -g -X POST -H"Content-Type: application/json" -H"Accept: application/json" \
+      "http://localhost:8080/graphql/api/v1" \
+      -d'{ 
+             "query" : "{ downloads { edges { node { downloads group product } } } }"
+         }'
+  ```
