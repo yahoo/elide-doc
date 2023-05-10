@@ -197,7 +197,6 @@ layout: default
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
-
     <div class="feature row align-items-center">
       <div class="col-sm text-center text-sm-right d-block d-sm-none">
         <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
@@ -210,8 +209,6 @@ layout: default
         <img src="assets/images/features/analytics-icon.png" class="img-fluid" alt="Features: Analytic Queries">
       </div>
     </div>
-
-
     <div class="feature row align-items-center elbow">
       <div class="elbow-right"></div>
       <div class="elbow-center"></div>
@@ -223,7 +220,7 @@ layout: default
       </div>
       <div class="col-sm my-3 my-sm-0">
         <h4>Open API</h4>
-        <p>Explore, understand, and compose queries against your Elide API through generated <a>Swagger</a> documentation or GraphQL schema.</p>
+        <p>Explore, understand, and compose queries against your Elide API through generated OpenAPI documentation or GraphQL schema.</p>
       </div>
     </div>
     <div class="feature row align-items-center elbow">
@@ -248,7 +245,6 @@ layout: default
       <div class="elbow-center"></div>
       <div class="elbow-left"></div>
     </div>
-
     <div class="feature row align-items-center">
       <div class="col-sm">
         <img src="assets/images/features/annotation-icon.png" class="img-fluid" alt="Features: Storage Agnostic">
@@ -258,13 +254,11 @@ layout: default
         <p>Elide is agnostic to your particular persistence strategy. Use an ORM or provide your own implementation of a data store.</p>
       </div>
     </div>
-
     <div class="feature row align-items-center elbow">
       <div class="elbow-left"></div>
       <div class="elbow-center"></div>
       <div class="elbow-right"></div>
     </div>
-
     <div class="feature row align-items-center">
       <div class="col-sm text-center text-sm-right d-block d-sm-none">
         <img src="assets/images/features/open-source-icon.png" class="img-fluid" alt="Features: Open Source">

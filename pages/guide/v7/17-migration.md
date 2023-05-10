@@ -20,6 +20,7 @@ Elide 7 is a major dependency upgrade including the following key updates:
 - Migrate from javax to jakarta
 - Upgrade to Jetty 11.X
 - Upgrade to Jersey 3.1.X
+- Upgrade to Swagger 2.X
 
 To keep the migration simpler, no interface changes were made to Elide.  
 
@@ -34,3 +35,7 @@ Hibernate 6 moves away from javax.persistence to jakarta.persistence among other
 ## Hibernate Search
 
 Hiberate Search 6.X introduces an entirely new API including model annotations.  [This guide](https://docs.jboss.org/hibernate/search/6.0/migration/html_single/) provides details about how to migrate.
+
+## Swagger 2 / OpenAPI 3
+
+The migration to Swagger 2 to support OpenAPI 3 completely replaces the older annotations that were used for Swagger 1. For instance the `@ApiModel` and `@ApiModelProperty` annotations have both been replaced by `@Schema`. An overview of the changes in OpenAPI 3 can be found [here](https://swagger.io/blog/news/whats-new-in-openapi-3-0/).

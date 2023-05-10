@@ -22,8 +22,8 @@ Elide is a mono-repo consisting of the following published modules:
 |---------------------------------|----------------------------------------------------------------------------------|
 | elide-core                      | Contains modeling annotations, JSON-API parser, and core functions.              |
 | elide-graphql                   | Contains the GraphQL parser.                                                     |
-| elide-async                     | Contains Elide's asynchronous and data export APIs.                               |
-| elide-swagger                   | Contains swagger document generation for JSON-API.                               |
+| elide-async                     | Contains Elide's asynchronous and data export APIs.                              |
+| elide-swagger                   | Contains OpenAPI document generation for JSON-API.                               |
 | elide-standalone                | Opinionated embedded Jetty application with JAX-RS endpoints for Elide           |      
 | elide-spring                    | Parent module for spring boot support                                            |      
 | elide-spring-boot-autoconfigure | Elide spring boot auto configuration module                                      |
