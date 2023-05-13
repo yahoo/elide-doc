@@ -107,7 +107,7 @@ public class App {
 
 ### SpringDoc Integration
 
-Elide contributes to [Springdoc](https://springdoc.org/v2/)'s OpenAPI document by exposing a Springdoc `OpenApiCustomizer` bean. The default implementation is implemented in `DefaultElideOpenApiCustomizer`. To override the behavior a `ElideOpenApiCustomizer` bean can be created which will cause the `DefaultElideOpenApiCustomizer` not be to configured.
+Elide contributes to [Springdoc](https://springdoc.org/v2/)'s OpenAPI document by exposing a Springdoc `OpenApiCustomizer` bean. The default implementation is implemented in `DefaultElideOpenApiCustomizer`. To override the behavior a `ElideOpenApiCustomizer` bean can be created which will cause the `DefaultElideOpenApiCustomizer` not to be configured.
 
 ```java
     @Bean
