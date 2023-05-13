@@ -10,7 +10,7 @@ version: 7
 
 The easiest way to get started with Elide is to use the [Spring Boot starter dependency](https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter). The starter bundles all of the dependencies you will need to stand up a web service. This tutorial uses the starter, and all of the code is [available here][elide-demo].
 
-You can deploy and play with this example on Heroku or locally.  The landing page will let you toggle between the [swagger UI][swagger-ui] and [Graphiql](https://github.com/graphql/graphiql) for the example service.
+You can deploy and play with this example on Heroku or locally.  The landing page will let you toggle between the [Swagger UI][swagger-ui] and [Graphiql](https://github.com/graphql/graphiql) for the example service.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yahoo/elide-standalone-example)
 
@@ -75,14 +75,15 @@ The Elide Spring starter uses a JPA data store (the thing that talks to the data
 ```yaml
 spring:
   jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: 'org.hibernate.dialect.H2Dialect'
+        '[default_batch_fetch_size]': 100
+        '[use_scrollable_resultset]': true
     hibernate:
-      show_sql: true
       naming:
         physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
-      dialect: 'org.hibernate.dialect.H2Dialect'
-      ddl-auto: 'validate'
-      jdbc:
-        use_scrollable_resultset: true
   datasource:
     url: 'jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1'
     username: 'sa'
@@ -100,10 +101,10 @@ elide:
   graphql:
     path: /graphql/api/v1
     enabled: true
-  swagger:
+  api-docs:
     path: /doc
     enabled: true
-    version: "1.0"
+    version: openapi_3_0
 ```
 
 The following configuration enables elide's asynchronous API for analytic queries:
@@ -111,11 +112,10 @@ The following configuration enables elide's asynchronous API for analytic querie
 ```yaml
   async:
     enabled: true
-    threadPoolSize: 7
-    maxRunTime: 65
-    cleanupEnabled: true
-    queryCleanupDays: 7
-    defaultAsyncQueryDAO: true
+    thread-pool-size: 7
+    max-run-time-seconds: 65
+    cleanup-enabled: true
+    query-cleanup-days: 7
 ```
 
 To enable analytic queries, we have to turn on the the aggregation data store.  This example also enables HJSON configuration for analytic models:

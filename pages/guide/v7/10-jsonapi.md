@@ -506,11 +506,10 @@ The models must be populated with at least one field for the meta block to be re
 
 Type coercion between the API and underlying data model has common support across JSON-API and GraphQL and is covered [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/09-clientapis.html#type-coercion).
 
-## Swagger
+## OpenAPI
 --------------------------
 
-Swagger documents can be highly customized.  As a result, they are not enabled by default and instead must be 
-initialized through code.  The steps to do this are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-swagger.html).
+OpenAPI documents can be highly customized. The steps to customize this are documented [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-openapi.html).
 
 ## Custom Error Responses
 --------------------------
