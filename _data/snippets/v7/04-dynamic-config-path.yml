@@ -7,8 +7,9 @@ Spring: |+2
   # application.yaml
 
   elide:
-    dynamic-config:
-      path: src/resources/configs
+    aggregation-store:
+      dynamic-config:
+        path: src/resources/configs
   ```
 
 Elide Standalone: |+2

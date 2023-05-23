@@ -7,13 +7,14 @@ Spring: |+2
   # application.yaml
 
   elide:
-    subscription:
-      enabled: true
-      path: /subscription
-      idleTimeoutMs: 30000
-      maxMessageSize: 10000
-      maxSubscriptions: 30
-      connectionTimeoutMs: 5000
+    graphql:
+      subscription:
+        enabled: true
+        path: /subscription
+        idle-timeout: 30000ms
+        max-message-size: 10000
+        max-subscriptions: 30
+        connection-timeout: 5000ms
   ```
 
 Elide Standalone: |+2
@@ -35,8 +36,8 @@ Elide Standalone: |+2
           }
 
           @Override
-          public Integer getConnectionTimeoutMs() {
-              return 5000;
+          public Duration getConnectionTimeout() {
+              return Duration.ofMillis(5000L);
           }
           
           @Override
@@ -50,8 +51,8 @@ Elide Standalone: |+2
           }
           
           @Override
-          public Long getIdleTimeoutMs() {
-              return 300000L;
+          public Duration getIdleTimeout() {
+              return Duration.ofMillis(300000L);
           }
       };
   }

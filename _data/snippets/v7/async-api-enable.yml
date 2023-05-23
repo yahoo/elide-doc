@@ -12,7 +12,8 @@ Spring: |+2
   elide:
     async:
       enabled: true
-      cleanupEnabled: true
+      cleanup:
+        enabled: true
   ```
 
 Elide Standalone: |+2

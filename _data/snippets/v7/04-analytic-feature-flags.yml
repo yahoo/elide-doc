@@ -6,11 +6,13 @@ Spring: |+2
   ```yaml
   # application.yaml
   elide:
-    dynamic-config:
-      enabled: true
     aggregation-store:
       enabled: true
-      enableMetaDataStore: true
+      metadata-store:
+        enabled: true
+      dynamic-config:
+        enabled: true
+
   ```
 
 Elide Standalone: |+2

@@ -6,16 +6,20 @@ Spring: |+2
   ```yaml
   elide:
     async:
-      threadPoolSize: 10
-      maxRunTimeMinutes: 120
-      queryCleanupDays: 10
-      queryCancellationIntervalSeconds: 600
-      maxAsyncAfterSeconds: 30
+      thread-pool-size: 10
+      max-async-after: 30s
+      cleanup:
+        enabled: true
+          query-max-run-time: 120s
+          query-retention-duration: 10d
+          query-cancellation-check-interval: 600s
       export:
         enabled: true
         path: /export
-        skipCSVHeader: false
-        storageDestination: /tmp
+        storage-destination: /tmp
+        format:
+          csv:
+            write-header: true
   ```
 
 Elide Standalone: |+2
@@ -24,57 +28,62 @@ Elide Standalone: |+2
   public ElideStandaloneAsyncSettings getAsyncProperties() {
       ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
           @Override
-          default Integer getThreadSize() {
+          public Integer getThreadSize() {
               return 10;
           }
 
           @Override
-          default Integer getMaxRunTimeSeconds() {
-              return 120;
+          public Duration getQueryMaxRunTime() {
+              return Duration.ofSeconds(120L);
           }
 
           @Override
-          default Integer getQueryCleanupDays() {
-              return 10;
+          public Duration getQueryRetentionDuration() {
+              return Duration.ofDays(10L);
           }
 
           @Override
-          default Integer getQueryCancelCheckIntervalSeconds() {
-              return 600;
+          public Duration getQueryCancellationCheckInterval() {
+              return Duration.ofSeconds(600L);
           }
 
           @Override
-          default Integer getMaxAsyncAfterSeconds() {
-              return 30;
+          public Duration getMaxAsyncAfter() {
+              return Duration.ofSeconds(30L);
           }
 
           @Override
-          default String getExportApiPathSpec() {
+          public String getExportApiPathSpec() {
               return "/export/*";
           }
 
           @Override
-          default boolean enableExport() {
+          boolean enableExport() {
               return false;
           }
 
           @Override
-          default boolean skipCSVHeader() {
+          public boolean appendFileExtension() {
+              return true;
+          }
+
+          @Override
+          public boolean csvWriteHeader() {
               return false;
           }
 
           @Override
-          default String getStorageDestination() {
+          public String getStorageDestination() {
               return "/tmp";
           }
 
           @Override
-          default Integer getExportAsyncResponseTimeoutSeconds() {
-              return 30;
+          public Duration getExportAsyncResponseTimeout() {
+              return Duration.ofSeconds(30L);
           }
 
           @Override
-          default ExecutorService getExportAsyncResponseExecutor() {
+          public ExecutorService getExportAsyncResponseExecutor() {
               return enableExport() ? Executors.newFixedThreadPool(getThreadSize() == null ? 6 : getThreadSize()) : null;
           }
       }

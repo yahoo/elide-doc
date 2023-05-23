@@ -11,8 +11,8 @@ Spring: |+2
       enabled: false
     graphql:
       enabled: false
-    subscription:
-      enabled: true
+      subscription:
+        enabled: true
   ```
 
 Elide Standalone: |+2

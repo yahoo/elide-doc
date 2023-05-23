@@ -107,15 +107,16 @@ elide:
     version: openapi_3_0
 ```
 
-The following configuration enables elide's asynchronous API for analytic queries:
+The following configuration enables Elide's asynchronous API for analytic queries:
 
 ```yaml
   async:
     enabled: true
     thread-pool-size: 7
-    max-run-time-seconds: 65
-    cleanup-enabled: true
-    query-cleanup-days: 7
+    cleanup:
+      enabled: true
+      query-max-run-time: 65s
+      query-retention-duration: 7d
 ```
 
 To enable analytic queries, we have to turn on the the aggregation data store.  This example also enables HJSON configuration for analytic models:
@@ -124,9 +125,9 @@ To enable analytic queries, we have to turn on the the aggregation data store.  
   aggregation-store:
     enabled: true
     default-dialect: h2
-  dynamic-config:
-    path: src/main/resources/analytics
-    enabled: true
+    dynamic-config:
+      path: src/main/resources/analytics
+      enabled: true
 ```
 
 ### Running
