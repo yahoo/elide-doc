@@ -3,47 +3,54 @@ files:
   - Elide Standalone
 
 Spring: |+2
+  <br/>
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
+
   ```java
-  //Override the following bean:
+  @Configuration
+  public class ElideConfiguration {
+      @Bean
+      public DataSourceConfiguration dataSourceConfiguration() {
+          return new DataSourceConfiguration() {
+              @Override
+              public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
+                  HikariConfig config = new HikariConfig();
 
-  @Bean
-  public DataSourceConfiguration getDataSourceConfiguration() {
-      return new DataSourceConfiguration() {
-          @Override
-          public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
-              HikariConfig config = new HikariConfig();
+                  config.setJdbcUrl(dbConfig.getUrl());
+                  config.setUsername(dbConfig.getUser());
+                  config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
+                  config.setDriverClassName(dbConfig.getDriver());
+                  dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
 
-              config.setJdbcUrl(dbConfig.getUrl());
-              config.setUsername(dbConfig.getUser());
-              config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
-              config.setDriverClassName(dbConfig.getDriver());
-              dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
-
-              return new HikariDataSource(config);
-          }
-      };
+                  return new HikariDataSource(config);
+              }
+          };
+      }
   }
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  //Override ElideStandaloneSettings:
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public DataSourceConfiguration getDataSourceConfiguration() {
+          return new DataSourceConfiguration() {
+              @Override
+              public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
+                  HikariConfig config = new HikariConfig();
 
-  @Override
-  public DataSourceConfiguration getDataSourceConfiguration() {
-      return new DataSourceConfiguration() {
-          @Override
-          public DataSource getDataSource(DBConfig dbConfig, DBPasswordExtractor dbPasswordExtractor) {
-              HikariConfig config = new HikariConfig();
+                  config.setJdbcUrl(dbConfig.getUrl());
+                  config.setUsername(dbConfig.getUser());
+                  config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
+                  config.setDriverClassName(dbConfig.getDriver());
+                  dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
 
-              config.setJdbcUrl(dbConfig.getUrl());
-              config.setUsername(dbConfig.getUser());
-              config.setPassword(dbPasswordExtractor.getDBPassword(dbConfig));
-              config.setDriverClassName(dbConfig.getDriver());
-              dbConfig.getPropertyMap().forEach((k, v) -> config.addDataSourceProperty(k, v));
-
-              return new HikariDataSource(config);
-          }
-      };
+                  return new HikariDataSource(config);
+              }
+          };
+      }
   }
   ```

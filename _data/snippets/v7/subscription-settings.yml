@@ -3,9 +3,10 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```yaml
-  # application.yaml
+  <br/>
+  Configure in `application.yaml`.
 
+  ```yaml
   elide:
     graphql:
       subscription:
@@ -18,42 +19,45 @@ Spring: |+2
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  //Override ElideStandaloneSettings
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+          return new ElideStandaloneSubscriptionSettings() { 
 
-  @Override
-  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
-      return new ElideStandaloneSubscriptionSettings() { 
+              @Override
+              public boolean enabled() {
+                  return true;
+              }
 
-          @Override
-          public boolean enabled() {
-              return true;
-          }
+              @Override
+              public String getPath() {
+                  return "/subscription";
+              }
 
-          @Override
-          public String getPath() {
-              return "/subscription";
-          }
-
-          @Override
-          public Duration getConnectionTimeout() {
-              return Duration.ofMillis(5000L);
-          }
+              @Override
+              public Duration getConnectionTimeout() {
+                  return Duration.ofMillis(5000L);
+              }
           
-          @Override
-          public Integer getMaxSubscriptions() {
-              return 30;
-          }
+              @Override
+              public Integer getMaxSubscriptions() {
+                  return 30;
+              }
           
-          @Override
-          public Integer getMaxMessageSize() {
-              return 10000;
-          }
+              @Override
+              public Integer getMaxMessageSize() {
+                  return 10000;
+              }
           
-          @Override
-          public Duration getIdleTimeout() {
-              return Duration.ofMillis(300000L);
-          }
-      };
+              @Override
+              public Duration getIdleTimeout() {
+                  return Duration.ofMillis(300000L);
+              }
+          };
+      }
   }
   ```

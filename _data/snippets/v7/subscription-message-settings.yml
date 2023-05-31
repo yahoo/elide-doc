@@ -3,62 +3,68 @@ files:
   - Elide Standalone
 
 Spring: |+2
+  <br/>
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
+
   ```java
-  //Override the following bean:
+  @Configuration
+  public class ElideConfiguration {
+      @Bean
+      public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
+          SubscriptionScanner scanner = SubscriptionScanner.builder()
 
-  @Bean
-  @Override
-  public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
-      SubscriptionScanner scanner = SubscriptionScanner.builder()
-
-              //Things you may want to override...
-              .deliveryDelay(Message.DEFAULT_DELIVERY_DELAY)
-              .messagePriority(Message.DEFAULT_PRIORITY)
-              .timeToLive(Message.DEFAULT_TIME_TO_LIVE)
-              .deliveryMode(Message.DEFAULT_DELIVERY_MODE)
-
-              //Things you probably don't care about...
-              .scanner(elide.getScanner())
-              .dictionary(elide.getElideSettings().getDictionary())
-              .connectionFactory(connectionFactory)
-              .mapper(elide.getMapper().getObjectMapper())
-              .build();
-
-      scanner.bindLifecycleHooks();
-
-      return scanner;
-  }
-  ```
-
-Elide Standalone: |+2
-  ```java
-  //Override ElideStandaloneSettings
-
-  @Override
-  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
-      return new ElideStandaloneSubscriptionSettings() { 
-
-          @Override
-          public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
-              SubscriptionScanner scanner = SubscriptionScanner.builder()
-      
-                  //Things you may want to override...
+                  // Things you may want to override...
                   .deliveryDelay(Message.DEFAULT_DELIVERY_DELAY)
                   .messagePriority(Message.DEFAULT_PRIORITY)
                   .timeToLive(Message.DEFAULT_TIME_TO_LIVE)
                   .deliveryMode(Message.DEFAULT_DELIVERY_MODE)
-      
-                  //Things you probably don't care about...
+
+                  // Things you probably don't care about...
                   .scanner(elide.getScanner())
                   .dictionary(elide.getElideSettings().getDictionary())
                   .connectionFactory(connectionFactory)
                   .mapper(elide.getMapper().getObjectMapper())
                   .build();
+
+          scanner.bindLifecycleHooks();
+
+          return scanner;
+      }
+  }
+  ```
+
+Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
+  ```java
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+          return new ElideStandaloneSubscriptionSettings() { 
+
+              @Override
+              public SubscriptionScanner subscriptionScanner(Elide elide, ConnectionFactory connectionFactory) {
+                  SubscriptionScanner scanner = SubscriptionScanner.builder()
       
-              scanner.bindLifecycleHooks();
+                      // Things you may want to override...
+                      .deliveryDelay(Message.DEFAULT_DELIVERY_DELAY)
+                      .messagePriority(Message.DEFAULT_PRIORITY)
+                      .timeToLive(Message.DEFAULT_TIME_TO_LIVE)
+                      .deliveryMode(Message.DEFAULT_DELIVERY_MODE)
       
-              return scanner;
-          }
-      };
+                      // Things you probably don't care about...
+                      .scanner(elide.getScanner())
+                      .dictionary(elide.getElideSettings().getDictionary())
+                      .connectionFactory(connectionFactory)
+                      .mapper(elide.getMapper().getObjectMapper())
+                      .build();
+      
+                  scanner.bindLifecycleHooks();
+
+                  return scanner;
+              }
+          };
+      }
   }
   ```

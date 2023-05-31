@@ -3,6 +3,9 @@ files:
   - Elide Standalone
 
 Spring: |+2
+  <br/>
+  Configure in `application.yaml`.
+
   ```yaml
   elide:
     async:
@@ -23,70 +26,75 @@ Spring: |+2
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  @Override
-  public ElideStandaloneAsyncSettings getAsyncProperties() {
-      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
-          @Override
-          public Integer getThreadSize() {
-              return 10;
-          }
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneAsyncSettings getAsyncProperties() {
+          ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+              @Override
+              public Integer getThreadSize() {
+                  return 10;
+              }
 
-          @Override
-          public Duration getQueryMaxRunTime() {
-              return Duration.ofSeconds(120L);
-          }
+              @Override
+              public Duration getQueryMaxRunTime() {
+                  return Duration.ofSeconds(120L);
+              }
 
-          @Override
-          public Duration getQueryRetentionDuration() {
-              return Duration.ofDays(10L);
-          }
+              @Override
+              public Duration getQueryRetentionDuration() {
+                  return Duration.ofDays(10L);
+              }
 
-          @Override
-          public Duration getQueryCancellationCheckInterval() {
-              return Duration.ofSeconds(600L);
-          }
+              @Override
+              public Duration getQueryCancellationCheckInterval() {
+                  return Duration.ofSeconds(600L);
+              }
 
-          @Override
-          public Duration getMaxAsyncAfter() {
-              return Duration.ofSeconds(30L);
-          }
+              @Override
+              public Duration getMaxAsyncAfter() {
+                  return Duration.ofSeconds(30L);
+              }
 
-          @Override
-          public String getExportApiPathSpec() {
-              return "/export/*";
-          }
+              @Override
+              public String getExportApiPathSpec() {
+                  return "/export/*";
+              }
 
-          @Override
-          boolean enableExport() {
-              return false;
-          }
+              @Override
+              boolean enableExport() {
+                  return false;
+              }
 
-          @Override
-          public boolean appendFileExtension() {
-              return true;
-          }
+              @Override
+              public boolean appendFileExtension() {
+                  return true;
+              }
 
-          @Override
-          public boolean csvWriteHeader() {
-              return false;
-          }
+              @Override
+              public boolean csvWriteHeader() {
+                  return false;
+              }
 
-          @Override
-          public String getStorageDestination() {
-              return "/tmp";
-          }
+              @Override
+              public String getStorageDestination() {
+                  return "/tmp";
+              }
 
-          @Override
-          public Duration getExportAsyncResponseTimeout() {
-              return Duration.ofSeconds(30L);
-          }
+              @Override
+              public Duration getExportAsyncResponseTimeout() {
+                  return Duration.ofSeconds(30L);
+              }
 
-          @Override
-          public ExecutorService getExportAsyncResponseExecutor() {
-              return enableExport() ? Executors.newFixedThreadPool(getThreadSize() == null ? 6 : getThreadSize()) : null;
+              @Override
+              public ExecutorService getExportAsyncResponseExecutor() {
+                  return enableExport() ? Executors.newFixedThreadPool(getThreadSize() == null ? 6 : getThreadSize()) : null;
+              }
           }
+          return asyncProperties;
       }
-      return asyncProperties;
   }
   ```
