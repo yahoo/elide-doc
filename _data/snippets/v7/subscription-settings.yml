@@ -3,56 +3,61 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```yaml
-  # application.yaml
+  <br/>
+  Configure in `application.yaml`.
 
+  ```yaml
   elide:
-    subscription:
-      enabled: true
-      path: /subscription
-      idleTimeoutMs: 30000
-      maxMessageSize: 10000
-      maxSubscriptions: 30
-      connectionTimeoutMs: 5000
+    graphql:
+      subscription:
+        enabled: true
+        path: /subscription
+        idle-timeout: 30000ms
+        max-message-size: 10000
+        max-subscriptions: 30
+        connection-timeout: 5000ms
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  //Override ElideStandaloneSettings
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+          return new ElideStandaloneSubscriptionSettings() { 
 
-  @Override
-  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
-      return new ElideStandaloneSubscriptionSettings() { 
+              @Override
+              public boolean enabled() {
+                  return true;
+              }
 
-          @Override
-          public boolean enabled() {
-              return true;
-          }
+              @Override
+              public String getPath() {
+                  return "/subscription";
+              }
 
-          @Override
-          public String getPath() {
-              return "/subscription";
-          }
-
-          @Override
-          public Integer getConnectionTimeoutMs() {
-              return 5000;
-          }
+              @Override
+              public Duration getConnectionTimeout() {
+                  return Duration.ofMillis(5000L);
+              }
           
-          @Override
-          public Integer getMaxSubscriptions() {
-              return 30;
-          }
+              @Override
+              public Integer getMaxSubscriptions() {
+                  return 30;
+              }
           
-          @Override
-          public Integer getMaxMessageSize() {
-              return 10000;
-          }
+              @Override
+              public Integer getMaxMessageSize() {
+                  return 10000;
+              }
           
-          @Override
-          public Long getIdleTimeoutMs() {
-              return 300000L;
-          }
-      };
+              @Override
+              public Duration getIdleTimeout() {
+                  return Duration.ofMillis(300000L);
+              }
+          };
+      }
   }
   ```

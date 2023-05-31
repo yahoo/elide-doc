@@ -3,25 +3,30 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```yaml
-  # application.yaml
+  <br/>
+  Configure in `application.yaml`.
 
+  ```yaml
   elide:
-    dynamic-config:
-      path: src/resources/configs
+    aggregation-store:
+      dynamic-config:
+        path: src/resources/configs
   ```
 
 Elide Standalone: |+2
-  ```java
-  //Override ElideStandaloneSettings
+  <br/>
+  Override `ElideStandaloneSettings`.
 
-  @Override
-  public ElideStandaloneAnalyticSettings getAnalyticProperties() {
-      return new ElideStandaloneAnalyticSettings() {
-          @Override
-          public String getDynamicConfigPath() {
-              return File.separator + "configs" + File.separator;
-          }
-      };
+  ```java
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+          return new ElideStandaloneAnalyticSettings() {
+              @Override
+              public String getDynamicConfigPath() {
+                  return File.separator + "configs" + File.separator;
+              }
+          };
+      }
   }
   ```

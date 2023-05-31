@@ -120,17 +120,18 @@ For the cache to apply to a query, there are two requirements:
 
 ### With Spring Configuration
 
-The configuration property `elide.aggregation-store.queryCacheMaximumEntries` controls the size of the default cache implementation.  Setting the value to be zero or negative disables the cache.   
+The configuration property `elide.aggregation-store.query-cache.max-size` controls the size of the default cache implementation.  Setting the value to be zero or negative disables the cache.   
 
-The configuration property `elide-aggregation-store.defaultCacheExpirationMinutes` sets the default item expiration.
+The configuration property `elide-aggregation-store.query-cache.expiration` sets the default item expiration.
 
 ```yaml
 elide:
   aggregation-store:
     enabled: true
-    queryCacheMaximumEntries : 1000
-    defaultCacheExpirationMinutes: 10
-
+    query-cache:
+      enabled: true
+      max-size: 1000
+      expiration: 10m
 ```
 
 To provide your own cache implementation, inject it as a `com.yahoo.elide.datastores.aggregation.cache.Cache` bean.

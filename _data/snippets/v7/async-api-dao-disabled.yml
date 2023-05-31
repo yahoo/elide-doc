@@ -4,39 +4,41 @@ files:
 
 Spring: |+2
   <br/>
-  Update your application.yaml with the additional code below. (Only the relevant portions are included.). You will have to initialize your implementation as a Bean.
-
-  ```yaml
-  elide:
-    async:
-      defaultAsyncAPIDAO: false
-  ```
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
 
   ```java
-    /**
-     * Configure the AsyncAPIDAO used by async requests.
-     * @return an AsyncAPIDAO object.
-     */
-    @Bean
-    public AsyncAPIDAO buildAsyncAPIDAO() {
-        return YourDAOImplementationObject;
-    }
+  @Configuration
+  public class ElideConfiguration {
+      /**
+       * Configure the AsyncAPIDAO used by async requests.
+       * @return an AsyncAPIDAO object.
+       */
+      @Bean
+      public AsyncAPIDAO asyncAPIDAO() {
+          return new CustomAsyncAPIDAO();
+      }
+  }
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  @Override
-  public ElideStandaloneAsyncSettings getAsyncProperties() {
-      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
-          /**
-           * Implementation of AsyncAPIDAO to use.
-           * @return AsyncAPIDAO type object.
-           */
-          @Override
-          default AsyncAPIDAO getAPIDAO() {
-              return yourDAOImplementationObject;
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneAsyncSettings getAsyncProperties() {
+          ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+              /**
+               * Implementation of AsyncAPIDAO to use.
+               * @return AsyncAPIDAO type object.
+               */
+              @Override
+              public AsyncAPIDAO getAPIDAO() {
+                  return new CustomAsyncAPIDAO();
+              }
           }
+          return asyncProperties;
       }
-      return asyncProperties;
   }
   ```

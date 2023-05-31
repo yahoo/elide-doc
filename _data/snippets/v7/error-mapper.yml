@@ -3,22 +3,28 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```java
-  //Override the following bean:
+  <br/>
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
 
-  @Bean
-  @Override
-  public ErrorMapper getErrorMapper() {
-      return error -> null;
+  ```java
+  @Configuration
+  public class ElideConfiguration {
+      @Bean
+      public ErrorMapper errorMapper() {
+          return new CustomErrorMapper();
+      }
   }
   ```
 
 Elide Standalone: |+2
-  ```java
-  //Override ElideStandaloneSettings
+  <br/>
+  Override `ElideStandaloneSettings`.
 
-  @Override
-  public ErrorMapper getErrorMapper() {
-      return error -> null;
+  ```java
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ErrorMapper getErrorMapper() {
+          return new CustomErrorMapper();
+      }
   }
   ```

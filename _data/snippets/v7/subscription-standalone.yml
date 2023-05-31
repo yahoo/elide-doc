@@ -3,40 +3,44 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```yaml
-  # application.yaml
+  <br/>
+  Configure in `application.yaml`.
 
+  ```yaml
   elide:
     json-api:
       enabled: false
     graphql:
       enabled: false
-    subscription:
-      enabled: true
+      subscription:
+        enabled: true
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  //Override ElideStandaloneSettings
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public boolean enableJSONAPI() {
+          return false;
+      }
 
-  @Override
-  public boolean enableJSONAPI() {
-      return false;
-  }
+      @Override
+      public boolean enableGraphQL() {
+          return false;
+      }
 
-  @Override
-  public boolean enableGraphQL() {
-      return false;
-  }
+      @Override
+      public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+          return new ElideStandaloneSubscriptionSettings() { 
 
-  @Override
-  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
-      return new ElideStandaloneSubscriptionSettings() { 
-
-          @Override
-          public boolean enabled() {
-              return true;
-          }
-      };
+              @Override
+              public boolean enabled() {
+                  return true;
+              }
+          };
+      }
   }
   ```

@@ -318,16 +318,17 @@ JSON-API links are disabled by default.  They can be enabled in application.yaml
 
 ```yaml
 elide:
-  baseUrl: 'https://elide.io'
+  base-url: 'https://elide.io'
   json-api:
     path: /json
     enabled: true
-    enableLinks: true
+    links:
+      enabled: true
 ```
 
-The `enableLinks` property switches the feature on.  The `baseUrl` property provides the URL schema, host, and port your clients use to connect to your service.  The `path` property provides the route where the JSON-API controller is rooted.  All link URLs using the above configuration would be prefixed with 'https://elide.io/json'.
+The `elide.json-api.links.enabled` property switches the feature on.  The `base-url` property provides the URL schema, host, and port your clients use to connect to your service.  The `path` property provides the route where the JSON-API controller is rooted.  All link URLs using the above configuration would be prefixed with 'https://elide.io/json'.
 
-If `baseUrl` is not provided, Elide will generate the link URL prefix using the client HTTP request.
+If `base-url` is not provided, Elide will generate the link URL prefix using the client HTTP request.
 
 For Elide standalone, you can enable links by overriding ElideStandaloneSettings and configure the settings:
 

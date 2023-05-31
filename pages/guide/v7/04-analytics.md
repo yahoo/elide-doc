@@ -72,11 +72,11 @@ Here are the respective responses:
 
 There are feature flags that enable Hjson configuration, analytic queries, and [Metadata queries](#metadata-queries) respectively:
 
-| Configuration                         | Description                                                       | Default  |
-| --------------------------------------| ----------------------------------------------------------------- | -------  |
-| dynamic-config.enabled                | Enable model creation through the Hjson configuration files.      | false    |
-| aggregation-store.enabled             | Enable support for data analytic queries.                         | false    |
-| aggregation-store.enableMetaDataStore | Enable the metadata query APIs exposing the metadata about the Aggregation store models including their metrics and dimensions. | false    |
+| Name                                               | Description                                                       | Default  |
+| ---------------------------------------------------| ----------------------------------------------------------------- | -------  |
+| `elide.aggregation-store.dynamic-config.enabled`   | Enable model creation through the Hjson configuration files.      | `false`  |
+| `elide.aggregation-store.enabled`                  | Enable support for data analytic queries.                         | `false`  |
+| `elide.aggregation-store.metadata-store.enabled`   | Enable the metadata query APIs exposing the metadata about the Aggregation store models including their metrics and dimensions. | `false`  |
 {:.table}
 
 {% include code_example example="04-analytic-feature-flags" %}

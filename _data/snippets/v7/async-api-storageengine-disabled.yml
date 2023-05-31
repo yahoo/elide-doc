@@ -4,39 +4,41 @@ files:
 
 Spring: |+2
   <br/>
-  Update your application.yaml with the additional code below. (Only the relevant portions are included.). You will have to initialize your implementation as a Bean.
-
-  ```yaml
-  elide:
-    async:
-      defaultResultStorageEngine: false
-  ```
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
 
   ```java
-    /**
-     * Configure the ResultStorageEngine used by TableExport requests.
-     * @return a ResultStorageEngine object.
-     */
-    @Bean
-    public ResultStorageEngine buildResultStorageEngine() {
-        return yourResultStorageEngineImplementationObject;
-    }
+  @Configuration
+  public class ElideConfiguration {
+      /**
+       * Configure the ResultStorageEngine used by TableExport requests.
+       * @return a ResultStorageEngine object.
+       */
+      @Bean
+      public ResultStorageEngine resultStorageEngine() {
+          return new CustomResultStorageEngine();
+      }
+  }
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  @Override
-  public ElideStandaloneAsyncSettings getAsyncProperties() {
-      ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
-          /**
-           * Implementation of ResultStorageEngine to use.
-           * @return ResultStorageEngine type object.
-           */
-          @Override
-          default ResultStorageEngine getResultStorageEngine() {
-              return yourResultStorageEngineImplementationObject;
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneAsyncSettings getAsyncProperties() {
+          ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
+              /**
+               * Implementation of ResultStorageEngine to use.
+               * @return ResultStorageEngine type object.
+               */
+              @Override
+              public ResultStorageEngine getResultStorageEngine() {
+                  return new CustomResultStorageEngine();
+              }
           }
+          return asyncProperties;
       }
-      return asyncProperties;
   }
   ```

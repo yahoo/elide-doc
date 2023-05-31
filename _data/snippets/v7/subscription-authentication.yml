@@ -3,27 +3,34 @@ files:
   - Elide Standalone
 
 Spring: |+2
+  <br/>
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
+
   ```java
-  //Override the following bean:
-  @Bean
-  @Override
-  public SubscriptionWebSocket.UserFactory getUserFactory() {
-      return DEFAULT_USER_FACTORY;
+  @Configuration
+  public class ElideConfiguration {
+      @Bean
+      public SubscriptionWebSocket.UserFactory userFactory() {
+          return new CustomUserFactory();
+      }
   }
   ```
 
 Elide Standalone: |+2
+  <br/>
+  Override `ElideStandaloneSettings`.
+
   ```java
-  //Override ElideStandaloneSettings
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
+          return new ElideStandaloneSubscriptionSettings() { 
 
-  @Override
-  public ElideStandaloneSubscriptionSettings getSubscriptionProperties() {
-      return new ElideStandaloneSubscriptionSettings() { 
-
-          @Override
-          public SubscriptionWebSocket.UserFactory getUserFactory() {
-              return DEFAULT_USER_FACTORY;
-          }
-      };
+              @Override
+              public SubscriptionWebSocket.UserFactory getUserFactory() {
+                  return new CustomUserFactory();
+              }
+          };
+      }
   }
   ```

@@ -3,25 +3,29 @@ files:
   - Elide Standalone
 
 Spring: |+2
-  ```yaml
-  # application.yaml
+  <br/>
+  Configure in `application.yaml`.
 
+  ```yaml
   elide:
     aggregation-store:
       default-dialect: H2
   ```
 
 Elide Standalone: |+2
-  ```java
-  //Override ElideStandaloneSettings
+  <br/>
+  Override `ElideStandaloneSettings`.
 
-  @Override
-  public ElideStandaloneAnalyticSettings getAnalyticProperties() {
-      return new ElideStandaloneAnalyticSettings() {
-          @Override
-          public String getDefaultDialect() {
-              return "Hive";
-          }
-      };
+  ```java
+  public abstract class Settings implements ElideStandaloneSettings {
+      @Override
+      public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+          return new ElideStandaloneAnalyticSettings() {
+              @Override
+              public String getDefaultDialect() {
+                  return "Hive";
+              }
+          };
+      }
   }
   ```
