@@ -107,7 +107,7 @@ If using [Elide spring boot][elide-spring], set the following setting in applica
 
 ```yaml
 elide:
-  verboseErrors: true
+  verbose-errors: true
 ```
 
 ## Hibernate SQL Logging
@@ -133,8 +133,7 @@ Be sure to configure Hibernate to show SQL in the JDBC configuration as well:
 ```yaml
 spring:
   jpa:
-    hibernate:
-      show_sql: true
+    show-sql: true
 ```
 
 ### Elide Standalone Settings:

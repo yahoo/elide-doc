@@ -84,6 +84,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: 'org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl'
+      ddl-auto: 'validate'
   datasource:
     url: 'jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1'
     username: 'sa'

@@ -54,16 +54,15 @@ Operation checks are inline checks whose evaluation requires the entity instance
 Operation checks are expected to implement the following `Check` interface:
 
 ```java
-    /**
-     * Determines whether the user can access the resource.
-     *
-     * @param object The object that is being read/written.
-     * @param requestScope Request scope object
-     * @param changeSpec Summary of modifications
-     * @return true if security check passed
-     */
-    public abstract boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
-}
+/**
+ * Determines whether the user can access the resource.
+ *
+ * @param object The object that is being read/written.
+ * @param requestScope Request scope object
+ * @param changeSpec Summary of modifications
+ * @return true if security check passed
+ */
+public abstract boolean ok(T object, RequestScope requestScope, Optional<ChangeSpec> changeSpec);
 ```
 
 ### User Checks
@@ -71,13 +70,13 @@ User checks depend strictly on the user principal.  They only take a User object
 
 User checks are expected to implement the following `Check` interface:
 ```java
-    /**
-     * Method reserved for user checks.
-     *
-     * @param user User to check
-     * @return True if user check passes, false otherwise
-     */
-    public abstract boolean ok(User user);
+/**
+ * Method reserved for user checks.
+ *
+ * @param user User to check
+ * @return True if user check passes, false otherwise
+ */
+public abstract boolean ok(User user);
 ```
 
 ### Filter Expression Checks
@@ -221,7 +220,6 @@ The `EntityDictionary` must be told to scan for checks (by calling `dictionary.s
 If not using Elide spring boot or standalone, you can register checks when creating the `Elide` instance:
 
 ```java
-
 //Create the check mappings
 Map<String, Class<? extends Check>> checkMappings = new HashMap<>();
 checkMappings.put("User is an admin", AdminCheck.class);

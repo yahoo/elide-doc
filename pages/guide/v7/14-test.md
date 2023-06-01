@@ -23,51 +23,52 @@ The example leverages:
 
 ### Maven
 ```xml
-        <dependency>
-            <groupId>com.yahoo.elide</groupId>
-            <artifactId>elide-spring-boot-starter</artifactId>
-            <version>${elide.version}</version>
-        </dependency>
+<dependency>
+    <groupId>com.yahoo.elide</groupId>
+    <artifactId>elide-spring-boot-starter</artifactId>
+    <version>${elide.version}</version>
+</dependency>
 
-        <dependency>
-            <groupId>com.yahoo.elide</groupId>
-            <artifactId>elide-test-helpers</artifactId>
-            <version>${elide.version}</version>
-            <scope>test</scope>
-        </dependency>
+<dependency>
+    <groupId>com.yahoo.elide</groupId>
+    <artifactId>elide-test-helpers</artifactId>
+    <version>${elide.version}</version>
+    <scope>test</scope>
+</dependency>
 
-        <dependency>
-            <groupId>com.jayway.restassured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>2.9.0</version>
-            <scope>test</scope>
-        </dependency>
+<dependency>
+    <groupId>com.jayway.restassured</groupId>
+    <artifactId>rest-assured</artifactId>
+    <version>2.9.0</version>
+    <scope>test</scope>
+</dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <version>${spring.version}</version>
+    <scope>test</scope>
+</dependency>
 
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.5.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.2</version>
-            <scope>test</scope>
-        </dependency>
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.5.2</version>
+    <scope>test</scope>
+</dependency>
 
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.197</version>
-        </dependency>
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-engine</artifactId>
+    <version>5.5.2</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <version>1.4.197</version>
+</dependency>
 ```
 
 ## Setup
