@@ -141,18 +141,20 @@ To provide your own cache implementation, inject it as a `com.yahoo.elide.datast
 To control the default size of the cache or the item expiration, override the following `ElideStandaloneSettings` methods:
 
 ```java
-@Override
-public ElideStandaloneAnalyticSettings getAnalyticProperties() {
-    return new ElideStandaloneAnalyticSettings() {
-        @Override
-        public Integer getQueryCacheMaximumEntries() {
-            return 1000;
-        }
-        @Override
-        public Long getDefaultCacheExpirationMinutes() {
-            return 10L;
-        }
-    };
+public abstract class Settings implements ElideStandaloneSettings {
+    @Override
+    public ElideStandaloneAnalyticSettings getAnalyticProperties() {
+        return new ElideStandaloneAnalyticSettings() {
+            @Override
+            public Integer getQueryCacheMaximumEntries() {
+                return 1000;
+            }
+            @Override
+            public Long getDefaultCacheExpirationMinutes() {
+                return 10L;
+            }
+        };
+    }
 }
 ```
 

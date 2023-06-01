@@ -43,7 +43,6 @@ If you are not using [Elide Spring Starter][elide-spring] or [Elide Standalone][
   <groupId>com.yahoo.elide</groupId>
   <artifactId>elide-core</artifactId>
 </dependency>
-
 ```
 
 Pull in swagger core :
@@ -60,6 +59,8 @@ Pull in swagger core :
 If you are using [Elide Spring Autoconfigure](https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-autoconfigure), you can customize the `OpenAPI` document by using a `OpenApiDocumentCustomizer` bean:
 
 ```java
+@Configuration
+public class ElideConfiguration {
     @Bean
     public OpenApiDocumentCustomizer openApiDocumentCustomizer() {
         return openApi -> {
@@ -68,6 +69,7 @@ If you are using [Elide Spring Autoconfigure](https://github.com/yahoo/elide/tre
             openApi.setInfo(info);
         };
     }
+}    
 ```
 
 The application yaml file has settings:
@@ -110,10 +112,13 @@ public class App {
 Elide contributes to [Springdoc](https://springdoc.org/v2/)'s OpenAPI document by exposing a Springdoc `OpenApiCustomizer` bean. The default implementation is implemented in `DefaultElideOpenApiCustomizer`. To override the behavior a `ElideOpenApiCustomizer` bean can be created which will cause the `DefaultElideOpenApiCustomizer` not to be configured.
 
 ```java
+@Configuration
+public class ElideConfiguration {
     @Bean
     public ElideOpenApiCustomizer elideOpenApiCustomizer() {
         return new MyCustomElideOpenApiCustomizer();
     }
+}
 ```
 
 ### Elide Standalone Configuration
@@ -126,6 +131,7 @@ If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/e
 - Construct OpenAPI documents for your service.
 
 ```java
+public abstract class Settings implements ElideStandaloneSettings {
     /**
      * Enable OpenAPI documentation.
      * @return whether OpenAPI is enabled;
@@ -185,7 +191,7 @@ If you are using [Elide Standalone](https://github.com/yahoo/elide/tree/master/e
 
         return docs;
     }
-
+}
 ```
 
 ### Elide Library Configuration

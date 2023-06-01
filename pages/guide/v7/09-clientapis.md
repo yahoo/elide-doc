@@ -121,7 +121,7 @@ This can be toggled by overriding the `Elide` autoconfigure bean:
 
 ##### Elide Standalone Configuration
 
-[Elide standalone][elide-standalone] defaults to ISO8601 dates.  This can be toggled by overriding the following setting in `ElideStandaloneSettings`:
+[Elide Standalone][elide-standalone] defaults to ISO8601 dates.  This can be toggled by overriding the following setting in `ElideStandaloneSettings`:
 
 ```java
     /**
@@ -172,21 +172,20 @@ public interface ErrorMapper {
 The mapper returns a `CustomErrorException` which allows the developer complete control over the error objects returned in the 'errors' array for both JSON-API and GraphQL.
 
 ```java
-        ErrorObjects.ErrorObjectsBuilder builder = ErrorObjects.builder()
-                .withCode("506")
-                .with("customKey", "customValue")
-                .withDetail("A detailed message")
-                .addError();
-       
-        // Add a second error to the 'errors' array:
-        builder
-                .withCode("540")
-                .with("customKey", "customValue")
-                .withDetail("A different message")
-                .addError();
-        
-        throw new CustomErrorException(500, "Exception while doing something", builder.build());
+ErrorObjects.ErrorObjectsBuilder builder = ErrorObjects.builder()
+        .withCode("506")
+        .with("customKey", "customValue")
+        .withDetail("A detailed message")
+        .addError();
 
+// Add a second error to the 'errors' array:
+builder
+        .withCode("540")
+        .with("customKey", "customValue")
+        .withDetail("A different message")
+        .addError();
+
+throw new CustomErrorException(500, "Exception while doing something", builder.build());
 ```
 
 You can configure a custom ErrorMapper as follows:

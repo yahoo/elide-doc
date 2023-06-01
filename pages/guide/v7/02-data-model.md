@@ -301,8 +301,8 @@ public interface Injector {
 An implementation of this interface can be passed to the `EntityDictionary` during its construction:
 
 ```java
-        EntityDictionary dictionary = new EntityDictionary(PermissionExpressions.getExpressions(),
-                (obj) -> injector.inject(obj));
+EntityDictionary dictionary = new EntityDictionary(PermissionExpressions.getExpressions(),
+        (obj) -> injector.inject(obj));
 ```
 
 If you're using the `elide-spring-boot*` artifacts, dependency injection is already setup using Spring.
