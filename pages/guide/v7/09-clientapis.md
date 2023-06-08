@@ -37,18 +37,53 @@ All Elide APIs share a common set of concepts:
 
 ### API Versioning
 
-Elide allows multiple versions of the same models to coexist and for clients to request a particular instance.  Elide JAX-RS endpoints (elide-standalone) and Spring conrollers (Spring) support an API version header ('ApiVersion') that can be set to match the model annotation (`@ApiVersion`) version.
+Elide allows multiple versions of the same models to coexist and for clients to request a particular instance.  Elide JAX-RS endpoints (elide-standalone) and Spring controllers (Spring) support an API version that can be set to match the model annotation (`@ApiVersion`) version.
 
 If no version is specified by the client, Elide only exposes the models that lack an `@ApiVersion` annotation.
 
 OpenAPI endpoints (JSON-API) and GraphQL schemas are also scoped by the `ApiVersion` header.  They only return the schema corresponding to the requested API version.  
 
+Elide includes implementations for the following API Versioning Strategies
+- Path
+- Header
+- Parameters
+- Media Type Profile
+
+This can be customized by implementing and registering a `com.yahoo.elide.core.request.route.RouteResolver`.
+
+The default in Elide Spring Boot uses the Path strategy. The Path strategy is the only one that is supported when integrating with Springdoc as the other strategies are difficult to document with OpenAPI.
+
+This can be configured using `application.yaml`.
+
+```yaml
+elide:
+  api-versioning-strategy:
+    path:
+      enabled: false
+    header:
+      enabled: true
+      header-name:
+      - ApiVersion
+```
+
+The default in Elide Standalone now accepts all the strategies.
+
+This can be configured by overriding `ElideStandaloneSettings`.
+
+```java
+public abstract class Settings implements ElideStandaloneSettings {
+    @Override
+    public RouteResolver getRouteResolver() {
+        new HeaderRouteResolver("ApiVersion");
+    }
+}
+```
+
 Details of how to version Elide models can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/02-data-model.html#api-versions).  Details of how to configure versioned OpenAPI documents can be found [here]({{site.baseurl}}/pages/guide/v{{ page.version }}/13-openapi.html#api-versions).
 
 ### Type Coercion
 
-Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide 
-will serialize the data model fields into the text format defined by the schema of the client payload.
+Elide attempts to deserialize and coerce fields in the client payload into the underlying type defined in the data model.  Similarly, Elide will serialize the data model fields into the text format defined by the schema of the client payload.
 
 Beyond primitive, numeric, and String types, Elide can serialize and deserialize complex and user defined types.
 
@@ -104,19 +139,18 @@ Elide has built-in support for either:
 
 ##### Spring Boot Configuration
 
-[Elide Spring Boot][elide-spring] is configured by default to use IS08601 dates.
+[Elide Spring Boot][elide-spring] is configured by default to use ISO8601 dates.
 
-This can be toggled by overriding the `Elide` autoconfigure bean:
+This can be toggled by creating a `ElideSettingsBuilderCustomizer` bean:
 
 ```java
+@Configuration
+public class ElideConfiguration {
     @Bean
-    public Elide initializeElide(EntityDictionary dictionary, DataStore dataStore, ElideConfigProperties settings) {
-
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                ...
-                .withEpochDates();
-
-        return new Elide(builder.build());
+    ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
+        return builder -> builder.serdes(serdes -> serdes.withEpochDates());
+    }
+}
 ```
 
 ##### Elide Standalone Configuration
@@ -124,13 +158,15 @@ This can be toggled by overriding the `Elide` autoconfigure bean:
 [Elide Standalone][elide-standalone] defaults to ISO8601 dates.  This can be toggled by overriding the following setting in `ElideStandaloneSettings`:
 
 ```java
+public abstract class Settings implements ElideStandaloneSettings {
     /**
      * Whether Dates should be ISO8601 strings (true) or epochs (false).
      * @return
      */
-    default boolean enableIS06081Dates() {
+    public boolean enableISO8601Dates() {
         return true;
     }
+}
 ```
 
 ##### Elide Library Configuration
@@ -152,42 +188,58 @@ Elide has built in support for converting between Strings or Integers to enumera
 
 ### Custom Error Responses
 
-For normal error handling, Elide throws runtime exceptions which are mapped to error responses.  You can override any error response in Elide by providing a custom `ErrorMapper`:
+For normal error handling, Elide throws runtime exceptions which are mapped to error responses.  You can override any error response in Elide by providing a custom `ExceptionMapper`:
 
 ```java
 /**
- * The ErrorMapper allows mapping any RuntimeException of your choice into more meaningful
- * CustomErrorExceptions to improved your error response to the client.
+ * Maps an exception to an {@link ElideErrorResponse}.
+ *
+ * @param <E> exception type
+ * @param <T> response body type
  */
 @FunctionalInterface
-public interface ErrorMapper {
+public interface ExceptionMapper<E extends Throwable, T> {
     /**
-     * @param origin any Exception not caught by default
-     * @return a mapped CustomErrorException or null if you do not want to map this error
+     * Map the exception to an {@link ElideErrorResponse}.
+     *
+     * @param exception the exception to map.
+     * @param errorContext the error context
+     * @return the mapped ElideErrorResponse or null if you do not want to map this error
      */
-    @Nullable CustomErrorException map(Exception origin);
+    @Nullable
+    ElideErrorResponse<? extends T> toErrorResponse(E exception, ErrorContext errorContext);
 }
 ```
 
-The mapper returns a `CustomErrorException` which allows the developer complete control over the error objects returned in the 'errors' array for both JSON-API and GraphQL.
+The mapper returns a `ElideErrorResponse` which allows the developer complete control over the error objects returned in the 'errors' array for both JSON-API and GraphQL.
 
 ```java
-ErrorObjects.ErrorObjectsBuilder builder = ErrorObjects.builder()
-        .withCode("506")
-        .with("customKey", "customValue")
-        .withDetail("A detailed message")
-        .addError();
-
-// Add a second error to the 'errors' array:
-builder
-        .withCode("540")
-        .with("customKey", "customValue")
-        .withDetail("A different message")
-        .addError();
-
-throw new CustomErrorException(500, "Exception while doing something", builder.build());
+public class InvalidEntityBodyExceptionMapper implements ExceptionMapper<InvalidEntityBodyException, ElideErrors> {
+    public ElideErrorResponse<ElideErrors> toErrorResponse(InvalidEntityBodyException exception, ErrorContext errorContext) {
+        return ElideErrorResponse.badRequest()
+            .errors(errors -> errors.error(error -> error.message("Invalid entity body")));
+    }
+}
 ```
 
-You can configure a custom ErrorMapper as follows:
+The `ElideErrors` will be mapped to the corresponding `JsonApiErrors` and `GraphQLErrors` using the `JsonApiErrorMapper` and `GraphQLErrorMapper`.
 
-{% include code_example example="error-mapper" %}
+You can configure a custom `ExceptionMapper` as follows:
+
+{% include code_example example="exception-mapper" %}
+
+The following is the relationship between `ElideError` and `JsonApiError` and `GraphQLError`.
+
+|Elide Error            |JsonApi Error          |GraphQL Error          |
+|-----------------------|-----------------------|-----------------------|
+|`message`              |`details`              |`message`              |
+|`attributes`           |`meta`                 |`extensions`           |
+|`attributes.id`        |`id`                   |`extensions.id`        |
+|`attributes.status`    |`status`               |`extensions.status`    |
+|`attributes.code`      |`code`                 |`extensions.code`      |
+|`attributes.title`     |`title`                |`extensions.title`     |
+|`attributes.source`    |`source`               |`extensions.source`    |
+|`attributes.links`     |`links`                |`extensions.links`     |
+|`attributes.path`      |`meta.path`            |`path`                 |
+|`attributes.locations` |`meta.locations`       |`locations`            |
+{:.table}

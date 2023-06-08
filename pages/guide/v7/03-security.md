@@ -231,14 +231,16 @@ EntityDictionary dictionary = new EntityDictionary(checkMappings, beanFactory::a
 DataStore dataStore = ...
 
 //Configure Elide settings
-ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-    .withUseFilterExpressions(true)
-    .withEntityDictionary(dictionary)
-    .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
-    .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary))
-    .withGraphQLDialect(new RSQLFilterDialect(dictionary))
-    .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"))
-    .withAuditLogger(new Slf4jLogger());
+ElideSettingsBuilder builder = ElideSettings.builder()
+    .dataStore(dataStore)
+    .entityDictionary(dictionary)
+    .settings(JsonApiSettings.builder()
+        .joinFilterDialect(new RSQLFilterDialect(dictionary))
+        .subqueryFilterDialect(new RSQLFilterDialect(dictionary)))
+    .settings(GraphQLSettings.builder()
+        .filterDialect(new RSQLFilterDialect(dictionary)))
+    .serdes(serdes -> serdes.withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC")))
+    .auditLogger(new Slf4jLogger());
 
 //Create the Elide instance
 Elide elide = new Elide(builder.build());

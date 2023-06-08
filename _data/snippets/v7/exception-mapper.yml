@@ -10,8 +10,8 @@ Spring: |+2
   @Configuration
   public class ElideConfiguration {
       @Bean
-      public ErrorMapper errorMapper() {
-          return new CustomErrorMapper();
+      public InvalidEntityBodyExceptionMapper exceptionMapper() {
+          return new InvalidEntityBodyExceptionMapper();
       }
   }
   ```
@@ -23,8 +23,8 @@ Elide Standalone: |+2
   ```java
   public abstract class Settings implements ElideStandaloneSettings {
       @Override
-      public ErrorMapper getErrorMapper() {
-          return new CustomErrorMapper();
+      public ExceptionMappers getExceptionMappers() {
+          return BasicExceptionMappers.builder().register(new InvalidEntityBodyExceptionMapper()).build();
       }
   }
   ```

@@ -80,8 +80,8 @@ The application yaml file has settings:
 ```yaml
 elide:
   api-docs:
-    path: /doc
     enabled: true
+    path: /doc
     version: openapi_3_0
 
 ```
@@ -109,7 +109,11 @@ public class App {
 
 ### SpringDoc Integration
 
-Elide contributes to [Springdoc](https://springdoc.org/v2/)'s OpenAPI document by exposing a Springdoc `OpenApiCustomizer` bean. The default implementation is implemented in `DefaultElideOpenApiCustomizer`. To override the behavior a `ElideOpenApiCustomizer` bean can be created which will cause the `DefaultElideOpenApiCustomizer` not to be configured.
+Elide contributes to [Springdoc](https://springdoc.org/v2/)'s OpenAPI document by exposing a Springdoc `OpenApiCustomizer` bean. 
+
+If API Versioning is used, only the Path strategy is supported when integrating with Springdoc as the other strategies are difficult to document with OpenAPI.
+
+The default implementation is implemented in `DefaultElideOpenApiCustomizer`. To override the behavior a `ElideOpenApiCustomizer` bean can be created which will cause the `DefaultElideOpenApiCustomizer` not to be configured.
 
 ```java
 @Configuration
@@ -117,6 +121,18 @@ public class ElideConfiguration {
     @Bean
     public ElideOpenApiCustomizer elideOpenApiCustomizer() {
         return new MyCustomElideOpenApiCustomizer();
+    }
+}
+```
+
+When `GroupedOpenApi` is used, the `ElideOpenApiCustomizer` is not applied to the groups. Instead Elide has a `DefaultElideGroupedOpenApiCustomizer` that will customize the `GroupedOpenApi` to set the appropriate `OpenApiCustomizers` on the `GroupedOpenApi` that matches the paths to match and exclude. To override the behavior a `ElideGroupedOpenApiCustomizer` can be defined that will need to process the `OpenApiCustomizers` and remove the ones automatically added by Elide.
+
+```java
+@Configuration
+public class ElideConfiguration {
+    @Bean
+    public ElideGroupedOpenApiCustomizer elideGroupedOpenApiCustomizer() {
+        return new MyCustomElideGroupedOpenApiCustomizer();
     }
 }
 ```
@@ -137,8 +153,8 @@ public abstract class Settings implements ElideStandaloneSettings {
      * @return whether OpenAPI is enabled;
      */
     @Override
-    default boolean enableApiDocs() {
-        return false;
+    public boolean enableApiDocs() {
+        return true;
     }
 
     /**
@@ -147,7 +163,7 @@ public abstract class Settings implements ElideStandaloneSettings {
      * @return Default: /api-docs/*
      */
     @Override
-    default String getApiDocsPathSpec() {
+    public String getApiDocsPathSpec() {
         return "/api-docs/*";
     }
 
@@ -156,7 +172,7 @@ public abstract class Settings implements ElideStandaloneSettings {
      * @return open api service name;
      */
     @Override
-    default String getApiTitle() {
+    public String getApiTitle() {
         return "Elide Service";
     }
 
@@ -165,7 +181,7 @@ public abstract class Settings implements ElideStandaloneSettings {
      * @return the OpenAPI Specification Version to generate
      */
     @Override
-    default OpenApiVersion getOpenApiVersion() {
+    public OpenApiVersion getOpenApiVersion() {
         return OpenApiVersion.OPENAPI_3_0;
     }
 
@@ -175,7 +191,7 @@ public abstract class Settings implements ElideStandaloneSettings {
      * @return list of OpenAPI registration objects.
      */
     @Override
-    default List<ApiDocsEndpoint.ApiDocsRegistration> buildApiDocs(EntityDictionary dictionary) {
+    public List<ApiDocsEndpoint.ApiDocsRegistration> buildApiDocs(EntityDictionary dictionary) {
         List<ApiDocsEndpoint.ApiDocsRegistration> docs = new ArrayList<>();
 
         dictionary.getApiVersions().stream().forEach(apiVersion -> {
@@ -200,7 +216,7 @@ If you are using Elide directly as a library (and not using Elide Standalone), f
 Create and initialize an entity dictionary.
 
 ```java
-EntityDictionary dictionary = new EntityDictionary(Maps.newHashMap());
+EntityDictionary dictionary = EntityDictionary.builder().build();
 
 dictionary.bindEntity(Book.class);
 dictionary.bindEntity(Author.class);
@@ -210,7 +226,7 @@ dictionary.bindEntity(Publisher.class);
 Create a Info object.
 
 ```java
-Info info = new Info().title("My Service").version("1.0");
+Info info = new Info().title("My Service").version("1");
 ```
 
 Initialize a OpenAPI builder.
@@ -225,13 +241,20 @@ Build the OpenAPI document
 OpenAPI document = builder.build().info(info);
 ```
 
-#### Convert OpenAPI to JSON
+#### Convert OpenAPI to JSON or YAML
 
 You can directly convert to JSON:
 
 ```java
 OpenApiDocument openApiDocument = new OpenApiDocument(document, OpenApiDocument.Version.from("3.0"));
 String jsonOutput = openApiDocument.of(OpenApiDocument.MediaType.APPLICATION_JSON);
+```
+
+You can directly convert to YAML:
+
+```java
+OpenApiDocument openApiDocument = new OpenApiDocument(document, OpenApiDocument.Version.from("3.0"));
+String jsonOutput = openApiDocument.of(OpenApiDocument.MediaType.APPLICATION_YAML);
 ```
 
 #### Configure JAX-RS Endpoint
@@ -302,14 +325,14 @@ The Swagger UI is very slow when the number of generated URL paths exceeds a few
 generate separate OpenAPI documents for subgraphs of the model.  
 
 ```java
-Set<Type<?>> entities = Sets.newHashSet(
-    new ClassType(Book.class),
-    new ClassType(Author.class),
-    new ClassType(Publisher.clas)s
+Set<Type<?>> entities = Set.of(
+    ClassType.of(Book.class),
+    ClassType.of(Author.class),
+    ClassType.of(Publisher.class)
 );
 
 OpenApiBuilder builder = new OpenApiBuilder(dictionary)
-    .explicitClassList(entities);
+    .managedClasses(entities);
 ```
 
 In the above example, the `OpenApiBuilder` will only generate paths that exclusively traverse the provided set of entities.  
@@ -321,7 +344,7 @@ documentation.
 
 ```java
 OpenApiBuilder builder = new OpenApiBuilder(dictionary)
-   .filterOperators(Sets.newHashSet(Operator.IN));
+   .filterOperators(Set.of(Operator.IN));
 ```
 
 In the above example, filter query parameters are only generated for the _IN_ operator.
@@ -358,7 +381,7 @@ Only the _required_, _value_, _example_, _readOnly_, _writeOnly_, _requiredPrope
 OpenAPI documents are tied to an explicit API version.  When constructing a OpenAPI document, the API version must be set to match the API version of the models it will describe:  
 
 ```java
-OpenApiBuilder builder = new OpenApiBuilder(dictionary).apiVersion("1.0");
+OpenApiBuilder builder = new OpenApiBuilder(dictionary).apiVersion("1");
 OpenAPI openApi = builder.build();
 ```
 

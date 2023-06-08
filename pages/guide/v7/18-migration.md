@@ -22,7 +22,101 @@ Elide 7 is a major dependency upgrade including the following key updates:
 - Upgrade to Jersey 3.1.X
 - Upgrade to Swagger 2.X
 
-To keep the migration simpler, no interface changes were made to Elide.  
+## API Changes
+
+### API Versioning Strategies
+
+Elide 7 includes implementations for the following API Versioning Strategies
+- Path
+- Header
+- Parameters
+- Media Type Profile
+
+This can be customized by implementing and registering a `com.yahoo.elide.core.request.route.RouteResolver`.
+
+The default in Elide Spring Boot is now using the Path strategy instead of using the `ApiVersion` header. The Path strategy is the only one that is supported when integrating with Springdoc as the other strategies are difficult to document with OpenAPI.
+
+This can be configured back to the previous defaults using `application.yaml`.
+
+```yaml
+elide:
+  api-versioning-strategy:
+    path:
+      enabled: false
+    header:
+      enabled: true
+      header-name:
+      - ApiVersion
+```
+
+The default in Elide Standalone now accepts all the strategies.
+
+This can be configured back to the previous defaults using the following.
+
+```java
+public abstract class Settings implements ElideStandaloneSettings {
+    @Override
+    public RouteResolver getRouteResolver() {
+        new HeaderRouteResolver("ApiVersion");
+    }
+}
+```
+
+### Elide Settings
+
+The `ElideSettingsBuilder` has been changed to be more consistent with the other Lombok builders and to allow easier customization over the defaults instead of replacing it.
+
+For Elide Spring Boot the default settings can be customized using a `ElideSettingsBuilderCustomizer`, `JsonApiSettingsBuilderCustomizer`, `GraphQLSettingsBuilderCustomizer` or `AsyncSettingsBuilderCustomizer`.
+
+The following code only modifies the `defaultMaxPageSize`.
+
+```java
+@Configuration
+public class ElideConfiguration {
+    @Bean
+    ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
+        return builder -> builder.defaultMaxPageSize(1000);
+    }
+}
+```
+
+For Elide Standalone the default settings can be customized by overriding the `getElideSettingsBuilder()`, `getJsonApiSettingsBuilder()`, `getGraphQLSettingsBuilder()` or `getAsyncSettingsBuilder()` methods in `ElideStandaloneSettings`.
+
+The following code only modifies the `defaultMaxPageSize`.
+
+```java
+public abstract class Settings implements ElideStandaloneSettings {
+    @Override
+    public ElideSettingsBuilder getElideSettingsBuilder(
+            EntityDictionary dictionary,
+            DataStore dataStore,
+            JsonApiMapper mapper) {
+        return ElideStandaloneSettings.super.getElideSettingsBuilder(
+                dictionary,
+                dataStore,
+                mapper)
+            defaultMaxPageSize(1000);
+    }
+}
+```
+
+### Request Scope
+
+The `com.yahoo.elide.core.security.RequestScope` interface has changed to be able to return a `Route`. This replaces the `getApiVersion()`, `getRequestHeaderByName()`, `getBaseUrlEndPoint()` and `getQueryParams()` methods.
+
+The JSON-API relevant fields in `com.yahoo.elide.core.RequestScope` have been moved to `com.yahoo.elide.jsonapi.JsonApiRequestScope`.
+
+### Exception Handling
+
+The `ErrorMapper` which mapped an exception to a `CustomErrorException` has been replaced by an `ExceptionMapper` that maps an exception to an `ElideErrorResponse` which contains `ElideErrors` as a body. The respective `DefaultJsonApiExceptionHandler` and `DefaultGraphQLExceptionHandler` will map the `ElideErrors` body to the respective `JsonApiErrors` and `GraphQLErrors` using a `JsonApiErrorMapper` and `GraphQLErrorMapper`.
+
+#### Constraint Violation
+
+Previously the property path that caused the constraint violation can be found on `source.property`. For JSON-API errors this is now at `meta.property`. For GraphQL errors this is now at `extensions.property`.
+
+### Elide
+
+The JSON-API processing logic in `com.yahoo.elide.Elide` have been moved to `com.yahoo.elide.jsonapi.JsonApi`.
 
 ## Spring Boot 3
 

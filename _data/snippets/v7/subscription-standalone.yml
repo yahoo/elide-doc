@@ -23,7 +23,7 @@ Elide Standalone: |+2
   ```java
   public abstract class Settings implements ElideStandaloneSettings {
       @Override
-      public boolean enableJSONAPI() {
+      public boolean enableJsonApi() {
           return false;
       }
 

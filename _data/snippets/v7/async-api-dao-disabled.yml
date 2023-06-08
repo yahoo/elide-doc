@@ -10,12 +10,12 @@ Spring: |+2
   @Configuration
   public class ElideConfiguration {
       /**
-       * Configure the AsyncAPIDAO used by async requests.
-       * @return an AsyncAPIDAO object.
+       * Configure the AsyncApiDao used by async requests.
+       * @return an AsyncApiDao object.
        */
       @Bean
-      public AsyncAPIDAO asyncAPIDAO() {
-          return new CustomAsyncAPIDAO();
+      public AsyncApiDao asyncApiDao() {
+          return new CustomAsyncApiDao();
       }
   }
   ```
@@ -30,12 +30,12 @@ Elide Standalone: |+2
       public ElideStandaloneAsyncSettings getAsyncProperties() {
           ElideStandaloneAsyncSettings asyncProperties = new ElideStandaloneAsyncSettings() {
               /**
-               * Implementation of AsyncAPIDAO to use.
-               * @return AsyncAPIDAO type object.
+               * Implementation of AsyncApiDao to use.
+               * @return AsyncApiDao type object.
                */
               @Override
-              public AsyncAPIDAO getAPIDAO() {
-                  return new CustomAsyncAPIDAO();
+              public AsyncApiDao getAsyncApiDao() {
+                  return new CustomAsyncApiDao();
               }
           }
           return asyncProperties;

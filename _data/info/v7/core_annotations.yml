@@ -234,12 +234,12 @@
         required: False
         type: Boolean
         description: Whether or not the API will respond to request for page totals of this entity type.
-      - name: defaultLimit
+      - name: defaultPageSize
         default: 500
         required: False
         type: Integer
         description: If the client does not specify a page size, this is the number of elements that will be returned.
-      - name: maxLimit
+      - name: maxPageSize
         default: 10000
         required: False
         type: Integer
