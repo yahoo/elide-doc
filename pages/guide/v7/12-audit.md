@@ -17,8 +17,8 @@ When using the JPA or Hibernate datastores, Elide generates [HQL/JPQL](https://d
 To enable logging to see these queries, set the following property (based on the data store) to DEBUG:
 
 ```xml
-<!-- Log JPA Datastore HQL Statements -->
-<logger name="com.yahoo.elide.core.hibernate.hql.DefaultQueryLogger" level="DEBUG" />
+<!-- Log JPA Datastore JPQL Statements -->
+<logger name="com.yahoo.elide.datastores.jpql.query.DefaultQueryLogger" level="DEBUG" />
 ```
 
 ```xml
