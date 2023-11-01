@@ -4,13 +4,13 @@ files:
 
 Spring: |+2
   <br/>
-  Create a `@Configuration` class that defines your custom implementation as a `@Bean`.
+  Create a `@Configuration` class that defines your custom implementation as a `@Bean`. In the following example the `InvalidEntityBodyExceptionMapper` is the custom implementation.
 
   ```java
   @Configuration
   public class ElideConfiguration {
       @Bean
-      public InvalidEntityBodyExceptionMapper exceptionMapper() {
+      public ExceptionMapper exceptionMapper() {
           return new InvalidEntityBodyExceptionMapper();
       }
   }
@@ -18,7 +18,7 @@ Spring: |+2
 
 Elide Standalone: |+2
   <br/>
-  Override `ElideStandaloneSettings`.
+  Override `ElideStandaloneSettings`. In the following example the `InvalidEntityBodyExceptionMapper` is the custom implementation being registered.
 
   ```java
   public abstract class Settings implements ElideStandaloneSettings {

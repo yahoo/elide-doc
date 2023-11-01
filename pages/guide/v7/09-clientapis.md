@@ -217,12 +217,29 @@ The mapper returns a `ElideErrorResponse` which allows the developer complete co
 public class InvalidEntityBodyExceptionMapper implements ExceptionMapper<InvalidEntityBodyException, ElideErrors> {
     public ElideErrorResponse<ElideErrors> toErrorResponse(InvalidEntityBodyException exception, ErrorContext errorContext) {
         return ElideErrorResponse.badRequest()
-            .errors(errors -> errors.error(error -> error.message("Invalid entity body")));
+                .errors(errors -> errors
+                        // Add the first error
+                        .error(error -> error
+                                .message(errorContext.isVerbose() ? exception.getMessage() : "Invalid entity body")
+                                .attribute("code", "InvalidEntityBody")
+                                .attribute("body", ""))
+                        // Add the second error
+                        .error(error -> error
+                                .message("Item 1 cannot be empty")
+                                .attribute("code", "NotEmpty")
+                                .attribute("item", "1"))
+                        // Add the third error
+                        .error(error -> error
+                                .message("Item 2 cannot be null")
+                                .attribute("code", "NotNull")
+                                .attribute("item", "2")));
     }
 }
 ```
 
-The `ElideErrors` will be mapped to the corresponding `JsonApiErrors` and `GraphQLErrors` using the `JsonApiErrorMapper` and `GraphQLErrorMapper`.
+The `ElideErrors` will be mapped to the corresponding `JsonApiErrors` and `GraphQLErrors`. The [`JsonApiError`](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/jsonapi/serialization/JsonApiErrorSerializer.java) and [`GraphQLError`](https://github.com/yahoo/elide/blob/master/elide-graphql/src/main/java/com/yahoo/elide/graphql/serialization/GraphQLErrorSerializer.java) are what is serialized as a response.
+
+This mapping of `ElideErrors` happens in the [`DefaultJsonApiExceptionHandler`](https://github.com/yahoo/elide/blob/master/elide-core/src/main/java/com/yahoo/elide/jsonapi/DefaultJsonApiExceptionHandler.java) and [`DefaultGraphQLExceptionHandler`](https://github.com/yahoo/elide/blob/master/elide-graphql/src/main/java/com/yahoo/elide/graphql/DefaultGraphQLExceptionHandler.java) using the `JsonApiErrorMapper` and `GraphQLErrorMapper`.
 
 You can configure a custom `ExceptionMapper` as follows:
 
