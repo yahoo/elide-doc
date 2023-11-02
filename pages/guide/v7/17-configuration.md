@@ -115,7 +115,7 @@ public class ElideConfiguration {
 
 Elide uses `GraphQLSettings` for configuring GraphQL. This is auto-configured in `ElideAutoConfiguration`.
 
-This can be customized by defining a `GraphQLSettingsBuilderCustomizer`. The following configures the use Federation.
+This can be customized by defining a `GraphQLSettingsBuilderCustomizer`. The following configures the use of Federation.
 
 ```java
 @Configuration
