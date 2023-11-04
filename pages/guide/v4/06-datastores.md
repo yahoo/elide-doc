@@ -138,7 +138,7 @@ default ElideSettings getElideSettings(ServiceLocator injector) {
             .withJoinFilterDialect(new RSQLFilterDialect(dictionary))
             .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary));
 
-    if (enableIS06081Dates()) {
+    if (enableISO8601Dates()) {
         builder = builder.withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
     }
 

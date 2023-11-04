@@ -175,19 +175,10 @@ By default, the FIQL operators =in=,=out=,== are case sensitive. This can be rev
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public RefreshableElide elide(EntityDictionary dictionary,
-            DataStore dataStore, ElideConfigProperties settings) {
-
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                .withEntityDictionary(dictionary)
-                .withDefaultMaxPageSize(settings.getMaxPageSize())
-                .withDefaultPageSize(settings.getPageSize())
-                .withJoinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
-                .withSubqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
-                .withAuditLogger(new Slf4jLogger())
-                .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
-
-        return new RefreshableElide(new Elide(builder.build()));
+    public JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer() {
+        return builder -> builder
+            .joinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
+            .subqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant());
     }
 }
 ```
@@ -329,14 +320,14 @@ The following JSON Patch request creates an author (Ernest Hemingway), some of h
 ## Links
 ------------
 
-JSON-API links are disabled by default.  They can be enabled in `application.yaml`:
+JSON-API links are disabled by default. They can be enabled in `application.yaml`:
 
 ```yaml
 elide:
   base-url: 'https://elide.io'
   json-api:
-    path: /json
     enabled: true
+    path: /json
     links:
       enabled: true
 ```
@@ -353,18 +344,15 @@ public abstract class Settings implements ElideStandaloneSettings {
     public String getBaseUrl() {
         return "https://elide.io";
     }
-    
+
     @Override
-    public ElideSettings getElideSettings(final ServiceLocator injector) {
-        ... //Removed other initialization for clarity
+    public JsonApiSettingsBuilder getJsonApiSettingsBuilder(EntityDictionary dictionary, JsonApiMapper mapper) {
+        String jsonApiBaseUrl = getBaseUrl()
+                + getJsonApiPathSpec().replace("/*", "")
+                + "/";
 
-        String jsonApiBaseUrl = getBaseUrl() + getJsonApiPathSpec().replaceAll("/\\*", "") + "/";
-
-        ElideSettingsBuilder builder = (new ElideSettingsBuilder(dataStore))
-		... // Removed other settings for clarity
-                .withJSONApiLinks(new DefaultJSONApiLinks(jsonApiBaseUrl));
-       
-        return builder.build();
+        return ElideStandaloneSettings.super.getJsonApiSettingsBuilder(dictionary, mapper)
+                .links(links -> links.enabled(true).jsonApiLinks(new DefaultJsonApiLinks(jsonApiBaseUrl)));
     }
 }
 ```
@@ -403,7 +391,7 @@ Enabling JSON-API links will result in payload responses that look like:
 You can customize the links that are returned by registering your own implementation of `JsonApiLinks` with ElideSettings:
 
 ```java
-public interface JSONApiLinks {
+public interface JsonApiLinks {
     Map<String, String> getResourceLevelLinks(PersistentResource var1);
 
     Map<String, String> getRelationshipLinks(PersistentResource var1, String var2);

@@ -115,7 +115,7 @@ This can be toggled by overriding the `Elide` autoconfigure bean:
      * Whether Dates should be ISO8601 strings (true) or epochs (false).
      * @return
      */
-    default boolean enableIS06081Dates() {
+    default boolean enableISO8601Dates() {
         return true;
     }
 ```
