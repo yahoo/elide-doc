@@ -145,29 +145,36 @@ Return all the books with an author whose name is 'Null Ned' and whose title is 
 
 The following RSQL operators are supported:
 
-* `=in=` : Evaluates to true if the attribute exactly matches any of the values in the list. (Case Sensitive)
-* `=ini=`: Evaluates to true if the attribute exactly matches any of the values in the list. (Case Insensitive)
-* `=out=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Sensitive)
-* `=outi=` : Evaluates to true if the attribute does not match any of the values in the list. (Case Insensitive)
-* `==ABC*` : Similar to SQL `like 'ABC%`. (Case Sensitive)
-* `==*ABC` : Similar to SQL `like '%ABC`. (Case Sensitive)
-* `==*ABC*` : Similar to SQL `like '%ABC%`. (Case Sensitive)
-* `=ini=ABC*` : Similar to SQL `like 'ABC%`. (Case Insensitive)
-* `=ini=*ABC` : Similar to SQL `like '%ABC`. (Case Insensitive)
-* `=ini=*ABC*` : Similar to SQL `like '%ABC%`. (Case Insensitive)
-* `=isnull=true` : Evaluates to true if the attribute is null
-* `=isnull=false` : Evaluates to true if the attribute is not null
-* `=lt=` : Evaluates to true if the attribute is less than the value.
-* `=gt=` : Evaluates to true if the attribute is greater than the value.
-* `=le=` : Evaluates to true if the attribute is less than or equal to the value.
-* `=ge=` : Evaluates to true if the attribute is greater than or equal to the value.
-* `=isempty=` : Determines if a collection is empty or not.
-* `=between=` : Determines if a model attribute is >= and <= the two provided arguments.
-* `=notbetween=` : Negates the between operator.
-* `=hasmember=` : Determines if a collection contains a particular element.  
-* `=hasnomember=` : Determines if a collection does not contain a particular element.
+|Operator          |Description                                                                                                                                                                                        |
+|------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|`=in=`            | Evaluates to true if the attribute exactly matches any of the values in the list. (Case Sensitive)                                                                                                |
+|`=ini=`           | Evaluates to true if the attribute exactly matches any of the values in the list. (Case Insensitive)                                                                                              |
+|`=out=`           | Evaluates to true if the attribute does not match any of the values in the list. (Case Sensitive)                                                                                                 |
+|`=outi=`          | Evaluates to true if the attribute does not match any of the values in the list. (Case Insensitive)                                                                                               |
+|`==ABC*`          | Similar to SQL `like 'ABC%'`. (Case Sensitive)                                                                                                                                                    |
+|`==*ABC`          | Similar to SQL `like '%ABC'`. (Case Sensitive)                                                                                                                                                    |
+|`==*ABC*`         | Similar to SQL `like '%ABC%'`. (Case Sensitive)                                                                                                                                                   |
+|`=ini=ABC*`       | Similar to SQL `like 'ABC%'`. (Case Insensitive)                                                                                                                                                  |
+|`=ini=*ABC`       | Similar to SQL `like '%ABC'`. (Case Insensitive)                                                                                                                                                  |
+|`=ini=*ABC*`      | Similar to SQL `like '%ABC%'`. (Case Insensitive)                                                                                                                                                 |
+|`=isnull=true`    | Evaluates to true if the attribute is `null`.                                                                                                                                                     |
+|`=isnull=false`   | Evaluates to true if the attribute is not `null`.                                                                                                                                                 |
+|`=lt=`            | Evaluates to true if the attribute is less than the value.                                                                                                                                        |
+|`=gt=`            | Evaluates to true if the attribute is greater than the value.                                                                                                                                     |
+|`=le=`            | Evaluates to true if the attribute is less than or equal to the value.                                                                                                                            |
+|`=ge=`            | Evaluates to true if the attribute is greater than or equal to the value.                                                                                                                         |
+|`=isempty=`       | Determines if a collection is empty or not.                                                                                                                                                       |
+|`=between=`       | Determines if a model attribute is >= and <= the two provided arguments.                                                                                                                          |
+|`=notbetween=`    | Negates the between operator.                                                                                                                                                                     |
+|`=hasmember=`     | Determines if a collection contains a particular element. This can be used to evaluate that an attribute across a to-many association has a `null` value present by using `=hasmember=null`.      |
+|`=hasnomember=`   | Determines if a collection does not contain a particular element.                                                                                                                                 |
+|`=subsetof=`      | Determines if a collection is a subset of the values in the list. Meaning all the elements of the collection are in the provided values. Note that an empty set is a subset of every set.         |
+|`=notsubsetof=`   | Determines if a collection is not a subset of the values in the list.                                                                                                                             |
+|`=supersetof=`    | Determines if a collection is a superset of the values in the list. Meaning all the elements in the provided values are in the collection.                                                        |
+|`=notsupersetof=` | Determines if a collection is not a superset of the values in the list.                                                                                                                               |
+{:.table}
 
-The operators 'hasmember' and 'hasnomember' can be applied to collections (book.awards) or across to-many relationships (book.authors.name).
+The operators `hasmember`, `hasnomember`, `subsetof`, `notsubsetof`, `supersetof`, `notsupersetof` can be applied to collections (book.awards) or across to-many relationships (book.authors.name).
 
 ##### FIQL Default Behaviour
 By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
