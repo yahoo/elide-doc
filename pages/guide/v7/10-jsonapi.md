@@ -171,7 +171,7 @@ The following RSQL operators are supported:
 |`=subsetof=`      | Determines if a collection is a subset of the values in the list. Meaning all the elements of the collection are in the provided values. Note that an empty set is a subset of every set.         |
 |`=notsubsetof=`   | Determines if a collection is not a subset of the values in the list.                                                                                                                             |
 |`=supersetof=`    | Determines if a collection is a superset of the values in the list. Meaning all the elements in the provided values are in the collection.                                                        |
-|`=notsupersetof=` | Determines if a collection is a superset of the values in the list.                                                                                                                               |
+|`=notsupersetof=` | Determines if a collection is not a superset of the values in the list.                                                                                                                               |
 {:.table}
 
 The operators `hasmember`, `hasnomember`, `subsetof`, `notsubsetof`, `supersetof`, `notsupersetof` can be applied to collections (book.awards) or across to-many relationships (book.authors.name).
