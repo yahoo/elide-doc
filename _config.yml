@@ -1,8 +1,8 @@
 title: "Elide"
 tagline: "Model Driven Json API and GraphQL Web Services for Java"
 description: "Model Driven Json API and GraphQL Web Services for Java"
-baseurl: ""
-url: "https://elide.io"
+baseurl: "/elide-doc"
+url: "https://paion-data.github.io"
 logo: "/assets/images/elide-logo.svg"
 # jekyll configuration
 exclude: ["README.md"]
@@ -20,7 +20,7 @@ plugins:
   - jekyll-sitemap
 
 defaults:
-  - 
+  -
     scope:
       path: "node_modules/**"
     values:
