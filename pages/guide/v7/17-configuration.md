@@ -21,7 +21,7 @@ This can be customized by defining a `ElideSettingsBuilderCustomizer`.
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
+    ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
         return builder -> builder.auditLogger(new MyCustomAuditLogger());
     }
 }
@@ -49,7 +49,7 @@ This can be customized by defining a `SerdesBuilderCustomizer`. If the defaults 
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public SerdesBuilderCustomizer serdesBuilderCustomizer() {
+    SerdesBuilderCustomizer serdesBuilderCustomizer() {
         return builder -> builder.clear().entry(Address.class, new AddressSerde());
     }
 }
@@ -61,7 +61,7 @@ This can also be customized by defining a `ElideSettingsBuilderCustomizer`.
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
+    ElideSettingsBuilderCustomizer elideSettingsBuilderCustomizer() {
         return builder -> builder.serdes(serdes -> serdes.entry(Address.class, new AddressSerde()));
     }
 }
@@ -77,22 +77,34 @@ This can be customized by defining a `JsonApiSettingsBuilderCustomizer`. The fol
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer() {
+    JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer() {
         return builder -> builder.links(links -> links.enabled(true).jsonApiLinks(new MyCustomJsonApiLinks()));
     }
 }
 ```
 
-The following configures the filter dialect.
+The following configures the filter dialect. Note that by default a `RSQLFilterDialect` using a `CaseSensitivityStrategy` of `UseColumnCollation` and `addDefaultArguments` of `true` are already defined as a `joinFilterDialect` and `subqueryFilterDialect` so when defining another `RSQLFilterDialect` this default filter dialect would need to be removed.
 
 ```java
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer(EntityDictionary entityDictionary) {
-        return builder -> builder
-                .joinFilterDialect(RSQLFilterDialect.builder().dictionary(entityDictionary).build())
-                .subqueryFilterDialect(RSQLFilterDialect.builder().dictionary(entityDictionary).build());
+    JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer(EntityDictionary entityDictionary) {
+        return builder -> builder.joinFilterDialects(joinFilterDialects -> {
+            joinFilterDialects.clear();
+            joinFilterDialects.add(RSQLFilterDialect.builder()
+                    .dictionary(entityDictionary)
+                    .caseSensitivityStrategy(new CaseSensitivityStrategy.FIQLCompliant())
+                    .addDefaultArguments(true)
+                    .build());
+        }).subqueryFilterDialects(subqueryFilterDialects -> {
+            subqueryFilterDialects.clear();
+            subqueryFilterDialects.add(RSQLFilterDialect.builder()
+                    .dictionary(entityDictionary)
+                    .caseSensitivityStrategy(new CaseSensitivityStrategy.FIQLCompliant())
+                    .addDefaultArguments(true)
+                    .build());
+        });
     }
 }
 ```
@@ -105,7 +117,7 @@ Elide auto-configures a `JsonApiController` in `ElideAutoConfiguration`. This ca
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public MyCustomJsonApiController jsonApiController() {
+    MyCustomJsonApiController jsonApiController() {
         return new MyCustomJsonApiController();
     }
 }
@@ -121,7 +133,7 @@ This can be customized by defining a `GraphQLSettingsBuilderCustomizer`. The fol
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public GraphQLSettingsBuilderCustomizer graphqlSettingsBuilderCustomizer() {
+    GraphQLSettingsBuilderCustomizer graphqlSettingsBuilderCustomizer() {
         return builder -> builder.federation(federation -> federation.enabled(true));
     }
 }
@@ -135,7 +147,7 @@ Elide auto-configures a `GraphQLController` in `ElideAutoConfiguration`. This ca
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public MyCustomGraphQLController graphqlController() {
+    MyCustomGraphQLController graphqlController() {
         return new MyCustomGraphQLController();
     }
 }
@@ -151,7 +163,7 @@ This can be customized by defining a `AsyncSettingsBuilderCustomizer`. The follo
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public AsyncSettingsBuilderCustomizer asyncSettingsBuilderCustomizer() {
+    AsyncSettingsBuilderCustomizer asyncSettingsBuilderCustomizer() {
         return builder -> builder.export(export -> export.enabled(true).path("/export"));
     }
 }
@@ -167,7 +179,7 @@ Elide auto-configures a `ApiDocsController` in `ElideAutoConfiguration`. This ca
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public MyApiDocsController apiDocsController() {
+    MyApiDocsController apiDocsController() {
         return new MyCustomApiDocsController();
     }
 }

@@ -177,15 +177,30 @@ The following RSQL operators are supported:
 The operators `hasmember`, `hasnomember`, `subsetof`, `notsubsetof`, `supersetof`, `notsupersetof` can be applied to collections (book.awards) or across to-many relationships (book.authors.name).
 
 ##### FIQL Default Behaviour
-By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
+By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy.
+
+Note that by default a `RSQLFilterDialect` using a `CaseSensitivityStrategy` of `UseColumnCollation` and `addDefaultArguments` of `true` are already defined as a `joinFilterDialect` and `subqueryFilterDialect` so when defining another `RSQLFilterDialect` this default filter dialect would need to be removed.
+
 ```java
 @Configuration
 public class ElideConfiguration {
     @Bean
-    public JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer() {
-        return builder -> builder
-            .joinFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
-            .subqueryFilterDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant());
+    JsonApiSettingsBuilderCustomizer jsonApiSettingsBuilderCustomizer(EntityDictionary entityDictionary) {
+        return builder -> builder.joinFilterDialects(joinFilterDialects -> {
+            joinFilterDialects.clear();
+            joinFilterDialects.add(RSQLFilterDialect.builder()
+                    .dictionary(entityDictionary)
+                    .caseSensitivityStrategy(new CaseSensitivityStrategy.FIQLCompliant())
+                    .addDefaultArguments(true)
+                    .build());
+        }).subqueryFilterDialects(subqueryFilterDialects -> {
+            subqueryFilterDialects.clear();
+            subqueryFilterDialects.add(RSQLFilterDialect.builder()
+                    .dictionary(entityDictionary)
+                    .caseSensitivityStrategy(new CaseSensitivityStrategy.FIQLCompliant())
+                    .addDefaultArguments(true)
+                    .build());
+        });
     }
 }
 ```

@@ -189,22 +189,19 @@ The operators 'hasmember' and 'hasnomember' can be applied to collections (book.
 
 #### FIQL Default Behaviour
 By default, the FIQL operators =in=,=out=,== are case sensitive. This can be reverted to case insensitive by changing the case sensitive strategy:
+
 ```java
+@Configuration
+public class ElideConfiguration {
     @Bean
-    @ConditionalOnMissingBean
-    public Elide initializeElide(EntityDictionary dictionary,
-            DataStore dataStore, ElideConfigProperties settings) {
-
-        ElideSettingsBuilder builder = new ElideSettingsBuilder(dataStore)
-                .withEntityDictionary(dictionary)
-                .withDefaultMaxPageSize(settings.getMaxPageSize())
-                .withDefaultPageSize(settings.getPageSize())
-                .withGraphQLDialect(new RSQLFilterDialect(dictionary), new CaseSensitivityStrategy.FIQLCompliant())
-                .withAuditLogger(new Slf4jLogger())
-                .withISO8601Dates("yyyy-MM-dd'T'HH:mm'Z'", TimeZone.getTimeZone("UTC"));
-
-        return new Elide(builder.build());
+    GraphQLSettingsBuilderCustomizer graphQLSettingsBuilderCustomizer(EntityDictionary entityDictionary) {
+        return builder -> builder.filterDialect(RSQLFilterDialect.builder()
+                .dictionary(entityDictionary)
+                .caseSensitivityStrategy(new CaseSensitivityStrategy.FIQLCompliant())
+                .addDefaultArguments(true)
+                .build());
     }
+}
 ```
 
 ### Attribute arguments.
