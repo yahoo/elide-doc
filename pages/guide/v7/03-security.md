@@ -46,7 +46,7 @@ Elide supports three different concrete `Check` classes depending on what is bei
 
 <div id="check-tree" style="height: 250px"></div>
 
-`Check` is the root intrface of all three variants:
+`Check` is the root interface of all three variants:
 
 ### Operation Checks
 Operation checks are inline checks whose evaluation requires the entity instance being read from or written to. They operate in memory of the process executing the Elide library.
@@ -244,6 +244,83 @@ ElideSettingsBuilder builder = ElideSettings.builder()
 
 //Create the Elide instance
 Elide elide = new Elide(builder.build());
+```
+
+## ID Obfuscation
+---------------------
+
+It is common to use a numeric sequence as the primary key, however this may undesirably leak information.
+
+* The value of the IDs generated can be predicted
+* Potentially leaks the counts of items
+* Potentially leaks the relative times of creation between different records
+
+ However at the same time using a random value as the primary key may affect performance.
+
+Elide supports 2 different ways of not exposing the primary key of the entity.
+
+* Allows registering a `IdObfuscator` that can obfuscate the id. Typically an encryption algorithm is used.
+* Allows designating another field or property as the `@EntityId` that will be used to look up the record instead of the `@Id`.
+
+### ID Obfuscator
+
+The `IdObfuscator` means that no additional column is required but some computation is required to always required to convert the ids. These ids will not be visible on the database level. Also sorting will typically take place on the underlying primary key and not the obfuscated value. If encryption is used for the obfuscation the user will need to safeguard those keys appropriately, also any changes to those keys or algorithm may mean that the ids will also correspondingly change.
+
+The following is an example using `org.springframework.security.crypto.encrypt.AesBytesEncryptor` to encrypt and decrypt the ID.
+
+```java
+@Configuration
+@EnableConfigurationProperties(AppSecurityProperties.class)
+public class ElideConfiguration {
+
+    /**
+     * Configures a id obfuscator.
+     *
+     * @param appSecurityProperties the configuration
+     * @return the id obfuscator
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "app.security.id-obfuscation", name = "enabled", havingValue = "true")
+    IdObfuscator idObfuscator(AppSecurityProperties appSecurityProperties) {
+        String password = appSecurityProperties.getIdObfuscation().getPassword();
+        String salt = appSecurityProperties.getIdObfuscation().getSalt();
+        AesBytesEncryptor bytesEncryptor = new AesBytesEncryptor(password, salt);
+        return new BytesEncryptorIdObfuscator(bytesEncryptor);
+    }
+}
+```
+
+### Entity ID
+
+Using the `@EntityId` allows the entity to have a totally separate column to identify the record that is not linked to the primary key in any way. A user could for instance choose [Cuid2](https://github.com/paralleldrive/cuid2) as the entity id for its records. Sorting on id will sort on the entity id as this is a real column.
+
+The following is an example of using a separate column as the entity identifier.
+
+```java
+@Include(name = "posts")
+@Table(name = "post")
+@Entity
+@Data
+public class Post {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "POST_SEQ")
+    @SequenceGenerator(name = "POST_SEQ", allocationSize = 1)
+    private Long id;
+
+    @EntityId
+    @NotNull
+    @Column(name = "entity_id")
+    private String entityId;
+
+    ...
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.entityId == null || "".equals(this.entityId)) {
+            this.entityId = UUID.randomUUID().toString();
+        }
+    }
+}
 ```
 
 <script>
