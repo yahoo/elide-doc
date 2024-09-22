@@ -225,11 +225,13 @@ or 'Science Fiction':
 ## Pagination
 --------------------------
 
+### Offset Pagination
+
 Any relationship can be paginated by providing one or both of the following parameters:
 1. **first** - The number of items to return per page.
 2. **after** - The number of items to skip.
 
-### Relationship Metadata
+#### Relationship Metadata
 
 Every relationship includes information about the collection (in addition to a list of edges) 
 that can be requested on demand:
@@ -246,6 +248,63 @@ These properties are contained within the _pageInfo_ structure:
   pageInfo {
     endCursor
     startCursor
+    hasNextPage
+    totalRecords
+  }
+}
+```
+
+### Cursor Pagination
+
+Cursor pagination is not enabled for the models by default and needs to be enabled by using annotating the model with the `@Paginate` annotation.
+
+```java
+@Include
+@Entity
+@Paginate(modes = { PaginationMode.OFFSET, PaginationMode.CURSOR })
+public class Book {
+}
+```
+
+Cursor pagination is supported by the following data stores:
+* Hashmap Data Store
+* JPA Data Store
+
+The JPA Data Store implements keyset pagination which assumes that appropriate indexes are created and that the sortable columns are non nullable.
+
+Where cursor pagination is supported, any relationship can be paginated by providing one or both of the following parameters:
+
+Scrolling forwards
+
+1. **first** - The number of items to return per page starting from the start.
+2. **after** - The cursor indicating the item the returned collection is after.
+
+Scrolling backwards
+
+1. **last** - The number of items to return per page starting from the end.
+2. **before** - The cursor indicating the item the returned collection is before.
+
+Note that scrolling backwards using _last_ and _before_ does not change the sort order.
+
+#### Relationship Metadata
+
+Every relationship includes information about the collection (in addition to a list of edges) 
+that can be requested on demand:
+
+2. **startCursor** - The cursor indicating the first item in the current page.
+1. **endCursor** - The cursor indicating the last item in the current page.
+3. **hasPreviousPage** - Whether or not more items exist before the current page.
+3. **hasNextPage** - Whether or not more items exist after the current page.
+4. **totalRecords** - The total number of records in this relationship across all pages.
+
+These properties are contained within the _pageInfo_ structure:
+
+```
+{
+  pageInfo {
+    startCursor
+    endCursor
+    hasPreviousPage
     hasNextPage
     totalRecords
   }

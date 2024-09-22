@@ -224,13 +224,17 @@ Argument values must be URL encoded.  There is no limit to the number of argumen
 Elide supports:
 1. Paginating a collection by row offset and limit.
 2. Paginating a collection by page size and number of pages.
-3. Returning the total size of a collection visible to the given user.
-4. Returning a _meta_ block in the JSON-API response body containing metadata about the collection or individual resources.
-5. A simple way to control: 
+3. Paginating a collection after or before a cursor.
+4. Returning the total size of a collection visible to the given user.
+5. Returning a _meta_ block in the JSON-API response body containing metadata about the collection or individual resources.
+6. A simple way to control: 
   * the availability of metadata 
   * the number of records that can be paginated
 
 ### Syntax
+
+#### Offset Pagination
+
 Elide allows pagination of the primary collection being returned in the response via the _page_ query parameter.
 
 The _rough_ BNF syntax for the _page_ query parameter is:
@@ -253,9 +257,52 @@ Legal combinations of the _page_ query params include:
 1. offset & limit
 1. offset & limit & totals
 
+#### Cursor Pagination
+
+Cursor pagination is not enabled for the models by default and needs to be enabled by using annotating the model with the `@Paginate` annotation.
+
+```java
+@Include
+@Entity
+@Paginate(modes = { PaginationMode.OFFSET, PaginationMode.CURSOR })
+public class Book {
+}
+```
+
+Cursor pagination is supported by the following data stores:
+* Hashmap Data Store
+* JPA Data Store
+
+The JPA Data Store implements keyset pagination which assumes that appropriate indexes are created and that the sortable columns are non nullable.
+
+The _rough_ BNF syntax for cursor pagination is:
+```
+<QUERY> ::= 
+     "page" "[" "size" "]" "=" <INTEGER>
+   | "page" "[" "first" "]" "=" <INTEGER>
+   | "page" "[" "after" "]" "=" <STRING>
+   | "page" "[" "last" "]" "=" <INTEGER>
+   | "page" "[" "before" "]" "=" <STRING>
+   | "page" "[" "totals" "]"
+```
+
+Legal combinations of the cursor query params include:
+1. first
+1. last
+1. after & size
+1. before & size
+1. first & totals
+1. last & totals
+1. after & size & totals
+1. before & size & totals
+
+Note that scrolling backwards using _last_ and _before_ does not change the sort order.
+
 ### Meta Block
-Whenever a _page_ query parameter is specified, Elide will return a _meta_ block in the
-JSON-API response that contains:
+
+#### Offset Pagination
+
+Whenever a _page_ query parameter is specified, Elide will return a _meta_ block in the JSON-API response that contains:
 1. The page _number_
 2. The page size or _limit_
 3. The total number of pages (_totalPages_) in the collection
@@ -263,6 +310,19 @@ JSON-API response that contains:
 
 The values for _totalPages_ and _totalRecords_ are only returned if the _page[totals]_ 
 parameter was specified in the query.
+
+#### Cursor Pagination
+
+Whenever cursor pagination is used, Elide will return a _meta_ block in the JSON-API response that contains:
+1. The cursor of the first record in the collection indicated by _startCursor_
+2. The cursor of the last record in the collection indicated by _endCursor_
+3. Whether there is a next page in _hasNextPage_
+4. Whether there is a previous page in _hasPreviousPage_
+5. The total number of records (_totalRecords_) in the collection.
+
+The values for _totalRecords_ are only returned if the _page[totals]_ parameter was specified in the query.
+
+The value for _hasNextPage_ or _hasPreviousPage_ may return false if it cannot be efficiently determined when scrolling in the opposite direction. For instance when scrolling backwards using _before_, _hasPreviousPage_ should indicate whether there are more records scrolling backwards but _hasNextPage_ may indicate false even if there are more records after the _endCursor_ if the data store cannot efficiently determine this.
 
 ### Example
 
